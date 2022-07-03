@@ -1,3 +1,4 @@
+
 #ifndef _BOUNDARY_
 #define _BOUNDARY_
 
@@ -20,7 +21,7 @@ public:
     Boundary (Vec2 a, Vec2 b){
         pointA = a;
         pointB = b;
-        length = Utilities::Distance(pointA, pointB);
+        length = pointA.Distance(pointB);
     }
 
     void Draw (SDL_Renderer* renderer) {
@@ -30,11 +31,11 @@ public:
     }
 
     double DistancePointA(Vec2 point) {
-        return Utilities::Distance(pointA, point);
+        return pointA.Distance(point);
     }
 
     double DistancePointB(Vec2 point) {
-        return Utilities::Distance(pointB, point);
+        return pointB.Distance(point);
     }
 
     Vec2 getPointA() { return pointA; }

@@ -5,8 +5,9 @@ make.exe all -f f:\Users\Collin\Desktop\broken-sdl\Makefile --print-data-base --
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
+ 
 
-# Make data base, printed on Sun Jul 03 10:11:50 2022
+# Make data base, printed on Sun Jul 03 10:27:10 2022
 
 # Variables
 
@@ -25,8 +26,7 @@ VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-82ad98a3-8d33-4272-8f09-3ad4ed740d
 # environment
 VSCODE_CWD = F:\Users\Collin\AppData\Local\Programs\Microsoft VS Code
 # environment
-CHOCOLATEYINSTALL = C 
-:\ProgramData\chocolatey
+CHOCOLATEYINSTALL = C:\ProgramData\chocolatey
 # environment
 SYSTEMROOT = C:\Windows
 # environment
@@ -203,12 +203,10 @@ SESSIONNAME = Console
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync load
 # environment
 PROCESSOR_REVISION = 7100
-# makefile (from 'f:\Users\Collin\Desktop\broken-sdl\Makefile', line 1)
-INCLUDE_PATHS = -Iinclude/
 # environment
 PROCESSOR_IDENTIFIER = AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD
 # variable set hash-table stats:
-# Load=98/1024=10%, Rehash=0, Collisions=10/130=8%
+# Load=97/1024=9%, Rehash=0, Collisions=10/128=8%
 
 # Pattern-specific Variable Values
 
@@ -255,14 +253,14 @@ all:
 # automatic
 # | := 
 # variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
-#  recipe to execute (from 'f:\Users\Collin\Desktop\broken-sdl\Makefile', line 4):
-	g++ -std=c++17 $(INCLUDE_PATHS) main.cpp -ISDL2/include -LSDL2/lib -Wall -lmingw32 -lSDL2main -lSDL2 -o main
+# Load=8/32=25%, Rehash=0, Collisions=1/11=9%
+#  recipe to execute (from 'f:\Users\Collin\Desktop\broken-sdl\Makefile', line 2):
+	g++ -std=c++17 main.cpp -ISDL2/include -LSDL2/lib -Wall -lmingw32 -lSDL2main -lSDL2 -o main
 
 # Not a target:
 f:\Users\Collin\Desktop\broken-sdl\Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-03 09:21:16
+#  Last modified 2022-07-03 10:14:55
 #  File has been updated.
 #  Successfully updated.
 
@@ -280,12 +278,13 @@ f:\Users\Collin\Desktop\broken-sdl\Makefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 5 / storage = 69 B / avg = 13 B
+# strcache buffers: 1 (0) / strings = 5 / storag 
+e = 69 B / avg = 13 B
 # current buf: size = 8174 B / used = 69 B / count = 5 / avg = 13 B
 
 # strcache performance: lookups = 10 / hit rate = 50%
 # hash-table stats:
 # Load=5/8192=0%, Rehash=0, Collisions=0/10=0%
-# Finished Make data base on Sun Jul 03 10:11:50 2022
+# Finished Make data base on Sun Jul 03 10:27:10 2022
 
  

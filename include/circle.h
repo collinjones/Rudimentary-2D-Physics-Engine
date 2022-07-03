@@ -1,3 +1,5 @@
+
+
 #ifndef _CIRCLE_
 #define _CIRCLE_
 
@@ -76,20 +78,30 @@ public:
         double closestX = line.getPointA().getX() + (dot * (line.getPointB().getX() - line.getPointA().getX()));
         double closestY = line.getPointA().getY() + (dot * (line.getPointB().getY() - line.getPointA().getY()));
         Vec2 closestPoint(closestX, closestY);
-        bool onSegment = closestPoint.CollisionWithLine(line);
+        bool onSegment = PointCollisionLine(closestPoint, line);
         if (!onSegment) return false;
 
-        double distanceClosestPoint = Utilities::Distance(closestPoint, position);
+        double distanceClosestPoint = position.Distance(closestPoint);
         if (distanceClosestPoint <= radius) {
             return true;
         }
         return false;
         
-    }   
+    }  
+
     bool CollisionWithPoint(Vec2 point) {
-        double distance = Utilities::Distance(point, position);
+        double distance = position.Distance(point);
 
         if (distance <= this->radius) {
+            return true;
+        }
+        return false;
+    }
+
+    bool PointCollisionLine(Vec2 point, Boundary line) {
+        double buffer = 0.1;
+        if (line.DistancePointA(point) + line.DistancePointB(point) >= line.getLength() - buffer 
+            && line.DistancePointA(point) + line.DistancePointB(point) <= line.getLength() + buffer) {
             return true;
         }
         return false;

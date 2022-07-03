@@ -1,3 +1,5 @@
+
+
 #ifndef _VECMATH_
 #define _VECMATH_
 

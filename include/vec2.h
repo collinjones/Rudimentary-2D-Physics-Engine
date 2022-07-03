@@ -1,8 +1,8 @@
 #ifndef _VEC2_
 #define _VEC2_ 
+#include <math.h>
 
 #include <SDL2/SDL.h>
-#include "boundary.h"
 
 class Vec2 {
 
@@ -65,15 +65,6 @@ public:
         vec.y = vec.y * newMag / this->magnitude();
     }
 
-    bool CollisionWithLine(Boundary line) {
-        double buffer = 0.1;
-        if (line.DistancePointA(*this) + line.DistancePointB(*this) >= line.getLength() - buffer 
-            && line.DistancePointA(*this) + line.DistancePointB(*this) <= line.getLength() + buffer) {
-            return true;
-        }
-        return false;
-    }
-
     SDL_FPoint getVec() { return vec; }
 
     double getX() { return vec.x; }
@@ -88,6 +79,13 @@ public:
     void operator = (const Vec2 &v) {
         vec.x = v.vec.x;
         vec.y = v.vec.y;
+    }
+
+    /* Just your friendly Pythagorean Theorem */
+    double Distance (Vec2 point) {
+        double distX = this->getX() - point.getX();
+        double distY = this->getY() - point.getY();
+        return sqrt((distX * distX) + (distY * distY));
     }
 };
 

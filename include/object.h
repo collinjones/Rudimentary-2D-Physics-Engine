@@ -1,8 +1,11 @@
+
+
 #ifndef _OBJECT_
 #define _OBJECT_ 
 
 #include <SDL2/SDL.h>
 #include "vec2.h"
+#include "vecMath.h"
 
 class Object {
 
