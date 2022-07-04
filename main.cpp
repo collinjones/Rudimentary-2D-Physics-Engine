@@ -12,7 +12,7 @@ using namespace std;
 
 #define PI 3.14
 const int WIDTH = 600;
-const int HEIGHT = 400;
+const int HEIGHT = 1000;
 const int FRAMERATE = 60;
 
 Vec2 startP(0, 200);
@@ -38,20 +38,20 @@ class Simulation {
 
             /* Temp - initialize two circles */
             Vec2 pos1(WIDTH/2, HEIGHT/2);
-            Vec2 pos2(700, 100);
-            Vec2 vel(rand() % 10+1, rand() % 10+1);
+            Vec2 pos2(700, 200);
+            Vec2 vel(rand() % 5 + 1, rand() % 5 + 1);
 
-            Vec2 b1A(0, 100);
-            Vec2 b1B(200, 0);
+            Vec2 b1A(WIDTH/2, 100);
+            Vec2 b1B(WIDTH-100, HEIGHT/2);
 
-            Vec2 b2A(0, 300);
-            Vec2 b2B(200, HEIGHT);
+            Vec2 b2A(WIDTH-100, HEIGHT/2);
+            Vec2 b2B(WIDTH/2, HEIGHT-100);
 
-            Vec2 b3A(400, 0);
-            Vec2 b3B(WIDTH, 100);
+            Vec2 b3A(WIDTH/2, HEIGHT-100);
+            Vec2 b3B(100, HEIGHT/2);
 
-            Vec2 b4A(400, HEIGHT);
-            Vec2 b4B(WIDTH, 300);
+            Vec2 b4A(100, HEIGHT/2);
+            Vec2 b4B(WIDTH/2, 100);
 
             boundaries.push_back(new Boundary(b1A, b1B));
             boundaries.push_back(new Boundary(b2A, b2B));
@@ -59,7 +59,7 @@ class Simulation {
             boundaries.push_back(new Boundary(b4A, b4B));
 
             circles.push_back(GenerateCircle(pos1, vel, 3));
-            // circles.push_back(GenerateCircle(pos2, vel, 2));
+            circles.push_back(GenerateCircle(pos2, vel, 2));
         }
 
         ~Simulation(){
@@ -85,16 +85,12 @@ class Simulation {
             
             while (!quit_flag) {
 
-                
-
-                
                 fill_screen(0,0,0,255);
                 /* Get positive normal of line segment */
                 double dx = b.getEnd().getX() - b.getStart().getX();
                 double dy = b.getEnd().getY() - b.getStart().getY();
                 Vec2 n(dy, -dx);
                 n.Normalize();
-                cout << n.getX() << ", " << n.getY() << endl;
                 
                 /* Check for events */
                 while (SDL_PollEvent(&e)){
@@ -117,21 +113,23 @@ class Simulation {
                     *      objects will fall with the same acceleration (gravity, in this case), 
                     *      regardless of its mass. This new force is the objects weight.
                     */
-                    Vec2 weight = VecMath::mult(gravity, circles[c]->getMass());
-                    circles[c]->ApplyForce(weight);
-
+                   if(!circles[c]->getCollisionWithBoundary()) {
+                        Vec2 weight = VecMath::mult(gravity, circles[c]->getMass());
+                        circles[c]->ApplyForce(weight);
+                   }
+                    
                     // cout << "Position:     (" << circles[c]->getPos().getX() << ", " << circles[c]->getPos().getY() << ")" << endl;
                     // cout << "Velocity:     (" << circles[c]->getVel().getX() << ", " << circles[c]->getVel().getY() << ")" << endl;
                     // cout << "Acceleration: (" << circles[c]->getAcc().getX() << ", " << circles[c]->getAcc().getY() << ")" << endl;
 
                     circles[c]->Update();
                     circles[c]->Draw(renderer);
+                    circles[c]->setCollisionWithBoundary(false);
                 }
 
                 /* Draw all of the lines (boundaries) */
                 for(int i = 0; i < (int) boundaries.size(); i++) {
                     boundaries[i]->Draw(renderer);
-                    cout << "drawing" << endl;
                 }
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);

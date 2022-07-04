@@ -48,7 +48,7 @@ public:
         } 
     }
 
-    int magnitude() {
+    double magnitude() {
         return sqrt( pow(vec.x, 2) + pow(vec.y, 2));
     }
 

@@ -17,14 +17,14 @@ public:
         return newVec;
     }  
 
-    static void div(Vec2* v, int scalar) {
+    static void div(Vec2* v, double scalar) {
         v->setX(v->getX() / scalar);
         v->setY(v->getY() / scalar);
     }
 
     /* Normalize a vector */
     static Vec2 normalize(Vec2 v) {
-        int mag = v.magnitude();
+        double mag = v.magnitude();
         div(&v, mag);
         return v;
     }

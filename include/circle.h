@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <cstdlib>
 #include "object.h"
 #include "vec2.h"
 #include "utilities.h"
@@ -18,6 +19,7 @@ private:
     double radius;
     double diameter;
     Vec2 closestLinePoint;
+    bool collisionWithBoundary;
 
 public:
 
@@ -26,6 +28,7 @@ public:
     : Object(pos, vel, acc, m, col) {  
         radius = (m * m) * SIZE_SCALAR;
         diameter = 2 * radius;
+        collisionWithBoundary = false;
     }
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
@@ -33,8 +36,8 @@ public:
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
-                int dx = radius - w;
-                int dy = radius - h;
+                double dx = radius - w;
+                double dy = radius - h;
                 if ( (dx*dx + dy*dy) <= (radius * radius) ) {
                     SDL_RenderDrawPoint(renderer, position.getX() + dx, position.getY() + dy);
                 }
@@ -45,17 +48,15 @@ public:
     void Bounce(Vec2 normal) {
         /* Calculate bounce vector given incoming velocity vector and normal vector */
         Vec2 tmp;
-        cout << velocity.Dot(normal) << endl;
         normal.multiply(-2 * velocity.Dot(normal));
         tmp = normal;
         tmp.add(velocity);
-        cout << tmp.getX() << ", " << tmp.getY() << endl;
         velocity = tmp;
     }
 
     void CollisionEdges(int width, int height) {
 
-        double edgeDampener = -0.1;  /* Used to slightly slow an object's velocity if it hits the edge */
+        double edgeDampener = -0.5;  /* Used to slightly slow an object's velocity if it hits the edge */
 
         if (this->position.getY() >= height - this->radius) {
             this->position.setY(height - this->radius);
@@ -78,12 +79,16 @@ public:
     void CollisionBoundaries(vector<Boundary*> boundaries) {
         for (int i = 0; i < (int) boundaries.size(); i++) {
             if (boundaries[i]->CircleIntersect(position, radius)){
+                setCollisionWithBoundary(true);
+                boundaries[i]->getNormal().multiply(-1);
                 this->Bounce(boundaries[i]->getNormal());
             }
         }
     }
 
     double getRadius() { return radius; }
+    void setCollisionWithBoundary(bool collided) { collisionWithBoundary = collided; }
+    bool getCollisionWithBoundary() { return collisionWithBoundary; }
 
 };
 
