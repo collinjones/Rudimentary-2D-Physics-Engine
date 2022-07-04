@@ -10,7 +10,7 @@
 class Object {
 
     protected:
-        Vec2 position;
+        Vec2 position; 
         Vec2 velocity;
         Vec2 acceleration;
         double mass;

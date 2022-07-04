@@ -22,14 +22,9 @@ public:
         v->setY(v->getY() / scalar);
     }
 
-    /* Get maginute of vector */
-    static int magnitude(Vec2 v) {
-        return sqrt( pow(v.getX(), 2) + pow(v.getY(), 2));
-    }
-
     /* Normalize a vector */
     static Vec2 normalize(Vec2 v) {
-        int mag = magnitude(v);
+        int mag = v.magnitude();
         div(&v, mag);
         return v;
     }

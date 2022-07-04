@@ -7,7 +7,7 @@ make.exe all -f f:\Users\Collin\Desktop\broken-sdl\Makefile --print-data-base --
 # There is NO WARRANTY, to the extent permitted by law.
  
 
-# Make data base, printed on Sun Jul 03 10:27:10 2022
+# Make data base, printed on Mon Jul 04 06:31:31 2022
 
 # Variables
 
@@ -22,7 +22,7 @@ USERPROFILE = C:\Users\colli
 # environment
 LOCALAPPDATA = C:\Users\colli\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-82ad98a3-8d33-4272-8f09-3ad4ed740dfb-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-94ebc079-8d0e-4ecc-b24c-a045e0bcb38a-sock
 # environment
 VSCODE_CWD = F:\Users\Collin\AppData\Local\Programs\Microsoft VS Code
 # environment
@@ -38,7 +38,7 @@ MAKE_COMMAND := C:/ProgramData/chocolatey/lib/make/tools/install/bin/make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_14924_AWPWHLRHJFZNYVBZ
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_15364_IUOETPPSTDVUBNFK
 # environment
 FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
@@ -94,7 +94,7 @@ MAKEFILE_LIST := f:\Users\Collin\Desktop\broken-sdl\Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 14924
+VSCODE_PID = 15364
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # automatic
@@ -255,12 +255,12 @@ all:
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'f:\Users\Collin\Desktop\broken-sdl\Makefile', line 2):
-	g++ -std=c++17 main.cpp -ISDL2/include -LSDL2/lib -Wall -lmingw32 -lSDL2main -lSDL2 -o main
+	g++ -std=c++17 main.cpp -IEigen -ISDL2/include -LSDL2/lib -Wall -lmingw32 -lSDL2main -lSDL2 -o main
 
 # Not a target:
 f:\Users\Collin\Desktop\broken-sdl\Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-03 10:14:55
+#  Last modified 2022-07-03 12:33:01
 #  File has been updated.
 #  Successfully updated.
 
@@ -278,13 +278,12 @@ f:\Users\Collin\Desktop\broken-sdl\Makefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 5 / storag 
-e = 69 B / avg = 13 B
+# strcache buffers: 1 (0) / strings = 5 / storage = 69 B / avg = 13 B
 # current buf: size = 8174 B / used = 69 B / count = 5 / avg = 13 B
 
 # strcache performance: lookups = 10 / hit rate = 50%
 # hash-table stats:
 # Load=5/8192=0%, Rehash=0, Collisions=0/10=0%
-# Finished Make data base on Sun Jul 03 10:27:10 2022
+# Finished Make data base on Mon Jul 04 06:31:31 2022
 
  

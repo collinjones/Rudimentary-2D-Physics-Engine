@@ -1,13 +1,14 @@
-
-
 #ifndef _CIRCLE_
 #define _CIRCLE_
 
 #include <SDL2/SDL.h>
+#include <iostream>
 #include "object.h"
 #include "vec2.h"
-#include "boundary.h"
 #include "utilities.h"
+#include "boundary.h"
+
+using namespace std;
 
 #define SIZE_SCALAR 3 /* a scalar for the size of the circle */
 
@@ -16,7 +17,7 @@ class Circle: public Object {
 private:
     double radius;
     double diameter;
-
+    Vec2 closestLinePoint;
 
 public:
 
@@ -41,9 +42,20 @@ public:
         }
     }
 
-    void Edges(int width, int height) {
+    void Bounce(Vec2 normal) {
+        /* Calculate bounce vector given incoming velocity vector and normal vector */
+        Vec2 tmp;
+        cout << velocity.Dot(normal) << endl;
+        normal.multiply(-2 * velocity.Dot(normal));
+        tmp = normal;
+        tmp.add(velocity);
+        cout << tmp.getX() << ", " << tmp.getY() << endl;
+        velocity = tmp;
+    }
 
-        double edgeDampener = -0.9;  /* Used to slightly slow an object's velocity if it hits the edge */
+    void CollisionEdges(int width, int height) {
+
+        double edgeDampener = -0.1;  /* Used to slightly slow an object's velocity if it hits the edge */
 
         if (this->position.getY() >= height - this->radius) {
             this->position.setY(height - this->radius);
@@ -63,49 +75,15 @@ public:
         }
     }
 
-    bool CollisionWithLine(Boundary line) {
-
-        /* Return true if either end of line is inside circle */
-        bool inside1 = CollisionWithPoint(line.getPointA());
-        bool inside2 = CollisionWithPoint(line.getPointB());
-        if (inside1 || inside2) return true;
-
-        /* Dot product of line & circle */
-        double dot = (((position.getX()-line.getPointA().getX())*(line.getPointB().getX()-line.getPointA().getX())) + 
-            ((position.getY()-line.getPointA().getY())*(line.getPointB().getY()-line.getPointA().getY())) ) / line.getLength() * line.getLength();
-
-        /* Find closest point on the line and check if that point is on the line segment or not */
-        double closestX = line.getPointA().getX() + (dot * (line.getPointB().getX() - line.getPointA().getX()));
-        double closestY = line.getPointA().getY() + (dot * (line.getPointB().getY() - line.getPointA().getY()));
-        Vec2 closestPoint(closestX, closestY);
-        bool onSegment = PointCollisionLine(closestPoint, line);
-        if (!onSegment) return false;
-
-        double distanceClosestPoint = position.Distance(closestPoint);
-        if (distanceClosestPoint <= radius) {
-            return true;
+    void CollisionBoundaries(vector<Boundary*> boundaries) {
+        for (int i = 0; i < (int) boundaries.size(); i++) {
+            if (boundaries[i]->CircleIntersect(position, radius)){
+                this->Bounce(boundaries[i]->getNormal());
+            }
         }
-        return false;
-        
-    }  
-
-    bool CollisionWithPoint(Vec2 point) {
-        double distance = position.Distance(point);
-
-        if (distance <= this->radius) {
-            return true;
-        }
-        return false;
     }
 
-    bool PointCollisionLine(Vec2 point, Boundary line) {
-        double buffer = 0.1;
-        if (line.DistancePointA(point) + line.DistancePointB(point) >= line.getLength() - buffer 
-            && line.DistancePointA(point) + line.DistancePointB(point) <= line.getLength() + buffer) {
-            return true;
-        }
-        return false;
-    }
+    double getRadius() { return radius; }
 
 };
 

@@ -1,5 +1,5 @@
-make.exe -f f:\Users\Collin\Desktop\broken-sdl\Makefile --dry-run --keep-going --print-directory
+make.exe -f f:\Users\Collin\Desktop\broken-sdl\Makefile --dry-run --always-make --keep-going --print-directory
 make: Entering directory 'f:/Users/Collin/Desktop/broken-sdl'
-g++ -std=c++17 main.cpp -ISDL2/include -LSDL2/lib -Wall -lmingw32 -lSDL2main -lSDL2 -o main
+g++ -std=c++17 main.cpp -IEigen -ISDL2/include -LSDL2/lib -Wall -lmingw32 -lSDL2main -lSDL2 -o main
 make: Leaving directory 'f:/Users/Collin/Desktop/broken-sdl'
  
