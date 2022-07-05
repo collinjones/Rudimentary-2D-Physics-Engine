@@ -42,6 +42,9 @@ class Object {
             position.add(velocity);
             acceleration.setVec(0, 0); // or acceleration.mult(0);
         }
+
+        void subVel(Vec2 vel) { velocity.sub(vel); }
+        void setVel(Vec2 vel) { velocity = vel; }
         
         Vec2 getPos() { return position; }
         Vec2 getVel() { return velocity; }

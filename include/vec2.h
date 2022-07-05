@@ -101,6 +101,19 @@ public:
         return os;
     }
 
+    bool operator ==(const Vec2 &v) {
+        if(v.vec.x == vec.x && v.vec.y == vec.y) {
+            return true;
+        }
+        return false;
+    }
+    bool operator !=(const Vec2 &v) {
+        if(v.vec.x == vec.x && v.vec.y == vec.y) {
+            return false;
+        }
+        return true;
+    }
+
     void Normalize() {
         setVec(vec.x / magnitude(), vec.y / magnitude());
     }

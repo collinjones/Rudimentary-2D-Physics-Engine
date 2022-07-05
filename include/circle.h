@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define SIZE_SCALAR 3 /* a scalar for the size of the circle */
+#define SIZE_SCALAR 5 /* a scalar for the size of the circle */
 
 class Circle: public Object {
 
@@ -20,13 +20,14 @@ private:
     double diameter;
     Vec2 closestLinePoint;
     bool collisionWithBoundary;
+    bool collisionWithCircle;
 
 public:
 
     /* Constructor - calls Object constructor */
     Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col) 
     : Object(pos, vel, acc, m, col) {  
-        radius = (m * m) * SIZE_SCALAR;
+        radius = (m + m) * SIZE_SCALAR;
         diameter = 2 * radius;
         collisionWithBoundary = false;
     }
@@ -43,6 +44,8 @@ public:
                 }
             }
         }
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
+        SDL_RenderDrawLine(renderer, position.getX(), position.getY(), (position.getX() + velocity.getX()*10), (position.getY() + velocity.getY()*10));
     }
 
     void Bounce(Vec2 normal) {
@@ -56,7 +59,7 @@ public:
 
     void CollisionEdges(int width, int height) {
 
-        double edgeDampener = -0.5;  /* Used to slightly slow an object's velocity if it hits the edge */
+        double edgeDampener = -0.9;  /* Used to slightly slow an object's velocity if it hits the edge */
 
         if (this->position.getY() >= height - this->radius) {
             this->position.setY(height - this->radius);
@@ -80,8 +83,39 @@ public:
         for (int i = 0; i < (int) boundaries.size(); i++) {
             if (boundaries[i]->CircleIntersect(position, radius)){
                 setCollisionWithBoundary(true);
-                boundaries[i]->getNormal().multiply(-1);
+                boundaries[i]->getNormal();
                 this->Bounce(boundaries[i]->getNormal());
+            }
+        }
+    }
+
+    void CollisionCircles(vector<Circle*> circles) {
+        for (int i = 0; i < (int) circles.size(); i++) {
+            if (position != circles[i]->getPos()){
+                double dist = circles[i]->getPos().Distance(position);
+                if (dist <= (circles[i]->getRadius() + radius)) {
+                    setCollisionWithCircle(true);
+                    Vec2 vCollision(circles[i]->getPos().getX() - position.getX(), 
+                                    circles[i]->getPos().getY() - position.getY());
+                    double dist = vCollision.magnitude();
+                    vCollision.divide(dist);
+                    Vec2 vRelativeVelocity(velocity.getX() - circles[i]->getVel().getX(), 
+                                           velocity.getY() - circles[i]->getVel().getY());
+                    double speed = vRelativeVelocity.getX() * vCollision.getX() + vRelativeVelocity.getY() * vCollision.getY();
+                    speed *= 0.90;
+                    if (speed < 0){
+                        continue;
+                    }
+
+                    /* Handle impulse and momentum */ 
+                    double impulse = 2 * speed / (circles[i]->getMass() + mass);
+                    Vec2 momentum1 = VecMath::mult(vCollision, impulse * circles[i]->getMass()); 
+                    Vec2 momentum2 = VecMath::mult(vCollision, impulse * mass); 
+                    velocity.sub(momentum1);
+                    Vec2 cpy = circles[i]->getVel();
+                    cpy.add(momentum2);
+                    circles[i]->setVel(cpy);
+                }
             }
         }
     }
@@ -89,6 +123,9 @@ public:
     double getRadius() { return radius; }
     void setCollisionWithBoundary(bool collided) { collisionWithBoundary = collided; }
     bool getCollisionWithBoundary() { return collisionWithBoundary; }
+    void setCollisionWithCircle(bool collided) { collisionWithCircle = collided; }
+    bool getCollisionWithCircle() { return collisionWithCircle; }
+    
 
 };
 

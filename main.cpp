@@ -11,8 +11,8 @@
 using namespace std;
 
 #define PI 3.14
-const int WIDTH = 600;
-const int HEIGHT = 1000;
+const int WIDTH = 1000;
+const int HEIGHT = 600;
 const int FRAMERATE = 60;
 
 Vec2 startP(0, 200);
@@ -26,7 +26,36 @@ Boundary b(startP, endP);
 class Simulation {
     public:
 
+        void LeftClick(SDL_MouseButtonEvent& b) {
+            if(b.button == SDL_BUTTON_LEFT){
+                if(!pointASelected) {
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    pA.setVec(posX, posY);
+                    pointASelected = true;
+                }
+                else {
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    pB.setVec(posX, posY);
+                    boundaries.push_back(new Boundary(pA, pB));
+                    pointASelected = false;
+                }
+            }
+        }
+
+        void RightClick(SDL_MouseButtonEvent& b) {
+            if(b.button == SDL_BUTTON_RIGHT){
+                Vec2 pos(WIDTH/2, HEIGHT/2);
+                Vec2 vel(rand() % 10 +1, rand() % 10 +1);
+                circles.push_back(GenerateCircle(pos, vel, 3));
+            }
+        }
+
         Simulation() {
+            pointASelected = false;
             srand (time(NULL));
             quit_flag = false;
             init_error = SDL_Init( SDL_INIT_VIDEO );
@@ -37,29 +66,7 @@ class Simulation {
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
             /* Temp - initialize two circles */
-            Vec2 pos1(WIDTH/2, HEIGHT/2);
-            Vec2 pos2(700, 200);
-            Vec2 vel(rand() % 5 + 1, rand() % 5 + 1);
-
-            Vec2 b1A(WIDTH/2, 100);
-            Vec2 b1B(WIDTH-100, HEIGHT/2);
-
-            Vec2 b2A(WIDTH-100, HEIGHT/2);
-            Vec2 b2B(WIDTH/2, HEIGHT-100);
-
-            Vec2 b3A(WIDTH/2, HEIGHT-100);
-            Vec2 b3B(100, HEIGHT/2);
-
-            Vec2 b4A(100, HEIGHT/2);
-            Vec2 b4B(WIDTH/2, 100);
-
-            boundaries.push_back(new Boundary(b1A, b1B));
-            boundaries.push_back(new Boundary(b2A, b2B));
-            boundaries.push_back(new Boundary(b3A, b3B));
-            boundaries.push_back(new Boundary(b4A, b4B));
-
-            circles.push_back(GenerateCircle(pos1, vel, 3));
-            circles.push_back(GenerateCircle(pos2, vel, 2));
+            
         }
 
         ~Simulation(){
@@ -84,8 +91,8 @@ class Simulation {
         int main_loop() {
             
             while (!quit_flag) {
-
                 fill_screen(0,0,0,255);
+                
                 /* Get positive normal of line segment */
                 double dx = b.getEnd().getX() - b.getStart().getX();
                 double dy = b.getEnd().getY() - b.getStart().getY();
@@ -97,13 +104,18 @@ class Simulation {
                     if (e.type == SDL_QUIT){
                         quit_flag = true;
                     }
+                    if (e.type == SDL_MOUSEBUTTONDOWN) {
+                        LeftClick(e.button);
+                        RightClick(e.button);
+                    }
                 }
 
                 /* Update and render circles on screen */
                 for (int c = 0; c < (int) circles.size(); c++) {
-                    // cout << "CIRCLE " << c << " - Mass: " << circles[c]->getMass() << endl;
+                    circles[c]->Update();
                     circles[c]->CollisionEdges(WIDTH, HEIGHT);
                     circles[c]->CollisionBoundaries(boundaries);
+                    circles[c]->CollisionCircles(circles);
 
                     /* == AN OBJECT FALLS (GRAVITY) AT THE SAME ACCELERATION INDEPENDENT OF ITS MASS == 
                     *
@@ -113,24 +125,24 @@ class Simulation {
                     *      objects will fall with the same acceleration (gravity, in this case), 
                     *      regardless of its mass. This new force is the objects weight.
                     */
-                   if(!circles[c]->getCollisionWithBoundary()) {
+                   if(!circles[c]->getCollisionWithCircle()) {
+                        cout << "applying gravity" << endl;
                         Vec2 weight = VecMath::mult(gravity, circles[c]->getMass());
                         circles[c]->ApplyForce(weight);
                    }
-                    
-                    // cout << "Position:     (" << circles[c]->getPos().getX() << ", " << circles[c]->getPos().getY() << ")" << endl;
-                    // cout << "Velocity:     (" << circles[c]->getVel().getX() << ", " << circles[c]->getVel().getY() << ")" << endl;
-                    // cout << "Acceleration: (" << circles[c]->getAcc().getX() << ", " << circles[c]->getAcc().getY() << ")" << endl;
-
-                    circles[c]->Update();
-                    circles[c]->Draw(renderer);
                     circles[c]->setCollisionWithBoundary(false);
+                    circles[c]->setCollisionWithCircle(false);
                 }
 
                 /* Draw all of the lines (boundaries) */
                 for(int i = 0; i < (int) boundaries.size(); i++) {
                     boundaries[i]->Draw(renderer);
                 }
+                /* Draw all of the Circles */
+                for(int c = 0; c < (int) circles.size(); c++) {
+                    circles[c]->Draw(renderer);
+                }
+                
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
             }
@@ -168,6 +180,10 @@ class Simulation {
 
         int init_error;
         bool quit_flag;
+
+        bool pointASelected;
+        Vec2 pA;
+        Vec2 pB;
 };
 
 
