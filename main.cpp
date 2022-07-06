@@ -180,10 +180,43 @@ class Simulation {
                     boundaries[i]->Draw(renderer);
                 }
 
+                if (boxPointASelected) {
+                    int tempPosX;
+                    int tempPosY;
+                    int tempWidth;
+                    int tempHeight;
+
+                    SDL_Rect* rect = new SDL_Rect();
+                    SDL_GetMouseState(&tempPosX, &tempPosY);
+                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                    if(tempPosX < boxPosX) {
+                        tempWidth = boxPosX - tempPosX;
+                        tempWidth *= -1;
+                    }
+                    else {
+                        tempWidth = tempPosX - boxPosX;
+                    }
+
+                    if(tempPosY < boxPosY) {
+                        tempHeight = boxPosY - tempPosY;
+                        tempHeight *= -1;
+                    }
+                    else {
+                        tempHeight = tempPosY - boxPosY;
+                    }
+ 
+                    rect->x = boxPosX;
+                    rect->y = boxPosY;
+                    rect->w = tempWidth;
+                    rect->h = tempHeight;
+                    SDL_RenderDrawRect(renderer, rect);
+                }
+
                 for(int i = 0; i < (int) rectangles.size(); i++) {
                     rectangles[i]->Draw(renderer);
+                    rectangles[i]->Fill(renderer);
                 }
-                // box.Fill(renderer);
+               
                 
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
