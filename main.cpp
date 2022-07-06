@@ -7,21 +7,13 @@
 #include "include/circle.h"
 #include "include/vecMath.h"
 #include "include/boundary.h"
+#include "include/rectangle.h"
 
 using namespace std;
 
+Rectangle box(200, 400, 400, 100);
+
 #define PI 3.14
-const int WIDTH = 1000;
-const int HEIGHT = 600;
-const int FRAMERATE = 60;
-
-Vec2 startP(0, 200);
-Vec2 endP(200, 300);
-
-const Vec2 gravity(0, 0.1);
-vector<Circle*> circles; 
-vector<Boundary*> boundaries;
-Boundary b(startP, endP);
 
 class Simulation {
     public:
@@ -39,18 +31,24 @@ class Simulation {
                     int posX;
                     int posY;
                     SDL_GetMouseState(&posX, &posY);
-                    pB.setVec(posX, posY);
-                    boundaries.push_back(new Boundary(pA, pB));
-                    pointASelected = false;
+                    if(posX != pA.getX() && posY != pA.getY()) {
+                        pB.setVec(posX, posY);
+                        boundaries.push_back(new Boundary(pA, pB));
+                        pointASelected = false;
+                    }
+                    
                 }
             }
         }
 
         void RightClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_RIGHT){
-                Vec2 pos(WIDTH/2, HEIGHT/2);
-                Vec2 vel(rand() % 10 +1, rand() % 10 +1);
-                circles.push_back(GenerateCircle(pos, vel, 3));
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+                Vec2 pos(posX, posY);
+                Vec2 vel(0, -5);
+                circles.push_back(GenerateCircle(pos, vel, rand() % 10 + 1));
             }
         }
 
@@ -64,8 +62,7 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-            /* Temp - initialize two circles */
+            gravity.setVec(0, 0.1);
             
         }
 
@@ -80,24 +77,18 @@ class Simulation {
             Vec2 a(0, 0);
 
             SDL_Color color;
-            color.r = 255;
-            color.g = 0;
-            color.b = 0;
+            color.r = rand() % 255 + 1;
+            color.g = rand() % 255 + 1;
+            color.b = rand() % 255 + 1;
             color.a = 255;
             return new Circle(pos, vel, a, mass, color);
         }
 
         /* MAIN SIMULATION LOOP */
-        int main_loop() {
+        int MainLoop() {
             
             while (!quit_flag) {
-                fill_screen(0,0,0,255);
-                
-                /* Get positive normal of line segment */
-                double dx = b.getEnd().getX() - b.getStart().getX();
-                double dy = b.getEnd().getY() - b.getStart().getY();
-                Vec2 n(dy, -dx);
-                n.Normalize();
+                FillScreen(0,0,0,255);
                 
                 /* Check for events */
                 while (SDL_PollEvent(&e)){
@@ -112,36 +103,46 @@ class Simulation {
 
                 /* Update and render circles on screen */
                 for (int c = 0; c < (int) circles.size(); c++) {
+                    /* Update the position of a circle */
                     circles[c]->Update();
-                    circles[c]->CollisionEdges(WIDTH, HEIGHT);
-                    circles[c]->CollisionBoundaries(boundaries);
-                    circles[c]->CollisionCircles(circles);
 
-                    /* == AN OBJECT FALLS (GRAVITY) AT THE SAME ACCELERATION INDEPENDENT OF ITS MASS == 
-                    *
-                    *  Without multiplying gravity with an objects mass, this gravity force being
-                    *      applied will be divided with the objects mass in the ApplyForce method, 
-                    *      causing gravity to act differently on each object. Galileo proved that 
-                    *      objects will fall with the same acceleration (gravity, in this case), 
-                    *      regardless of its mass. This new force is the objects weight.
-                    */
-                   if(!circles[c]->getCollisionWithCircle()) {
-                        cout << "applying gravity" << endl;
-                        Vec2 weight = VecMath::mult(gravity, circles[c]->getMass());
-                        circles[c]->ApplyForce(weight);
-                   }
+                    /* Check for and resolve collisions against the borders, line segments, and other circles */
+                    circles[c]->CollisionEdges(WIDTH, HEIGHT);
+                    circles[c]->CollisionBoundaries(boundaries, renderer);
+                    circles[c]->CollisionCircles(circles);
+                    circles[c]->CollisionRectangles(box, renderer);
+                    
+                    /* If circle is colliding with another circle or line, don't apply gravity */
+                    /* This is a hacky solution to preventing objects from clipping into eachother */
+                    /* Once we have repulsion implemented, we can repulse objects when they intersect */
+                    if(!circles[c]->getCollisionWithCircle()) {
+                        circles[c]->ApplyForce(gravity);
+                    }
+                    else {
+                        Vec2 reverseGravity(0, -0.1);
+                        circles[c]->ApplyForce(reverseGravity);
+                    }
+                    if(!circles[c]->getCollisionWithBoundary()) {
+                        circles[c]->ApplyForce(gravity);
+                    }
+                    else {
+                        Vec2 reverseGravity(0, -0.1);
+                        circles[c]->ApplyForce(reverseGravity);
+                    }
+
+                    /* Reset collisions flag to false and draw the circle */
                     circles[c]->setCollisionWithBoundary(false);
                     circles[c]->setCollisionWithCircle(false);
+                    circles[c]->Draw(renderer);
                 }
 
                 /* Draw all of the lines (boundaries) */
                 for(int i = 0; i < (int) boundaries.size(); i++) {
                     boundaries[i]->Draw(renderer);
                 }
-                /* Draw all of the Circles */
-                for(int c = 0; c < (int) circles.size(); c++) {
-                    circles[c]->Draw(renderer);
-                }
+
+                box.Draw(renderer);
+                box.Fill(renderer);
                 
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
@@ -149,12 +150,12 @@ class Simulation {
             return 0;
         }
 
-        void fill_screen(int r, int g, int b, int a){
+        void FillScreen(int r, int g, int b, int a){
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
         }
 
-        int check_for_errors() {
+        int CheckForErrors() {
 
             if ( init_error < 0 ) {
                 cout << "SDL Could not be initialized: " << endl;
@@ -178,8 +179,17 @@ class Simulation {
         SDL_Renderer* renderer = NULL;
         SDL_Event e;
 
+        const int WIDTH = 1000;
+        const int HEIGHT = 600;
+        const int FRAMERATE = 60;
+
         int init_error;
         bool quit_flag;
+
+        vector<Circle*> circles;
+        vector<Circle*> pegs; 
+        vector<Boundary*> boundaries;  
+        Vec2 gravity;
 
         bool pointASelected;
         Vec2 pA;
@@ -193,8 +203,8 @@ int WinMain () {
 
     // Check for any initialization errors
     
-    if(physics_engine.check_for_errors()) return EXIT_FAILURE;
-    physics_engine.main_loop();
+    if(physics_engine.CheckForErrors()) return EXIT_FAILURE;
+    physics_engine.MainLoop();
 
     return EXIT_SUCCESS;
 }

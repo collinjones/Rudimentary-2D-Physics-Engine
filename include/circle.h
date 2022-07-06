@@ -8,6 +8,7 @@
 #include "vec2.h"
 #include "utilities.h"
 #include "boundary.h"
+#include "rectangle.h"
 
 using namespace std;
 
@@ -15,19 +16,24 @@ using namespace std;
 
 class Circle: public Object {
 
-private:
+protected:
     double radius;
     double diameter;
     Vec2 closestLinePoint;
     bool collisionWithBoundary;
     bool collisionWithCircle;
+    const double restitution = 0.9;  /* Dampening when objects collide */
 
 public:
+
+    Circle() {
+        ;
+    }
 
     /* Constructor - calls Object constructor */
     Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col) 
     : Object(pos, vel, acc, m, col) {  
-        radius = (m + m) * SIZE_SCALAR;
+        radius = m * 3;
         diameter = 2 * radius;
         collisionWithBoundary = false;
     }
@@ -44,11 +50,16 @@ public:
                 }
             }
         }
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
-        SDL_RenderDrawLine(renderer, position.getX(), position.getY(), (position.getX() + velocity.getX()*10), (position.getY() + velocity.getY()*10));
+        // DrawVelocity(renderer);
     }
 
-    void Bounce(Vec2 normal) {
+    void DrawVelocity(SDL_Renderer* renderer) {
+        Vec2 velPos((position.getX() + velocity.getX()*10), (position.getY() + velocity.getY()*10));
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
+        SDL_RenderDrawLine(renderer, position.getX(), position.getY(), velPos.getX(), velPos.getY());
+    }
+
+    void LineBounce(Vec2 normal) {
         /* Calculate bounce vector given incoming velocity vector and normal vector */
         Vec2 tmp;
         normal.multiply(-2 * velocity.Dot(normal));
@@ -59,33 +70,37 @@ public:
 
     void CollisionEdges(int width, int height) {
 
-        double edgeDampener = -0.9;  /* Used to slightly slow an object's velocity if it hits the edge */
-
         if (this->position.getY() >= height - this->radius) {
             this->position.setY(height - this->radius);
-            this->velocity.multY(edgeDampener);
+            this->velocity.multY(-restitution);  /* Reverse velocity */
         }
-        if (this->position.getY() <= this->radius) {
+        else if (this->position.getY() <= this->radius) {
             this->position.setY(this->radius);
-            this->velocity.multY(edgeDampener);
+            this->velocity.multY(-restitution);  /* Reverse velocity */
         }
         if (this->position.getX() >= width-this->radius) {
             this->position.setX(width - this->radius);
-            this->velocity.multX(edgeDampener);
+            this->velocity.multX(-restitution);  /* Reverse velocity */
         }
-        if (this->position.getX() <= this->radius) {
+        else if (this->position.getX() <= this->radius) {
             this->position.setX(this->radius);
-            this->velocity.multX(edgeDampener);
+            this->velocity.multX(-restitution);  /* Reverse velocity */
         }
     }
 
-    void CollisionBoundaries(vector<Boundary*> boundaries) {
+    void CollisionBoundaries(vector<Boundary*> boundaries, SDL_Renderer* renderer) {
         for (int i = 0; i < (int) boundaries.size(); i++) {
-            if (boundaries[i]->CircleIntersect(position, radius)){
+            if (boundaries[i]->CircleIntersect(position, radius, renderer)){
                 setCollisionWithBoundary(true);
-                boundaries[i]->getNormal();
-                this->Bounce(boundaries[i]->getNormal());
+                this->LineBounce(boundaries[i]->getNormal());
             }
+        }
+    }
+
+    void CollisionBoundary(Boundary boundary, SDL_Renderer* renderer) {
+        if (boundary.CircleIntersect(position, radius, renderer)){
+            setCollisionWithBoundary(true);
+            this->LineBounce(boundary.getNormal());
         }
     }
 
@@ -95,37 +110,81 @@ public:
                 double dist = circles[i]->getPos().Distance(position);
                 if (dist <= (circles[i]->getRadius() + radius)) {
                     setCollisionWithCircle(true);
-                    Vec2 vCollision(circles[i]->getPos().getX() - position.getX(), 
-                                    circles[i]->getPos().getY() - position.getY());
-                    double dist = vCollision.magnitude();
-                    vCollision.divide(dist);
-                    Vec2 vRelativeVelocity(velocity.getX() - circles[i]->getVel().getX(), 
-                                           velocity.getY() - circles[i]->getVel().getY());
-                    double speed = vRelativeVelocity.getX() * vCollision.getX() + vRelativeVelocity.getY() * vCollision.getY();
-                    speed *= 0.90;
-                    if (speed < 0){
-                        continue;
-                    }
-
-                    /* Handle impulse and momentum */ 
-                    double impulse = 2 * speed / (circles[i]->getMass() + mass);
-                    Vec2 momentum1 = VecMath::mult(vCollision, impulse * circles[i]->getMass()); 
-                    Vec2 momentum2 = VecMath::mult(vCollision, impulse * mass); 
-                    velocity.sub(momentum1);
-                    Vec2 cpy = circles[i]->getVel();
-                    cpy.add(momentum2);
-                    circles[i]->setVel(cpy);
+                    ResolveCollisionCircle(circles[i]);
                 }
             }
         }
     }
 
-    double getRadius() { return radius; }
+    void CollisionRectangles(Rectangle rect, SDL_Renderer* renderer) {
+        if (rect.CollisionWithCircle(position.getX(), position.getY(), radius)) {
+            if(rect.getTopCollision()) {
+                this->position.setY(rect.getRect().y - radius);
+                this->velocity.multY(-restitution);  /* Reverse velocity */
+            }
+            else if(rect.getBottomCollision()) {
+                this->position.setY(rect.getRect().y + rect.getRect().h + radius);
+                this->velocity.multY(-restitution);  /* Reverse velocity */
+            }
+            else if(rect.getLeftCollision()) {
+                this->position.setX(rect.getRect().x - this->radius);
+                this->velocity.multX(-restitution);  /* Reverse velocity */
+            }
+            else if(rect.getRightCollision()) {
+                this->position.setX(rect.getRect().x + rect.getRect().w  + this->radius);
+                this->velocity.multX(-restitution);  /* Reverse velocity */
+            }
+            rect.resetCollisions();
+        }
+    }
+
+    void ResolveCollisionCircle(Circle* circle) {
+        /* Resolves a collision with another circle */
+        Vec2 vCollision;
+        Vec2 vRelativeVelocity;
+        Vec2 momentum1;
+        Vec2 momentum2;
+        Vec2 obj2VelCpy; 
+        double speed;    /* Used to calculate impulse */
+        double impulse;  /* Used to calculate momentums */
+
+        /* Get the collision vector and its distance (magnitude) */
+        vCollision.setVec(circle->getPos().getX() - position.getX(), 
+                        circle->getPos().getY() - position.getY());
+
+        /* Normalize the collision vector to get its direction */
+        vCollision.divide(vCollision.magnitude());
+
+        /* Get the relative velocity vector and calculate the collision speed, then dampen the speed by the restituion */
+        vRelativeVelocity.setVec(velocity.getX() - circle->getVel().getX(), 
+                               velocity.getY() - circle->getVel().getY());
+        speed = vRelativeVelocity.getX() * vCollision.getX() + vRelativeVelocity.getY() * vCollision.getY();
+        speed *= restitution;
+
+        /* If the speed is less than 0 (object moving away), just return here */
+        if (speed < 0){
+            return;
+        }
+
+        /* Calculate impulse, which will be used to calculate each objects momentum */ 
+        impulse = 2 * speed / (circle->getMass() + mass);
+        momentum1 = VecMath::mult(vCollision, impulse * circle->getMass()); 
+        momentum2 = VecMath::mult(vCollision, impulse * mass); 
+
+        /* Subtract the momentum1 from this objects velocity */
+        velocity.sub(momentum1);
+
+        /* Add the momentum2 to the other objects velocity */
+        obj2VelCpy = circle->getVel();
+        obj2VelCpy.add(momentum2);
+        circle->setVel(obj2VelCpy);
+    }
+
     void setCollisionWithBoundary(bool collided) { collisionWithBoundary = collided; }
-    bool getCollisionWithBoundary() { return collisionWithBoundary; }
     void setCollisionWithCircle(bool collided) { collisionWithCircle = collided; }
+    bool getCollisionWithBoundary() { return collisionWithBoundary; }
     bool getCollisionWithCircle() { return collisionWithCircle; }
-    
+    double getRadius() { return radius; }
 
 };
 
