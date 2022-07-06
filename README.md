@@ -18,6 +18,11 @@ Medhaj's environment is Java 13.
 
 This engine is inspired by a wonderful book called Nature of Code. https://natureofcode.com/ \
 Many of the concepts, such as vectors and the concept of physics in code can be traced back to this book.  \
-However, beyond that, the more complex concepts such as Elastic Collisions, Vector Reflections, Normal Vectors and Dot Product, etc, have been interpreted from many sources, then pieced together to fit our particular use in a larger system. 
+However, beyond that, the more complex concepts such as Elastic Collisions, Vector Reflections, Normal Vectors and Dot Product, Momentum, etc, have been interpreted from many sources, then pieced together to fit our particular use in a larger system. 
 
 Collin and Medhaj have taken these concepts and represented them together at once in one large interactive simulation. 
+
+## CURRENT CONTROLS
+Click the left mouse button once, then again in another location to create a line. \
+Right click the mosue to create a circle. \
+Press the `R` key once to begin the creation of a box, Press `R` again to create it. 
