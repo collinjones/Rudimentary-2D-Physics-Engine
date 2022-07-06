@@ -52,6 +52,7 @@ public:
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
     void Draw(SDL_Renderer* renderer) {
+        DrawVelocity(renderer);
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
@@ -62,11 +63,11 @@ public:
                 }
             }
         }
-        // DrawVelocity(renderer);
+        
     }
 
     void DrawVelocity(SDL_Renderer* renderer) {
-        Vec2 velPos((position.getX() + velocity.getX()*10), (position.getY() + velocity.getY()*10));
+        Vec2 velPos((position.getX() + velocity.getX()*8), (position.getY() + velocity.getY()*8));
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
         SDL_RenderDrawLine(renderer, position.getX(), position.getY(), velPos.getX(), velPos.getY());
     }
@@ -81,6 +82,7 @@ public:
     }
 
     void CollisionEdges(int width, int height) {
+        /* Checks and resolves collisions with the edges of the screen */
 
         if (this->position.getY() >= height - this->radius) {
             this->position.setY(height - this->radius);
@@ -101,6 +103,7 @@ public:
     }
 
     void CollisionBoundaries(vector<Boundary*> boundaries, SDL_Renderer* renderer) {
+        /* Checks and resolves collisions with active lines */
         for (int i = 0; i < (int) boundaries.size(); i++) {
             if (boundaries[i]->CircleIntersect(position, radius, renderer)){
                 setCollisionWithBoundary(true);
@@ -117,6 +120,7 @@ public:
     }
 
     void CollisionCircles(vector<Circle*> circles) {
+        /* Checks if this circle is colliding with the input circle */
         for (int i = 0; i < (int) circles.size(); i++) {
             if (position != circles[i]->getPos()){
                 double dist = circles[i]->getPos().Distance(position);
@@ -129,6 +133,7 @@ public:
     }
 
     void CollisionRectangles(vector<Rectangle*> rectangles) {
+        /* Checks and resolves collisions with other rectangles */
         for (int i = 0; i < (int) rectangles.size(); i++) {
             if (rectangles[i]->CollisionWithCircle(position.getX(), position.getY(), radius, &closestPointToRect, &leftCollision, &rightCollision, &topCollision, &bottomCollision)) {
                 if(topCollision) {
@@ -154,6 +159,7 @@ public:
 
     void ResolveCollisionCircle(Circle* circle) {
         /* Resolves a collision with another circle */
+
         Vec2 vCollision;
         Vec2 vRelativeVelocity;
         Vec2 momentum1;
