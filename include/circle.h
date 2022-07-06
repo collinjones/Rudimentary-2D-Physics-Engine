@@ -24,6 +24,13 @@ protected:
     bool collisionWithCircle;
     const double restitution = 0.9;  /* Dampening when objects collide */
 
+    Vec2 closestPointToRect;
+
+    bool topCollision;
+    bool bottomCollision;
+    bool leftCollision;
+    bool rightCollision;
+
 public:
 
     Circle() {
@@ -36,6 +43,11 @@ public:
         radius = m * 3;
         diameter = 2 * radius;
         collisionWithBoundary = false;
+
+        topCollision = false;
+        bottomCollision = false;
+        leftCollision = false;
+        rightCollision = false;
     }
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
@@ -116,25 +128,27 @@ public:
         }
     }
 
-    void CollisionRectangles(Rectangle rect, SDL_Renderer* renderer) {
-        if (rect.CollisionWithCircle(position.getX(), position.getY(), radius)) {
-            if(rect.getTopCollision()) {
-                this->position.setY(rect.getRect().y - radius);
-                this->velocity.multY(-restitution);  /* Reverse velocity */
+    void CollisionRectangles(vector<Rectangle*> rectangles) {
+        for (int i = 0; i < (int) rectangles.size(); i++) {
+            if (rectangles[i]->CollisionWithCircle(position.getX(), position.getY(), radius, &closestPointToRect, &leftCollision, &rightCollision, &topCollision, &bottomCollision)) {
+                if(topCollision) {
+                    this->position.setY(rectangles[i]->getRect().y - radius);
+                    this->velocity.multY(-restitution);  /* Reverse velocity */
+                }
+                else if(bottomCollision) {
+                    this->position.setY(rectangles[i]->getRect().y + rectangles[i]->getRect().h + radius);
+                    this->velocity.multY(-restitution);  /* Reverse velocity */
+                }
+                else if(leftCollision) {
+                    this->position.setX(rectangles[i]->getRect().x - this->radius);
+                    this->velocity.multX(-restitution);  /* Reverse velocity */
+                }
+                else if(rightCollision) {
+                    this->position.setX(rectangles[i]->getRect().x + rectangles[i]->getRect().w  + this->radius);
+                    this->velocity.multX(-restitution);  /* Reverse velocity */
+                }
             }
-            else if(rect.getBottomCollision()) {
-                this->position.setY(rect.getRect().y + rect.getRect().h + radius);
-                this->velocity.multY(-restitution);  /* Reverse velocity */
-            }
-            else if(rect.getLeftCollision()) {
-                this->position.setX(rect.getRect().x - this->radius);
-                this->velocity.multX(-restitution);  /* Reverse velocity */
-            }
-            else if(rect.getRightCollision()) {
-                this->position.setX(rect.getRect().x + rect.getRect().w  + this->radius);
-                this->velocity.multX(-restitution);  /* Reverse velocity */
-            }
-            rect.resetCollisions();
+            resetCollisions();
         }
     }
 
@@ -185,6 +199,19 @@ public:
     bool getCollisionWithBoundary() { return collisionWithBoundary; }
     bool getCollisionWithCircle() { return collisionWithCircle; }
     double getRadius() { return radius; }
+
+    bool getTopCollision() { return topCollision; }
+    bool getBottomCollision() { return bottomCollision; }
+    bool getLeftCollision() { return leftCollision; }
+    bool getRightCollision() { return rightCollision; }
+    
+
+    void resetCollisions() {
+        topCollision = false;
+        bottomCollision = false;
+        leftCollision = false;
+        rightCollision = false;
+    }
 
 };
 

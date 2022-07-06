@@ -11,8 +11,6 @@
 
 using namespace std;
 
-Rectangle box(200, 400, 400, 100);
-
 #define PI 3.14
 
 class Simulation {
@@ -20,12 +18,12 @@ class Simulation {
 
         void LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
-                if(!pointASelected) {
+                if(!linePointASelected) {
                     int posX;
                     int posY;
                     SDL_GetMouseState(&posX, &posY);
                     pA.setVec(posX, posY);
-                    pointASelected = true;
+                    linePointASelected = true;
                 }
                 else {
                     int posX;
@@ -34,7 +32,7 @@ class Simulation {
                     if(posX != pA.getX() && posY != pA.getY()) {
                         pB.setVec(posX, posY);
                         boundaries.push_back(new Boundary(pA, pB));
-                        pointASelected = false;
+                        linePointASelected = false;
                     }
                     
                 }
@@ -47,13 +45,49 @@ class Simulation {
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
-                Vec2 vel(0, -5);
-                circles.push_back(GenerateCircle(pos, vel, rand() % 10 + 1));
+                Vec2 vel(0, 0);
+                circles.push_back(GenerateCircle(pos, vel, 5));
+            }
+        }
+
+        void RKeyHeld(SDL_KeyboardEvent& k) {
+            if (k.keysym.scancode == SDL_SCANCODE_R) {
+                if(!boxPointASelected) {
+                    SDL_GetMouseState(&boxPosX, &boxPosY);
+                    boxPointASelected = true;
+                }
+                else {
+                    int secondPosX;
+                    int secondPosY;
+                    int width;
+                    int height;
+                    SDL_GetMouseState(&secondPosX, &secondPosY);
+                    cout << secondPosX << endl;
+                    cout << boxPosX << endl;
+                    if(secondPosX < boxPosX) {
+                        width = boxPosX - secondPosX;
+                        boxPosX -= width;
+                    }
+                    else {
+                        width = secondPosX - boxPosX;
+                    }
+
+                    if(secondPosY < boxPosY) {
+                        height = boxPosY - secondPosY;
+                        boxPosY -= height;
+                    }
+                    else {
+                        height = secondPosY - boxPosY;
+                    }
+                    rectangles.push_back(new Rectangle(boxPosX, boxPosY, width, height));
+                    boxPointASelected = false;
+                }
             }
         }
 
         Simulation() {
-            pointASelected = false;
+            linePointASelected = false;
+            boxPointASelected = false;
             srand (time(NULL));
             quit_flag = false;
             init_error = SDL_Init( SDL_INIT_VIDEO );
@@ -98,6 +132,10 @@ class Simulation {
                     if (e.type == SDL_MOUSEBUTTONDOWN) {
                         LeftClick(e.button);
                         RightClick(e.button);
+                        
+                    }
+                    if (e.type == SDL_KEYDOWN) {
+                        RKeyHeld(e.key);
                     }
                 }
 
@@ -110,7 +148,7 @@ class Simulation {
                     circles[c]->CollisionEdges(WIDTH, HEIGHT);
                     circles[c]->CollisionBoundaries(boundaries, renderer);
                     circles[c]->CollisionCircles(circles);
-                    circles[c]->CollisionRectangles(box, renderer);
+                    circles[c]->CollisionRectangles(rectangles);
                     
                     /* If circle is colliding with another circle or line, don't apply gravity */
                     /* This is a hacky solution to preventing objects from clipping into eachother */
@@ -133,6 +171,7 @@ class Simulation {
                     /* Reset collisions flag to false and draw the circle */
                     circles[c]->setCollisionWithBoundary(false);
                     circles[c]->setCollisionWithCircle(false);
+                    // circles[c]->debugging_setCircleToMouse();
                     circles[c]->Draw(renderer);
                 }
 
@@ -141,8 +180,10 @@ class Simulation {
                     boundaries[i]->Draw(renderer);
                 }
 
-                box.Draw(renderer);
-                box.Fill(renderer);
+                for(int i = 0; i < (int) rectangles.size(); i++) {
+                    rectangles[i]->Draw(renderer);
+                }
+                // box.Fill(renderer);
                 
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
@@ -187,13 +228,18 @@ class Simulation {
         bool quit_flag;
 
         vector<Circle*> circles;
-        vector<Circle*> pegs; 
+        vector<Rectangle*> rectangles; 
         vector<Boundary*> boundaries;  
+
         Vec2 gravity;
 
-        bool pointASelected;
+        bool linePointASelected;
+        bool boxPointASelected;
         Vec2 pA;
         Vec2 pB;
+
+        int boxPosX;
+        int boxPosY;
 };
 
 

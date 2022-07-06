@@ -1,0 +1,23 @@
+BUG #1:
+
+Circles with a radius smaller than their terminal velocity (implemented using drag) will clip through object. 
+
+	Possible solutions:
+		(EASY) 1. Limit the minimum radius of object so that the likelihood of this occurring is lower. 
+		(HARD) 2. Implement CCD (Continuous Collision Detection). Essentially, constantly check if each object is intersecting with another and set it's position and velocity accordingly. 
+	    (MEDIUM) 3. Incorporate a terminal velocity (max attainable velocity) of objects and balance it so that so object can't reach a speed that is equal to its diameter or something idk. 
+
+BUG #2:
+
+Circles will clip through the ends of boundaries (lines). This occurs because there is no code to resolve that collision other than confirming it happened. 
+	
+	Possible solutions:
+		1. Depending on the objects direction, multiply object velocity by (-1) to reverse it.
+		2. Add a 2x2 circle or rectangle to either end of the line but don't draw it. This way, the circle just treats the ends as another object to collide with. 
+
+BUG #3:
+
+Circles will clip through boundaries (lines) if they begin to rest. This is due to the fact that there is no code to set the circles (x, y) position, only to set it's new velocity. 
+	
+	Possible solutions:
+		1. Add a "lastSafePos" position vector to circle and always update it until it collides with an object. Along with setting velocity, set the current position to the lastSafePos, then reset lastSafePos. 

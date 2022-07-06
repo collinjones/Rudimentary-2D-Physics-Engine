@@ -107,6 +107,7 @@ public:
         }
         return false;
     }
+
     bool operator !=(const Vec2 &v) {
         if(v.vec.x == vec.x && v.vec.y == vec.y) {
             return false;
