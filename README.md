@@ -17,7 +17,7 @@ Medhaj's environment is Java 13.
 ## Additional Comments
 
 This engine is inspired by a wonderful book called Nature of Code by Daniel Shiffman. https://natureofcode.com/ \
-Many of the concepts, such as vectors and the concept of physics in code can be traced back to this book.  \
+Many of the concepts, such as vectors, forces, and the concept of physics in code can be traced back to this book.  \
 However, beyond that, the more complex concepts such as Elastic Collisions, Vector Reflections, Normal Vectors and Dot Product, Momentum, etc, have been interpreted from many sources such as MathOverflow, G4G, StackOverflow, then pieced together to fit our particular use in a larger system. 
 
 Collin and Medhaj have taken these concepts and represented them together at once in one large interactive simulation. 
