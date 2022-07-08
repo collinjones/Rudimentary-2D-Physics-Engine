@@ -101,10 +101,10 @@ class Simulation {
         }
 
         void GeneratePachinko() {
-            for ( int y = 200; y < 700; y+= 50) {
+            for ( int y = 2; y < 12; y+= 1) {
                 for (int x = 0; x < WIDTH; x += 50) {
-                    if (y/100 % 2 == 0){
-                        Vec2 pos(x, y);
+                    if (y % 2 == 1){
+                        Vec2 pos(x, y*50);
                         SDL_Color color;
                         color.r = rand() % 255 + 1;
                         color.g = rand() % 255 + 1;
@@ -113,7 +113,7 @@ class Simulation {
                         pegs.push_back(new Peg(pos, 5, color));
                     }
                     else {
-                        Vec2 pos(x + 25, y);
+                        Vec2 pos(x + 25, y*50);
                         SDL_Color color;
                         color.r = rand() % 255 + 1;
                         color.g = rand() % 255 + 1;

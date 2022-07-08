@@ -4,6 +4,7 @@
 #define _OBJECT_ 
 
 #include <SDL2/SDL.h>
+#include <vector>
 #include "vec2.h"
 #include "vecMath.h"
 
@@ -14,7 +15,8 @@ class Object {
         Vec2 velocity;
         Vec2 acceleration;
         double mass;
-        SDL_Color color;
+        SDL_Color color; 
+           
 
     public:
 

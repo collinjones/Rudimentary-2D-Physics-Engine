@@ -23,6 +23,11 @@ protected:
     bool collisionWithBoundary; 
     bool collisionWithCircle;
     const double restitution = 0.9;  /* Dampening when objects collide */
+    double interactionRadius;
+    vector<Peg*> pegs;
+    vector<Circle*> circles;
+    vector<Rectangle*> rects;
+    vector<Boundary*> lines;  
 
     Vec2 closestPointToRect;
 
@@ -41,6 +46,7 @@ public:
     Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col) 
     : Object(pos, vel, acc, m, col) {  
         radius = m * 3;
+        interactionRadius = 2 * radius;
         diameter = 2 * radius;
         collisionWithBoundary = false;
 
