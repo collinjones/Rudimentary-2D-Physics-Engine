@@ -52,7 +52,7 @@ public:
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
     void Draw(SDL_Renderer* renderer) {
-        DrawVelocity(renderer);
+        // DrawVelocity(renderer);
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
@@ -172,7 +172,6 @@ public:
 
     void ResolveCollisionPeg(Peg* peg, SDL_Renderer* renderer) {
         /* Resolves a collision with another circle */
-        cout << "collision with peg" << endl;
 
         Vec2 vCollision;  /* Holds the direction of collision */
         Vec2 vRelativeVelocity;
@@ -204,16 +203,11 @@ public:
         /* Calculate impulse, which will be used to calculate each objects momentum */ 
         impulse = 2 * speed / (peg->getMass() + mass);
         momentum1 = VecMath::mult(vCollision, impulse * peg->getMass()); 
-        momentum2 = VecMath::mult(vCollision, impulse * mass); 
-        momentum1.multiply(2);
+        momentum1.multiply(1.5);  // strength of bounce 
         
 
         /* Subtract the momentum1 from this objects velocity */
-        cout << "VELOCITY " << velocity << endl;
         velocity.sub(momentum1);
-        
-        cout << "VELOCITY " << velocity << endl;
-        cout << "MOMENTUM " << momentum1 << endl;
     }
 
     void ResolveCollisionCircle(Circle* circle) {

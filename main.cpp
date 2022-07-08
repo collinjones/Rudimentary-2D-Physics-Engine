@@ -47,7 +47,23 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
                 Vec2 vel(0, 0);
-                circles.push_back(GenerateCircle(pos, vel, rand() % 6 + 2));
+                circles.push_back(GenerateCircle(pos, vel, 3));
+            }
+        }
+
+        void PKeyPressed(SDL_KeyboardEvent& k) {
+            if(k.keysym.scancode == SDL_SCANCODE_P){
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+                Vec2 pos(posX, posY);
+
+                SDL_Color color;
+                color.r = rand() % 255 + 1;
+                color.g = rand() % 255 + 1;
+                color.b = rand() % 255 + 1;
+                color.a = 255;
+                pegs.push_back(new Peg(pos, 5, color));
             }
         }
 
@@ -63,8 +79,6 @@ class Simulation {
                     int width;
                     int height;
                     SDL_GetMouseState(&secondPosX, &secondPosY);
-                    cout << secondPosX << endl;
-                    cout << boxPosX << endl;
                     if(secondPosX < boxPosX) {
                         width = boxPosX - secondPosX;
                         boxPosX -= width;
@@ -86,6 +100,35 @@ class Simulation {
             }
         }
 
+        void GeneratePachinko() {
+            for ( int y = 200; y < 700; y+= 50) {
+                for (int x = 0; x < WIDTH; x += 50) {
+                    if (y/100 % 2 == 0){
+                        Vec2 pos(x, y);
+                        SDL_Color color;
+                        color.r = rand() % 255 + 1;
+                        color.g = rand() % 255 + 1;
+                        color.b = rand() % 255 + 1;
+                        color.a = 255;
+                        pegs.push_back(new Peg(pos, 5, color));
+                    }
+                    else {
+                        Vec2 pos(x + 25, y);
+                        SDL_Color color;
+                        color.r = rand() % 255 + 1;
+                        color.g = rand() % 255 + 1;
+                        color.b = rand() % 255 + 1;
+                        color.a = 255;
+                        pegs.push_back(new Peg(pos, 5, color));
+                    }
+                }
+            }
+
+            for(int x = 0; x < WIDTH; x += 50) {
+                rectangles.push_back(new Rectangle(x, HEIGHT-300, 10, 300));
+            }
+        }
+
         Simulation() {
             linePointASelected = false;
             boxPointASelected = false;
@@ -98,14 +141,7 @@ class Simulation {
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             gravity.setVec(0, 0.1);
-            
-            Vec2 pos(WIDTH/2, HEIGHT/2);
-            SDL_Color color;
-            color.r = rand() % 255 + 1;
-            color.g = rand() % 255 + 1;
-            color.b = rand() % 255 + 1;
-            color.a = 255;
-            pegs.push_back(new Peg(pos, 5, color));
+            GeneratePachinko();
 
         }
 
@@ -132,7 +168,6 @@ class Simulation {
             
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
-                pegs[0]->Draw(renderer);
                 
                 /* Check for events */
                 while (SDL_PollEvent(&e)){
@@ -146,6 +181,7 @@ class Simulation {
                     }
                     if (e.type == SDL_KEYDOWN) {
                         RKeyHeld(e.key);
+                        PKeyPressed(e.key);
                     }
                 }
 
@@ -225,7 +261,10 @@ class Simulation {
 
                 for(int i = 0; i < (int) rectangles.size(); i++) {
                     rectangles[i]->Draw(renderer);
-                    //rectangles[i]->Fill(renderer);
+                }
+
+                for(int i = 0; i < (int) pegs.size(); i++) {
+                    pegs[i]->Draw(renderer);
                 }
                
                 
@@ -264,8 +303,8 @@ class Simulation {
         SDL_Renderer* renderer = NULL;
         SDL_Event e;
 
-        const int WIDTH = 1000;
-        const int HEIGHT = 600;
+        const int WIDTH = 600;
+        const int HEIGHT = 1000;
         const int FRAMERATE = 60;
 
         int init_error;
