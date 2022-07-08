@@ -9,20 +9,13 @@ class Rectangle {
 
 private:
     SDL_Rect rect;
-
-
-
     
-
 public:
     Rectangle(int x, int y, int w, int h) {
         rect.x = x;
         rect.y = y;
         rect.w = w;
         rect.h = h;
-
-        
-
     }
 
     void Draw(SDL_Renderer* renderer) {
@@ -76,7 +69,7 @@ public:
             /* Return true if circle is colliding with rectangle */
             return true;
         }
-        /* Return false if circle is not colliding with rectangle */
+        /* Return false otherwise */
         return false;
     }
 

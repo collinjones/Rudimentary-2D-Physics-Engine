@@ -8,6 +8,7 @@
 #include "include/vecMath.h"
 #include "include/boundary.h"
 #include "include/rectangle.h"
+#include "include/peg.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
                 Vec2 vel(0, 0);
-                circles.push_back(GenerateCircle(pos, vel, 5));
+                circles.push_back(GenerateCircle(pos, vel, rand() % 6 + 2));
             }
         }
 
@@ -98,6 +99,14 @@ class Simulation {
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             gravity.setVec(0, 0.1);
             
+            Vec2 pos(WIDTH/2, HEIGHT/2);
+            SDL_Color color;
+            color.r = rand() % 255 + 1;
+            color.g = rand() % 255 + 1;
+            color.b = rand() % 255 + 1;
+            color.a = 255;
+            pegs.push_back(new Peg(pos, 5, color));
+
         }
 
         ~Simulation(){
@@ -123,6 +132,7 @@ class Simulation {
             
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
+                pegs[0]->Draw(renderer);
                 
                 /* Check for events */
                 while (SDL_PollEvent(&e)){
@@ -148,6 +158,7 @@ class Simulation {
                     circles[c]->CollisionEdges(WIDTH, HEIGHT);
                     circles[c]->CollisionBoundaries(boundaries, renderer);
                     circles[c]->CollisionCircles(circles);
+                    circles[c]->CollisionPegs(pegs, renderer);
                     circles[c]->CollisionRectangles(rectangles);
                     
                     /* If circle is colliding with another circle or line, don't apply gravity */
@@ -214,7 +225,7 @@ class Simulation {
 
                 for(int i = 0; i < (int) rectangles.size(); i++) {
                     rectangles[i]->Draw(renderer);
-                    rectangles[i]->Fill(renderer);
+                    //rectangles[i]->Fill(renderer);
                 }
                
                 
@@ -263,6 +274,7 @@ class Simulation {
         vector<Circle*> circles;
         vector<Rectangle*> rectangles; 
         vector<Boundary*> boundaries;  
+        vector<Peg*> pegs;
 
         Vec2 gravity;
 

@@ -6,9 +6,9 @@
 #include <cstdlib>
 #include "object.h"
 #include "vec2.h"
-#include "utilities.h"
 #include "boundary.h"
 #include "rectangle.h"
+#include "peg.h"
 
 using namespace std;
 
@@ -20,7 +20,7 @@ protected:
     double radius;
     double diameter;
     Vec2 closestLinePoint;
-    bool collisionWithBoundary;
+    bool collisionWithBoundary; 
     bool collisionWithCircle;
     const double restitution = 0.9;  /* Dampening when objects collide */
 
@@ -63,10 +63,10 @@ public:
                 }
             }
         }
-        
     }
 
     void DrawVelocity(SDL_Renderer* renderer) {
+        /* Draws the velocity of the object represented as a line */
         Vec2 velPos((position.getX() + velocity.getX()*8), (position.getY() + velocity.getY()*8));
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
         SDL_RenderDrawLine(renderer, position.getX(), position.getY(), velPos.getX(), velPos.getY());
@@ -132,6 +132,19 @@ public:
         }
     }
 
+    void CollisionPegs(vector<Peg*> pegs, SDL_Renderer* renderer) {
+        /* Checks if this circle is colliding with the input circle */
+        for (int i = 0; i < (int) pegs.size(); i++) {
+            if (position != pegs[i]->getPos()){
+                double dist = pegs[i]->getPos().Distance(position);
+                if (dist <= (pegs[i]->getRadius() + radius)) {
+                    setCollisionWithCircle(true);
+                    ResolveCollisionPeg(pegs[i], renderer);
+                }
+            }
+        }
+    }
+
     void CollisionRectangles(vector<Rectangle*> rectangles) {
         /* Checks and resolves collisions with other rectangles */
         for (int i = 0; i < (int) rectangles.size(); i++) {
@@ -155,6 +168,52 @@ public:
             }
             resetCollisions();
         }
+    }
+
+    void ResolveCollisionPeg(Peg* peg, SDL_Renderer* renderer) {
+        /* Resolves a collision with another circle */
+        cout << "collision with peg" << endl;
+
+        Vec2 vCollision;  /* Holds the direction of collision */
+        Vec2 vRelativeVelocity;
+        Vec2 momentum1;
+        Vec2 momentum2;
+        Vec2 obj2VelCpy; 
+        double speed;    /* Used to calculate impulse */
+        double impulse;  /* Used to calculate momentums */
+
+        /* Get the collision vector and its distance (magnitude) */
+        vCollision.setVec(peg->getPos().getX() - position.getX(), 
+                        peg->getPos().getY() - position.getY());
+
+        /* Normalize the collision vector to get its direction */
+        vCollision.divide(vCollision.magnitude());
+        
+
+        /* Get the relative velocity vector and calculate the collision speed, then dampen the speed by the restituion */
+        vRelativeVelocity.setVec(velocity.getX() - peg->getVel().getX(), 
+                               velocity.getY() - peg->getVel().getY());
+        speed = vRelativeVelocity.getX() * vCollision.getX() + vRelativeVelocity.getY() * vCollision.getY();
+        speed *= restitution;
+
+        /* If the speed is less than 0 (object moving away), just return here */
+        if (speed < 0){
+            return;
+        }
+
+        /* Calculate impulse, which will be used to calculate each objects momentum */ 
+        impulse = 2 * speed / (peg->getMass() + mass);
+        momentum1 = VecMath::mult(vCollision, impulse * peg->getMass()); 
+        momentum2 = VecMath::mult(vCollision, impulse * mass); 
+        momentum1.multiply(2);
+        
+
+        /* Subtract the momentum1 from this objects velocity */
+        cout << "VELOCITY " << velocity << endl;
+        velocity.sub(momentum1);
+        
+        cout << "VELOCITY " << velocity << endl;
+        cout << "MOMENTUM " << momentum1 << endl;
     }
 
     void ResolveCollisionCircle(Circle* circle) {
