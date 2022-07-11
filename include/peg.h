@@ -7,6 +7,7 @@
 class Peg {
 
 private:
+
     Vec2 position;
     Vec2 velocity;
     double radius;
