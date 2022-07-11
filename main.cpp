@@ -9,6 +9,7 @@
 #include "include/boundary.h"
 #include "include/rectangle.h"
 #include "include/peg.h"
+#include "include/emitter.h"
 
 using namespace std;
 
@@ -45,10 +46,18 @@ class Simulation {
                 int posX;
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
-                Vec2 pos(posX, posY);
-                Vec2 vel(0, 0);
-                circles.push_back(GenerateCircle(pos, vel, 3));
+                emitters.push_back(new Emitter((double) posX, (double) posY));
             }
+
+            // int posX;
+            // int posY;
+            // SDL_GetMouseState(&posX, &posY);
+            // SDL_Color color;
+            // color.r = rand() % 255 + 1;
+            // color.g = rand() % 255 + 1;
+            // color.b = rand() % 255 + 1;
+            // color.a = 255;
+            // circles.push_back(new Circle(Vec2(posX, posY), Vec2(0, 0), Vec2(0, 0), 3, color));
         }
 
         void PKeyPressed(SDL_KeyboardEvent& k) {
@@ -63,7 +72,7 @@ class Simulation {
                 color.g = rand() % 255 + 1;
                 color.b = rand() % 255 + 1;
                 color.a = 255;
-                pegs.push_back(new Peg(pos, 5, color));
+                pegs.push_back(new Peg(pos, 1, color));
             }
         }
 
@@ -101,7 +110,7 @@ class Simulation {
         }
 
         void GeneratePachinko() {
-            for ( int y = 2; y < 12; y+= 1) {
+            for (int y = 2; y < 12; y+= 1) {
                 for (int x = 0; x < WIDTH; x += 50) {
                     if (y % 2 == 1){
                         Vec2 pos(x, y*50);
@@ -110,7 +119,7 @@ class Simulation {
                         color.g = rand() % 255 + 1;
                         color.b = rand() % 255 + 1;
                         color.a = 255;
-                        pegs.push_back(new Peg(pos, 5, color));
+                        pegs.push_back(new Peg(pos, 3, color));
                     }
                     else {
                         Vec2 pos(x + 25, y*50);
@@ -119,7 +128,7 @@ class Simulation {
                         color.g = rand() % 255 + 1;
                         color.b = rand() % 255 + 1;
                         color.a = 255;
-                        pegs.push_back(new Peg(pos, 5, color));
+                        pegs.push_back(new Peg(pos, 3, color));
                     }
                 }
             }
@@ -141,7 +150,7 @@ class Simulation {
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             gravity.setVec(0, 0.1);
-            GeneratePachinko();
+            // GeneratePachinko();
 
         }
 
@@ -215,6 +224,7 @@ class Simulation {
                         circles[c]->ApplyForce(reverseGravity);
                     }
 
+
                     /* Reset collisions flag to false and draw the circle */
                     circles[c]->setCollisionWithBoundary(false);
                     circles[c]->setCollisionWithCircle(false);
@@ -266,6 +276,10 @@ class Simulation {
                 for(int i = 0; i < (int) pegs.size(); i++) {
                     pegs[i]->Draw(renderer);
                 }
+
+                for(int i = 0; i < (int) emitters.size(); i++) {
+                    emitters[i]->Emit(&circles);
+                }
                
                 
                 SDL_RenderPresent(renderer);
@@ -296,8 +310,6 @@ class Simulation {
             return 0;
         }
         
-
-
     private:
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
@@ -314,6 +326,7 @@ class Simulation {
         vector<Rectangle*> rectangles; 
         vector<Boundary*> boundaries;  
         vector<Peg*> pegs;
+        vector<Emitter*> emitters;
 
         Vec2 gravity;
 
