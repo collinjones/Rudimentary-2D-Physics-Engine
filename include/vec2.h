@@ -3,6 +3,9 @@
 #include <math.h>
 
 #include <SDL2/SDL.h>
+#include <iostream>
+
+using namespace std;
 
 class Vec2 {
 
@@ -22,47 +25,47 @@ public:
     }
 
     void setVec(double x, double y) {
-        this->vec.x = x;
-        this->vec.y = y;
+        vec.x = x;
+        vec.y = y;
     }
 
     /* Add a vector to this vector */
     void add(Vec2 v) {
-        this->vec.x += v.getX();
-        this->vec.y += v.getY();
+        vec.x += v.getX();
+        vec.y += v.getY();
     }
 
     /* Subtract a vector from this vector */
     void sub(Vec2 v) {
-        this->vec.x -= v.getX();
-        this->vec.y -= v.getY();
+        vec.x -= v.getX();
+        vec.y -= v.getY();
     }
 
     /* Limit this vectors magnitude to the mag passed in */
     void limit(double mag) {
-        if (this->magnitude() > mag) {
-            this->setMag(mag);
+        if (magnitude() > mag) {
+            setMag(mag);
         } 
     }
 
-    int magnitude() {
+    double magnitude() {
         return sqrt( pow(vec.x, 2) + pow(vec.y, 2));
     }
 
     void multiply(double scalar) {
-        this->vec.x *= scalar;
-        this->vec.y *= scalar;
+        vec.x *= scalar;
+        vec.y *= scalar;
     }
 
     void divide(double scalar) {
-        this->vec.x /= scalar;
-        this->vec.y /= scalar;
+        vec.x /= scalar;
+        vec.y /= scalar;
     }
 
     /* https://stackoverflow.com/questions/41317291/setting-the-magnitude-of-a-2d-vector */
     void setMag(double newMag) {
-        vec.x = vec.x * newMag / this->magnitude();
-        vec.y = vec.y * newMag / this->magnitude();
+        vec.x = vec.x * newMag / magnitude();
+        vec.y = vec.y * newMag / magnitude();
     }
 
     SDL_FPoint getVec() { return vec; }
@@ -70,11 +73,11 @@ public:
     double getX() { return vec.x; }
     double getY() { return vec.y; }
 
-    void setX(double x) { this->vec.x = x; }
-    void setY(double y) { this->vec.y = y; }
+    void setX(double x) { vec.x = x; }
+    void setY(double y) { vec.y = y; }
 
-    void multX(double scalar) { this->vec.x *= scalar; }
-    void multY(double scalar) { this->vec.y *= scalar; }
+    void multX(double scalar) { vec.x *= scalar; }
+    void multY(double scalar) { vec.y *= scalar; }
 
     void operator = (const Vec2 &v) {
         vec.x = v.vec.x;
@@ -82,10 +85,46 @@ public:
     }
 
     /* Just your friendly Pythagorean Theorem */
-    double Distance (Vec2 point) {
-        double distX = this->getX() - point.getX();
-        double distY = this->getY() - point.getY();
-        return sqrt((distX * distX) + (distY * distY));
+    double Distance (Vec2 other) {
+        double distX = vec.x - other.getX();
+        double distY = vec.y - other.getY();
+        return sqrt((distX * distX) + (distY * distY));  
+    }
+
+    double Dot(Vec2 other) {
+        return (vec.x * other.getX()) + (vec.y * other.getY());
+    }
+
+    friend ostream& operator<<(ostream& os, const Vec2& v)
+    {
+        os << "(" << v.vec.x << ", " << v.vec.y << ")";
+        return os;
+    }
+
+    bool operator ==(const Vec2 &v) {
+        if(v.vec.x == vec.x && v.vec.y == vec.y) {
+            return true;
+        }
+        return false;
+    }
+
+    bool operator !=(const Vec2 &v) {
+        if(v.vec.x == vec.x && v.vec.y == vec.y) {
+            return false;
+        }
+        return true;
+    }
+
+    void Normalize() {
+        setVec(vec.x / magnitude(), vec.y / magnitude());
+    }
+
+    bool IntersectCircle(Vec2 pos, double rad) {
+        double dist = Distance(pos);
+        if(dist <= rad) {
+            return true;
+        }
+        return false;
     }
 };
 

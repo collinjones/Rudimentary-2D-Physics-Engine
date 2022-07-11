@@ -1,39 +1,69 @@
-
-
 #ifndef _CIRCLE_
 #define _CIRCLE_
 
 #include <SDL2/SDL.h>
+#include <iostream>
+#include <cstdlib>
 #include "object.h"
 #include "vec2.h"
 #include "boundary.h"
-#include "utilities.h"
+#include "rectangle.h"
+#include "peg.h"
 
-#define SIZE_SCALAR 3 /* a scalar for the size of the circle */
+using namespace std;
+
+#define SIZE_SCALAR 5 /* a scalar for the size of the circle */
 
 class Circle: public Object {
 
-private:
+protected:
     double radius;
     double diameter;
+    Vec2 closestLinePoint;
+    bool collisionWithBoundary; 
+    bool collisionWithCircle;
+    const double restitution = 0.9;  /* Dampening when objects collide */
+    double interactionRadius;
+    vector<Peg*> pegs;
+    vector<Circle*> circles;
+    vector<Rectangle*> rects;
+    vector<Boundary*> lines;  
 
+    Vec2 closestPointToRect;
+
+    bool topCollision;
+    bool bottomCollision;
+    bool leftCollision;
+    bool rightCollision;
 
 public:
+
+    Circle() {
+        ;
+    }
 
     /* Constructor - calls Object constructor */
     Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col) 
     : Object(pos, vel, acc, m, col) {  
-        radius = (m * m) * SIZE_SCALAR;
+        radius = m * 3;
+        interactionRadius = 2 * radius;
         diameter = 2 * radius;
+        collisionWithBoundary = false;
+
+        topCollision = false;
+        bottomCollision = false;
+        leftCollision = false;
+        rightCollision = false;
     }
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
     void Draw(SDL_Renderer* renderer) {
+        // DrawVelocity(renderer);
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
-                int dx = radius - w;
-                int dy = radius - h;
+                double dx = radius - w;
+                double dy = radius - h;
                 if ( (dx*dx + dy*dy) <= (radius * radius) ) {
                     SDL_RenderDrawPoint(renderer, position.getX() + dx, position.getY() + dy);
                 }
@@ -41,70 +71,211 @@ public:
         }
     }
 
-    void Edges(int width, int height) {
+    void DrawVelocity(SDL_Renderer* renderer) {
+        /* Draws the velocity of the object represented as a line */
+        Vec2 velPos((position.getX() + velocity.getX()*8), (position.getY() + velocity.getY()*8));
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
+        SDL_RenderDrawLine(renderer, position.getX(), position.getY(), velPos.getX(), velPos.getY());
+    }
 
-        double edgeDampener = -0.9;  /* Used to slightly slow an object's velocity if it hits the edge */
+    void LineBounce(Vec2 normal) {
+        /* Calculate bounce vector given incoming velocity vector and normal vector */
+        Vec2 tmp;
+        normal.multiply(-2 * velocity.Dot(normal));
+        tmp = normal;
+        tmp.add(velocity);
+        velocity = tmp;
+    }
+
+    void CollisionEdges(int width, int height) {
+        /* Checks and resolves collisions with the edges of the screen */
 
         if (this->position.getY() >= height - this->radius) {
             this->position.setY(height - this->radius);
-            this->velocity.multY(edgeDampener);
+            this->velocity.multY(-restitution);  /* Reverse velocity */
         }
-        if (this->position.getY() <= this->radius) {
+        else if (this->position.getY() <= this->radius) {
             this->position.setY(this->radius);
-            this->velocity.multY(edgeDampener);
+            this->velocity.multY(-restitution);  /* Reverse velocity */
         }
         if (this->position.getX() >= width-this->radius) {
             this->position.setX(width - this->radius);
-            this->velocity.multX(edgeDampener);
+            this->velocity.multX(-restitution);  /* Reverse velocity */
         }
-        if (this->position.getX() <= this->radius) {
+        else if (this->position.getX() <= this->radius) {
             this->position.setX(this->radius);
-            this->velocity.multX(edgeDampener);
+            this->velocity.multX(-restitution);  /* Reverse velocity */
         }
     }
 
-    bool CollisionWithLine(Boundary line) {
-
-        /* Return true if either end of line is inside circle */
-        bool inside1 = CollisionWithPoint(line.getPointA());
-        bool inside2 = CollisionWithPoint(line.getPointB());
-        if (inside1 || inside2) return true;
-
-        /* Dot product of line & circle */
-        double dot = (((position.getX()-line.getPointA().getX())*(line.getPointB().getX()-line.getPointA().getX())) + 
-            ((position.getY()-line.getPointA().getY())*(line.getPointB().getY()-line.getPointA().getY())) ) / line.getLength() * line.getLength();
-
-        /* Find closest point on the line and check if that point is on the line segment or not */
-        double closestX = line.getPointA().getX() + (dot * (line.getPointB().getX() - line.getPointA().getX()));
-        double closestY = line.getPointA().getY() + (dot * (line.getPointB().getY() - line.getPointA().getY()));
-        Vec2 closestPoint(closestX, closestY);
-        bool onSegment = PointCollisionLine(closestPoint, line);
-        if (!onSegment) return false;
-
-        double distanceClosestPoint = position.Distance(closestPoint);
-        if (distanceClosestPoint <= radius) {
-            return true;
+    void CollisionBoundaries(vector<Boundary*> boundaries, SDL_Renderer* renderer) {
+        /* Checks and resolves collisions with active lines */
+        for (int i = 0; i < (int) boundaries.size(); i++) {
+            if (boundaries[i]->CircleIntersect(position, radius, renderer)){
+                setCollisionWithBoundary(true);
+                this->LineBounce(boundaries[i]->getNormal());
+            }
         }
-        return false;
+    }
+
+    void CollisionBoundary(Boundary boundary, SDL_Renderer* renderer) {
+        if (boundary.CircleIntersect(position, radius, renderer)){
+            setCollisionWithBoundary(true);
+            this->LineBounce(boundary.getNormal());
+        }
+    }
+
+    void CollisionCircles(vector<Circle*> circles) {
+        /* Checks if this circle is colliding with the input circle */
+        for (int i = 0; i < (int) circles.size(); i++) {
+            if (position != circles[i]->getPos()){
+                double dist = circles[i]->getPos().Distance(position);
+                if (dist <= (circles[i]->getRadius() + radius)) {
+                    setCollisionWithCircle(true);
+                    ResolveCollisionCircle(circles[i]);
+                }
+            }
+        }
+    }
+
+    void CollisionPegs(vector<Peg*> pegs, SDL_Renderer* renderer) {
+        /* Checks if this circle is colliding with the input circle */
+        for (int i = 0; i < (int) pegs.size(); i++) {
+            if (position != pegs[i]->getPos()){
+                double dist = pegs[i]->getPos().Distance(position);
+                if (dist <= (pegs[i]->getRadius() + radius)) {
+                    setCollisionWithCircle(true);
+                    ResolveCollisionPeg(pegs[i], renderer);
+                }
+            }
+        }
+    }
+
+    void CollisionRectangles(vector<Rectangle*> rectangles) {
+        /* Checks and resolves collisions with other rectangles */
+        for (int i = 0; i < (int) rectangles.size(); i++) {
+            if (rectangles[i]->CollisionWithCircle(position.getX(), position.getY(), radius, &closestPointToRect, &leftCollision, &rightCollision, &topCollision, &bottomCollision)) {
+                if(topCollision) {
+                    this->position.setY(rectangles[i]->getRect().y - radius);
+                    this->velocity.multY(-restitution);  /* Reverse velocity */
+                }
+                else if(bottomCollision) {
+                    this->position.setY(rectangles[i]->getRect().y + rectangles[i]->getRect().h + radius);
+                    this->velocity.multY(-restitution);  /* Reverse velocity */
+                }
+                else if(leftCollision) {
+                    this->position.setX(rectangles[i]->getRect().x - this->radius);
+                    this->velocity.multX(-restitution);  /* Reverse velocity */
+                }
+                else if(rightCollision) {
+                    this->position.setX(rectangles[i]->getRect().x + rectangles[i]->getRect().w  + this->radius);
+                    this->velocity.multX(-restitution);  /* Reverse velocity */
+                }
+            }
+            resetCollisions();
+        }
+    }
+
+    void ResolveCollisionPeg(Peg* peg, SDL_Renderer* renderer) {
+        /* Resolves a collision with another circle */
+
+        Vec2 vCollision;  /* Holds the direction of collision */
+        Vec2 vRelativeVelocity;
+        Vec2 momentum1;
+        Vec2 momentum2;
+        Vec2 obj2VelCpy; 
+        double speed;    /* Used to calculate impulse */
+        double impulse;  /* Used to calculate momentums */
+
+        /* Get the collision vector and its distance (magnitude) */
+        vCollision.setVec(peg->getPos().getX() - position.getX(), 
+                        peg->getPos().getY() - position.getY());
+
+        /* Normalize the collision vector to get its direction */
+        vCollision.divide(vCollision.magnitude());
         
-    }  
 
-    bool CollisionWithPoint(Vec2 point) {
-        double distance = position.Distance(point);
+        /* Get the relative velocity vector and calculate the collision speed, then dampen the speed by the restituion */
+        vRelativeVelocity.setVec(velocity.getX() - peg->getVel().getX(), 
+                               velocity.getY() - peg->getVel().getY());
+        speed = vRelativeVelocity.getX() * vCollision.getX() + vRelativeVelocity.getY() * vCollision.getY();
+        speed *= restitution;
 
-        if (distance <= this->radius) {
-            return true;
+        /* If the speed is less than 0 (object moving away), just return here */
+        if (speed < 0){
+            return;
         }
-        return false;
+
+        /* Calculate impulse, which will be used to calculate each objects momentum */ 
+        impulse = 2 * speed / (peg->getMass() + mass);
+        momentum1 = VecMath::mult(vCollision, impulse * peg->getMass()); 
+        momentum1.multiply(1.5);  // strength of bounce 
+        
+
+        /* Subtract the momentum1 from this objects velocity */
+        velocity.sub(momentum1);
     }
 
-    bool PointCollisionLine(Vec2 point, Boundary line) {
-        double buffer = 0.1;
-        if (line.DistancePointA(point) + line.DistancePointB(point) >= line.getLength() - buffer 
-            && line.DistancePointA(point) + line.DistancePointB(point) <= line.getLength() + buffer) {
-            return true;
+    void ResolveCollisionCircle(Circle* circle) {
+        /* Resolves a collision with another circle */
+
+        Vec2 vCollision;
+        Vec2 vRelativeVelocity;
+        Vec2 momentum1;
+        Vec2 momentum2;
+        Vec2 obj2VelCpy; 
+        double speed;    /* Used to calculate impulse */
+        double impulse;  /* Used to calculate momentums */
+
+        /* Get the collision vector and its distance (magnitude) */
+        vCollision.setVec(circle->getPos().getX() - position.getX(), 
+                        circle->getPos().getY() - position.getY());
+
+        /* Normalize the collision vector to get its direction */
+        vCollision.divide(vCollision.magnitude());
+
+        /* Get the relative velocity vector and calculate the collision speed, then dampen the speed by the restituion */
+        vRelativeVelocity.setVec(velocity.getX() - circle->getVel().getX(), 
+                               velocity.getY() - circle->getVel().getY());
+        speed = vRelativeVelocity.getX() * vCollision.getX() + vRelativeVelocity.getY() * vCollision.getY();
+        speed *= restitution;
+
+        /* If the speed is less than 0 (object moving away), just return here */
+        if (speed < 0){
+            return;
         }
-        return false;
+
+        /* Calculate impulse, which will be used to calculate each objects momentum */ 
+        impulse = 2 * speed / (circle->getMass() + mass);
+        momentum1 = VecMath::mult(vCollision, impulse * circle->getMass()); 
+        momentum2 = VecMath::mult(vCollision, impulse * mass); 
+
+        /* Subtract the momentum1 from this objects velocity */
+        velocity.sub(momentum1);
+
+        /* Add the momentum2 to the other objects velocity */
+        obj2VelCpy = circle->getVel();
+        obj2VelCpy.add(momentum2);
+        circle->setVel(obj2VelCpy);
+    }
+
+    void setCollisionWithBoundary(bool collided) { collisionWithBoundary = collided; }
+    void setCollisionWithCircle(bool collided) { collisionWithCircle = collided; }
+    bool getCollisionWithBoundary() { return collisionWithBoundary; }
+    bool getCollisionWithCircle() { return collisionWithCircle; }
+    double getRadius() { return radius; }
+
+    bool getTopCollision() { return topCollision; }
+    bool getBottomCollision() { return bottomCollision; }
+    bool getLeftCollision() { return leftCollision; }
+    bool getRightCollision() { return rightCollision; }
+    
+
+    void resetCollisions() {
+        topCollision = false;
+        bottomCollision = false;
+        leftCollision = false;
+        rightCollision = false;
     }
 
 };

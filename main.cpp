@@ -5,23 +5,133 @@
 #include <time.h>       /* time */
 #include "include/vec2.h"
 #include "include/circle.h"
-#include "include/boundary.h"
 #include "include/vecMath.h"
+#include "include/boundary.h"
+#include "include/rectangle.h"
+#include "include/peg.h"
 
 using namespace std;
 
 #define PI 3.14
-const int WIDTH = 1000;
-const int HEIGHT = 600;
-const int FRAMERATE = 60;
-
-const Vec2 gravity(0, 0.1);
-vector<Circle*> circles; 
 
 class Simulation {
     public:
 
+        void LeftClick(SDL_MouseButtonEvent& b) {
+            if(b.button == SDL_BUTTON_LEFT){
+                if(!linePointASelected) {
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    pA.setVec(posX, posY);
+                    linePointASelected = true;
+                }
+                else {
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    if(posX != pA.getX() && posY != pA.getY()) {
+                        pB.setVec(posX, posY);
+                        boundaries.push_back(new Boundary(pA, pB));
+                        linePointASelected = false;
+                    }
+                    
+                }
+            }
+        }
+
+        void RightClick(SDL_MouseButtonEvent& b) {
+            if(b.button == SDL_BUTTON_RIGHT){
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+                Vec2 pos(posX, posY);
+                Vec2 vel(0, 0);
+                circles.push_back(GenerateCircle(pos, vel, 3));
+            }
+        }
+
+        void PKeyPressed(SDL_KeyboardEvent& k) {
+            if(k.keysym.scancode == SDL_SCANCODE_P){
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+                Vec2 pos(posX, posY);
+
+                SDL_Color color;
+                color.r = rand() % 255 + 1;
+                color.g = rand() % 255 + 1;
+                color.b = rand() % 255 + 1;
+                color.a = 255;
+                pegs.push_back(new Peg(pos, 5, color));
+            }
+        }
+
+        void RKeyHeld(SDL_KeyboardEvent& k) {
+            if (k.keysym.scancode == SDL_SCANCODE_R) {
+                if(!boxPointASelected) {
+                    SDL_GetMouseState(&boxPosX, &boxPosY);
+                    boxPointASelected = true;
+                }
+                else {
+                    int secondPosX;
+                    int secondPosY;
+                    int width;
+                    int height;
+                    SDL_GetMouseState(&secondPosX, &secondPosY);
+                    if(secondPosX < boxPosX) {
+                        width = boxPosX - secondPosX;
+                        boxPosX -= width;
+                    }
+                    else {
+                        width = secondPosX - boxPosX;
+                    }
+
+                    if(secondPosY < boxPosY) {
+                        height = boxPosY - secondPosY;
+                        boxPosY -= height;
+                    }
+                    else {
+                        height = secondPosY - boxPosY;
+                    }
+                    rectangles.push_back(new Rectangle(boxPosX, boxPosY, width, height));
+                    boxPointASelected = false;
+                }
+            }
+        }
+
+        void GeneratePachinko() {
+            for ( int y = 2; y < 12; y+= 1) {
+                for (int x = 0; x < WIDTH; x += 50) {
+                    if (y % 2 == 1){
+                        Vec2 pos(x, y*50);
+                        SDL_Color color;
+                        color.r = rand() % 255 + 1;
+                        color.g = rand() % 255 + 1;
+                        color.b = rand() % 255 + 1;
+                        color.a = 255;
+                        pegs.push_back(new Peg(pos, 5, color));
+                    }
+                    else {
+                        Vec2 pos(x + 25, y*50);
+                        SDL_Color color;
+                        color.r = rand() % 255 + 1;
+                        color.g = rand() % 255 + 1;
+                        color.b = rand() % 255 + 1;
+                        color.a = 255;
+                        pegs.push_back(new Peg(pos, 5, color));
+                    }
+                }
+            }
+
+            for(int x = 0; x < WIDTH; x += 50) {
+                rectangles.push_back(new Rectangle(x, HEIGHT-300, 10, 300));
+            }
+        }
+
         Simulation() {
+            linePointASelected = false;
+            boxPointASelected = false;
             srand (time(NULL));
             quit_flag = false;
             init_error = SDL_Init( SDL_INIT_VIDEO );
@@ -30,14 +140,9 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            gravity.setVec(0, 0.1);
+            GeneratePachinko();
 
-            /* Temp - initialize two circles */
-            Vec2 pos1(350, 100);
-            Vec2 pos2(700, 100);
-            Vec2 vel(0, 0);
-
-            circles.push_back(GenerateCircle(pos1, vel, 3));
-            circles.push_back(GenerateCircle(pos2, vel, 2));
         }
 
         ~Simulation(){
@@ -51,70 +156,130 @@ class Simulation {
             Vec2 a(0, 0);
 
             SDL_Color color;
-            color.r = 255;
-            color.g = 0;
-            color.b = 0;
+            color.r = rand() % 255 + 1;
+            color.g = rand() % 255 + 1;
+            color.b = rand() % 255 + 1;
             color.a = 255;
             return new Circle(pos, vel, a, mass, color);
         }
 
         /* MAIN SIMULATION LOOP */
-        int main_loop() {
-
-            Vec2 v1(200, 400);
-            Vec2 v2(400, 300);
-            Boundary b(v1, v2);
+        int MainLoop() {
             
             while (!quit_flag) {
-
-                fill_screen(0,0,0,255);
-                b.Draw(renderer);
-
+                FillScreen(0,0,0,255);
                 
                 /* Check for events */
                 while (SDL_PollEvent(&e)){
                     if (e.type == SDL_QUIT){
                         quit_flag = true;
                     }
+                    if (e.type == SDL_MOUSEBUTTONDOWN) {
+                        LeftClick(e.button);
+                        RightClick(e.button);
+                        
+                    }
+                    if (e.type == SDL_KEYDOWN) {
+                        RKeyHeld(e.key);
+                        PKeyPressed(e.key);
+                    }
                 }
 
                 /* Update and render circles on screen */
                 for (int c = 0; c < (int) circles.size(); c++) {
-                    cout << "CIRCLE " << c << " - Mass: " << circles[c]->getMass() << endl;
-                    circles[c]->CollisionWithLine(b);
-                    circles[c]->Edges(WIDTH, HEIGHT);
-
-                    /* == AN OBJECT FALLS (GRAVITY) AT THE SAME ACCELERATION INDEPENDENT OF ITS MASS == 
-                    *
-                    *  Without multiplying gravity with an objects mass, this gravity force being
-                    *      applied will be divided with the objects mass in the ApplyForce method, 
-                    *      causing gravity to act differently on each object. Galileo proved that 
-                    *      objects will fall with the same acceleration (gravity, in this case), 
-                    *      regardless of its mass. This new force is the objects weight.
-                    */
-                    Vec2 weight = VecMath::mult(gravity, circles[c]->getMass());
-                    circles[c]->ApplyForce(weight);
-
-                    cout << "Position:     (" << circles[c]->getPos().getX() << ", " << circles[c]->getPos().getY() << ")" << endl;
-                    cout << "Velocity:     (" << circles[c]->getVel().getX() << ", " << circles[c]->getVel().getY() << ")" << endl;
-                    cout << "Acceleration: (" << circles[c]->getAcc().getX() << ", " << circles[c]->getAcc().getY() << ")" << endl;
-
+                    /* Update the position of a circle */
                     circles[c]->Update();
+
+                    /* Check for and resolve collisions against the borders, line segments, and other circles */
+                    circles[c]->CollisionEdges(WIDTH, HEIGHT);
+                    circles[c]->CollisionBoundaries(boundaries, renderer);
+                    circles[c]->CollisionCircles(circles);
+                    circles[c]->CollisionPegs(pegs, renderer);
+                    circles[c]->CollisionRectangles(rectangles);
+                    
+                    /* If circle is colliding with another circle or line, don't apply gravity */
+                    /* This is a hacky solution to preventing objects from clipping into eachother */
+                    /* Once we have repulsion implemented, we can repulse objects when they intersect */
+                    if(!circles[c]->getCollisionWithCircle()) {
+                        circles[c]->ApplyForce(gravity);
+                    }
+                    else {
+                        Vec2 reverseGravity(0, -0.1);
+                        circles[c]->ApplyForce(reverseGravity);
+                    }
+                    if(!circles[c]->getCollisionWithBoundary()) {
+                        circles[c]->ApplyForce(gravity);
+                    }
+                    else {
+                        Vec2 reverseGravity(0, -0.1);
+                        circles[c]->ApplyForce(reverseGravity);
+                    }
+
+                    /* Reset collisions flag to false and draw the circle */
+                    circles[c]->setCollisionWithBoundary(false);
+                    circles[c]->setCollisionWithCircle(false);
+                    // circles[c]->debugging_setCircleToMouse();
                     circles[c]->Draw(renderer);
                 }
+
+                /* Draw all of the lines (boundaries) */
+                for(int i = 0; i < (int) boundaries.size(); i++) {
+                    boundaries[i]->Draw(renderer);
+                }
+
+                if (boxPointASelected) {
+                    int tempPosX;
+                    int tempPosY;
+                    int tempWidth;
+                    int tempHeight;
+
+                    SDL_Rect* rect = new SDL_Rect();
+                    SDL_GetMouseState(&tempPosX, &tempPosY);
+                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                    if(tempPosX < boxPosX) {
+                        tempWidth = boxPosX - tempPosX;
+                        tempWidth *= -1;
+                    }
+                    else {
+                        tempWidth = tempPosX - boxPosX;
+                    }
+
+                    if(tempPosY < boxPosY) {
+                        tempHeight = boxPosY - tempPosY;
+                        tempHeight *= -1;
+                    }
+                    else {
+                        tempHeight = tempPosY - boxPosY;
+                    }
+ 
+                    rect->x = boxPosX;
+                    rect->y = boxPosY;
+                    rect->w = tempWidth;
+                    rect->h = tempHeight;
+                    SDL_RenderDrawRect(renderer, rect);
+                }
+
+                for(int i = 0; i < (int) rectangles.size(); i++) {
+                    rectangles[i]->Draw(renderer);
+                }
+
+                for(int i = 0; i < (int) pegs.size(); i++) {
+                    pegs[i]->Draw(renderer);
+                }
                
+                
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
             }
             return 0;
         }
 
-        void fill_screen(int r, int g, int b, int a){
+        void FillScreen(int r, int g, int b, int a){
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
         }
 
-        int check_for_errors() {
+        int CheckForErrors() {
 
             if ( init_error < 0 ) {
                 cout << "SDL Could not be initialized: " << endl;
@@ -138,8 +303,27 @@ class Simulation {
         SDL_Renderer* renderer = NULL;
         SDL_Event e;
 
+        const int WIDTH = 600;
+        const int HEIGHT = 1000;
+        const int FRAMERATE = 60;
+
         int init_error;
         bool quit_flag;
+
+        vector<Circle*> circles;
+        vector<Rectangle*> rectangles; 
+        vector<Boundary*> boundaries;  
+        vector<Peg*> pegs;
+
+        Vec2 gravity;
+
+        bool linePointASelected;
+        bool boxPointASelected;
+        Vec2 pA;
+        Vec2 pB;
+
+        int boxPosX;
+        int boxPosY;
 };
 
 
@@ -149,8 +333,8 @@ int WinMain () {
 
     // Check for any initialization errors
     
-    if(physics_engine.check_for_errors()) return EXIT_FAILURE;
-    physics_engine.main_loop();
+    if(physics_engine.CheckForErrors()) return EXIT_FAILURE;
+    physics_engine.MainLoop();
 
     return EXIT_SUCCESS;
 }
