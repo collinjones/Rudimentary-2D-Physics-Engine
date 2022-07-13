@@ -10,6 +10,8 @@
 #include "include/rectangle.h"
 #include "include/peg.h"
 #include "include/emitter.h"
+#include "include/shapeFactory.h"
+#include "include/singletonRenderer.h"
 
 using namespace std;
 
@@ -17,7 +19,14 @@ using namespace std;
 
 class Simulation {
     public:
-
+        /*
+         * left click: make a line (click two different locations)
+         * right click: emmiter
+         * A key: attracter
+         * K key: repulser
+         * R key: rectangle
+         * P key: peg
+        */
         void LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
                 if(!linePointASelected) {
@@ -33,7 +42,7 @@ class Simulation {
                     SDL_GetMouseState(&posX, &posY);
                     if(posX != pA.getX() && posY != pA.getY()) {
                         pB.setVec(posX, posY);
-                        boundaries.push_back(new Boundary(pA, pB));
+                        boundaries.push_back(shapeFact->createBoundary(pA,pB));
                         linePointASelected = false;
                     }
 
@@ -47,6 +56,7 @@ class Simulation {
                 int posX;
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
+                emitters.push_back(shapeFact->createEmitter((double) posX, (double) posY));
                 emitters.push_back(new Emitter((double) posX, (double) posY));
             }
 
@@ -68,12 +78,7 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
 
-                SDL_Color color;
-                color.r = rand() % 255 + 1;
-                color.g = rand() % 255 + 1;
-                color.b = rand() % 255 + 1;
-                color.a = 255;
-                pegs.push_back(new Peg(pos, 1, color));
+               pegs.push_back(shapeFact->createPeg(pos,1));
             }
         }
 
@@ -104,28 +109,23 @@ class Simulation {
                     else {
                         height = secondPosY - boxPosY;
                     }
-                    rectangles.push_back(new Rectangle(boxPosX, boxPosY, width, height));
+                    rectangles.push_back(shapeFact->createRectangle(boxPosX, boxPosY, width, height));
                     boxPointASelected = false;
                 }
             }
         }
-        void AKeyPressed(SDL_KeyboardEvent& k) {
-                    if(k.keysym.scancode == SDL_SCANCODE_A){
-                        int posX;
-                        int posY;
-                        int random = rand()%6+3;
-                        SDL_GetMouseState(&posX, &posY);
-                        Vec2 a(0, 0);
-                        Vec2 vel(0,0);
-                        Vec2 pos(posX, posY);
-                        SDL_Color color;
-                        color.r = rand() % 255 + 1;
-                        color.g = rand() % 255 + 1;
-                        color.b = rand() % 255 + 1;
-                        color.a = 255;
-                        circles.push_back(new Circle(pos, vel , a, random, color,true));
-                    }
-                }
+        void AKeyPressed(SDL_KeyboardEvent& k)
+        {
+            if(k.keysym.scancode == SDL_SCANCODE_A){
+                int posX;
+                int posY;
+                int random = rand()%6+3;
+                SDL_GetMouseState(&posX, &posY);
+                Vec2 vel(0,0);
+                Vec2 pos(posX, posY);
+                circles.push_back(shapeFact->createCircle(pos,vel,random,true));
+            }
+        }
 
          void KKeyPressed(SDL_KeyboardEvent& k)
           {
@@ -134,15 +134,10 @@ class Simulation {
                  int posY;
                  int random = rand()%6+3;
                  SDL_GetMouseState(&posX, &posY);
-                 Vec2 a(0, 0);
+
                  Vec2 vel(0,0);
                  Vec2 pos(posX, posY);
-                 SDL_Color color;
-                 color.r = rand() % 255 + 1;
-                 color.g = rand() % 255 + 1;
-                 color.b = rand() % 255 + 1;
-                 color.a = 255;
-                 circles.push_back(new Circle(pos, vel , a, random, color,false));
+                 circles.push_back(shapeFact->createCircle(pos,vel,random,false));
              }
          }
 
@@ -151,27 +146,19 @@ class Simulation {
                 for (int x = 0; x < WIDTH; x += 50) {
                     if (y % 2 == 1){
                         Vec2 pos(x, y*50);
-                        SDL_Color color;
-                        color.r = rand() % 255 + 1;
-                        color.g = rand() % 255 + 1;
-                        color.b = rand() % 255 + 1;
-                        color.a = 255;
-                        pegs.push_back(new Peg(pos, 3, color));
+
+                        pegs.push_back(shapeFact->createPeg(pos,3));
                     }
                     else {
                         Vec2 pos(x + 25, y*50);
-                        SDL_Color color;
-                        color.r = rand() % 255 + 1;
-                        color.g = rand() % 255 + 1;
-                        color.b = rand() % 255 + 1;
-                        color.a = 255;
-                        pegs.push_back(new Peg(pos, 3, color));
+
+                        pegs.push_back(shapeFact->createPeg(pos,3));
                     }
                 }
             }
 
             for(int x = 0; x < WIDTH; x += 50) {
-                rectangles.push_back(new Rectangle(x, HEIGHT-300, 10, 300));
+                rectangles.push_back(shapeFact->createRectangle(x, HEIGHT-300, 10, 300));
             }
         }
 
@@ -185,7 +172,9 @@ class Simulation {
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            //renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            //renderer = singletonRenderer.getRenderer(window);
+            renderer = singletonRenderer::getRenderer(window);
             gravity.setVec(0, 0.0);
             // GeneratePachinko();
 
@@ -357,7 +346,8 @@ class Simulation {
         
     private:
         SDL_Window* window = NULL;
-        SDL_Renderer* renderer = NULL;
+        //SDL_Renderer* renderer = NULL;
+        SDL_Renderer* renderer;
         SDL_Event e;
 
         const int WIDTH = 600;
@@ -382,6 +372,8 @@ class Simulation {
 
         int boxPosX;
         int boxPosY;
+
+        shapeFactory* shapeFact = new shapeFactory();
 };
 
 
