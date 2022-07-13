@@ -20,7 +20,7 @@ class shapeFactory{
         Circle* createCircle(Vec2 pos, Vec2 vel, double m){
             Vec2 acc(0, 0);
             SDL_Color col = {.r=255,.g=0,.b=0,.a=255};
-            Circle* crc = new Circle(pos, vel, acc, m, col);
+            Circle* crc = new Circle(pos, vel, m, col);
             return crc;
         }
 
@@ -30,12 +30,12 @@ class shapeFactory{
             if(attractOrRepulse == true)
             {
                 SDL_Color col = {.r=0,.g=255,.b=0,.a=255};
-                crc = new Circle(pos, vel, acc, m, col,true);
+                crc = new Circle(pos, vel, m, col,true);
             }
             else
             {
                 SDL_Color col = {.r=0,.g=0,.b=255,.a=255};
-                crc = new Circle(pos, vel, acc, m, col,false);
+                crc = new Circle(pos, vel, m, col,false);
             }
             return crc;
         }

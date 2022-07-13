@@ -10,6 +10,9 @@
 #include "include/rectangle.h"
 #include "include/peg.h"
 #include "include/emitter.h"
+#include "include/singletonRenderer.h"
+#include "include/shapeFactory.h"
+
 
 using namespace std;
 
@@ -195,7 +198,8 @@ class Simulation {
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            //renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            renderer = singletonRenderer::getRenderer(window);
             gravity.setVec(0, 0.0);
             // GeneratePachinko();
             GenerateSolarSystem();
@@ -385,7 +389,8 @@ class Simulation {
         
     private:
         SDL_Window* window = NULL;
-        SDL_Renderer* renderer = NULL;
+       // SDL_Renderer* renderer = NULL;
+        SDL_Renderer* renderer;
         SDL_Event e;
 
         const int WIDTH = 1000;
