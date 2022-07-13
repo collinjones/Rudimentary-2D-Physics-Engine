@@ -19,25 +19,20 @@ class Circle: public Object {
 protected:
     double radius;
     double diameter;
-    Vec2 closestLinePoint;
+    Vec2 closestPointToRect;
     bool collisionWithBoundary; 
     bool collisionWithCircle;
     const double restitution = 0.9;  /* Dampening when objects collide */
-    double interactionRadius;
-    vector<Peg*> pegs;
-    vector<Circle*> circles;
-    vector<Rectangle*> rects;
-    vector<Boundary*> lines;  
 
-    Vec2 closestPointToRect;
+    
 
-    bool topCollision;
+    bool topCollision; 
     bool bottomCollision;
     bool leftCollision;
     bool rightCollision;
 
-    bool attracter=false;
-    bool repulser=false;
+    bool attracter = false;
+    bool repulser = false;
 
 public:
 
@@ -46,26 +41,24 @@ public:
     }
 
     /* Constructor - calls Object constructor */
-    Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col) 
-    : Object(pos, vel, acc, m, col) {  
+    Circle(Vec2 pos, Vec2 vel, double m, SDL_Color col) 
+    : Object(pos, vel, m, col) {  
         radius = m * 3;
-        interactionRadius = 2 * radius;
         diameter = 2 * radius;
-        collisionWithBoundary = false;
 
+        collisionWithBoundary = false;
         topCollision = false;
         bottomCollision = false;
         leftCollision = false;
         rightCollision = false;
     }
     /* true for the bool means attracter and false means repulser*/
-    Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col, bool attractOrRepulse)
-        : Object(pos, vel, acc, m, col) {
+    Circle(Vec2 pos, Vec2 vel, double m, SDL_Color col, bool attractOrRepulse)
+        : Object(pos, vel, m, col) {
             radius = m * 3;
-            interactionRadius = 2 * radius;
             diameter = 2 * radius;
+            
             collisionWithBoundary = false;
-
             topCollision = false;
             bottomCollision = false;
             leftCollision = false;
@@ -293,12 +286,12 @@ public:
             return a;
     }
 
-    void attracterAlgorithm(Circle* circ)
+    void attractorAlgorithm(Circle* circ)
     {
      Vec2 force = this->position;
      force.sub(circ->position);
      double distanceSq = constrain(force.magnitudeSq(), 25, 2500);
-     int G = 2;
+     double G = 1;
      double strength = ((this->getMass() * circ->getMass())/distanceSq)*G;
      force.setMag(strength);
      circ->ApplyForce(force);
@@ -314,19 +307,19 @@ public:
                {
                     if (c!=k)
                     {
-                        circles[c]->attracterAlgorithm(circles[k]);
+                        circles[c]->attractorAlgorithm(circles[k]);
                     }
                }
            }
         }
     }
 
-    void repulserAlgorithm(Circle* circ)
+    void repulsorAlgorithm(Circle* circ)
         {
          Vec2 force = this->position;
          force.sub(circ->position);
          double distanceSq = constrain(force.magnitudeSq(), 25, 2500);
-         int G = 2;
+         int G = 1;
          double strength = ((this->getMass() * circ->getMass())/distanceSq)*G;
          force.setMag(-1*(strength));
          circ->ApplyForce(force);
@@ -334,15 +327,16 @@ public:
 
     void repulseCircle(vector<Circle*> circles)
     {
-        for (int c = 0; c < (int) circles.size(); c++)
+        int cSize = circles.size();
+        for (int c = 0; c < cSize; c++)
         {
            if(circles[c]->getRepulser()==true)
            {
-               for (int k = 0; k < (int) circles.size(); k++)
+               for (int k = 0; k < cSize; k++)
                {
                     if (c!=k)
                     {
-                        circles[c]->repulserAlgorithm(circles[k]);
+                        circles[c]->repulsorAlgorithm(circles[k]);
                     }
                }
            }
