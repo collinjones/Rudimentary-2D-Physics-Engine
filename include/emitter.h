@@ -8,14 +8,13 @@
 class Emitter {
 private:
     Vec2 pos;
-
 public:
     Emitter(double x, double y) {
         pos.setVec(x, y);
     }
 
     void Emit(vector<Circle*> *circles) {
-        if(circles->size() != 2) {
+        if(circles->size() <= 2) {
             Vec2 a(0, 0);
             Vec2 vel(rand() % 3 + 1 , rand() % 3 + 1);
             SDL_Color color;
@@ -24,6 +23,18 @@ public:
             color.b = rand() % 255 + 1;
             color.a = 255;
             circles->push_back(new Circle(pos, vel, a, 3, color));
+            //int rdmNumber = rand()%2;
+//            int rdmNumber = 0;
+//            if (rdmNumber == 0)
+//            {
+//
+//                circles->push_back(new Circle(pos, vel, a, 3, color,true));
+//                rdmNumber++;
+//            }
+//            else
+//            {
+//                circles->push_back(new Circle(pos, vel, a, 3, color));
+//            }
         }
 
     }

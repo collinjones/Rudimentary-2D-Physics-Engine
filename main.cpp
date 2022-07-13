@@ -36,10 +36,11 @@ class Simulation {
                         boundaries.push_back(new Boundary(pA, pB));
                         linePointASelected = false;
                     }
-                    
+
                 }
             }
         }
+
 
         void RightClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_RIGHT){
@@ -108,6 +109,42 @@ class Simulation {
                 }
             }
         }
+        void AKeyPressed(SDL_KeyboardEvent& k) {
+                    if(k.keysym.scancode == SDL_SCANCODE_A){
+                        int posX;
+                        int posY;
+                        int random = rand()%6+3;
+                        SDL_GetMouseState(&posX, &posY);
+                        Vec2 a(0, 0);
+                        Vec2 vel(0,0);
+                        Vec2 pos(posX, posY);
+                        SDL_Color color;
+                        color.r = rand() % 255 + 1;
+                        color.g = rand() % 255 + 1;
+                        color.b = rand() % 255 + 1;
+                        color.a = 255;
+                        circles.push_back(new Circle(pos, vel , a, random, color,true));
+                    }
+                }
+
+         void KKeyPressed(SDL_KeyboardEvent& k)
+          {
+             if(k.keysym.scancode == SDL_SCANCODE_K){
+                 int posX;
+                 int posY;
+                 int random = rand()%6+3;
+                 SDL_GetMouseState(&posX, &posY);
+                 Vec2 a(0, 0);
+                 Vec2 vel(0,0);
+                 Vec2 pos(posX, posY);
+                 SDL_Color color;
+                 color.r = rand() % 255 + 1;
+                 color.g = rand() % 255 + 1;
+                 color.b = rand() % 255 + 1;
+                 color.a = 255;
+                 circles.push_back(new Circle(pos, vel , a, random, color,false));
+             }
+         }
 
         void GeneratePachinko() {
             for (int y = 2; y < 12; y+= 1) {
@@ -149,7 +186,7 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            gravity.setVec(0, 0.1);
+            gravity.setVec(0, 0.0);
             // GeneratePachinko();
 
         }
@@ -191,6 +228,8 @@ class Simulation {
                     if (e.type == SDL_KEYDOWN) {
                         RKeyHeld(e.key);
                         PKeyPressed(e.key);
+                        AKeyPressed(e.key);
+                        KKeyPressed(e.key);
                     }
                 }
 
@@ -198,6 +237,12 @@ class Simulation {
                 for (int c = 0; c < (int) circles.size(); c++) {
                     /* Update the position of a circle */
                     circles[c]->Update();
+
+                    //friction test
+                    circles[c]->friction(HEIGHT);
+                    //attracter test
+                    circles[c]->attractCircles(circles);
+                    circles[c]->repulseCircle(circles);
 
                     /* Check for and resolve collisions against the borders, line segments, and other circles */
                     circles[c]->CollisionEdges(WIDTH, HEIGHT);
@@ -316,7 +361,7 @@ class Simulation {
         SDL_Event e;
 
         const int WIDTH = 600;
-        const int HEIGHT = 1000;
+        const int HEIGHT = 700;
         const int FRAMERATE = 60;
 
         int init_error;

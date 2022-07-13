@@ -41,6 +41,11 @@ public:
         vec.y -= v.getY();
     }
 
+//    Vec2 subVec(Vec2 v) {
+//        Vec2 returnVec = new Vec2(vec.x-v.getX(),vec.y-v.getY());
+//        return returnVec;
+//    }
+
     /* Limit this vectors magnitude to the mag passed in */
     void limit(double mag) {
         if (magnitude() > mag) {
@@ -51,6 +56,10 @@ public:
     double magnitude() {
         return sqrt( pow(vec.x, 2) + pow(vec.y, 2));
     }
+
+    double magnitudeSq() {
+            return (sqrt( pow(vec.x, 2) + pow(vec.y, 2)))*(sqrt( pow(vec.x, 2) + pow(vec.y, 2)));
+        }
 
     void multiply(double scalar) {
         vec.x *= scalar;

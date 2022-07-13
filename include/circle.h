@@ -36,6 +36,9 @@ protected:
     bool leftCollision;
     bool rightCollision;
 
+    bool attracter=false;
+    bool repulser=false;
+
 public:
 
     Circle() {
@@ -55,10 +58,31 @@ public:
         leftCollision = false;
         rightCollision = false;
     }
+    /* true for the bool means attracter and false means repulser*/
+    Circle(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col, bool attractOrRepulse)
+        : Object(pos, vel, acc, m, col) {
+            radius = m * 3;
+            interactionRadius = 2 * radius;
+            diameter = 2 * radius;
+            collisionWithBoundary = false;
+
+            topCollision = false;
+            bottomCollision = false;
+            leftCollision = false;
+            rightCollision = false;
+
+            if(attractOrRepulse == true)
+            {
+                attracter = true;
+            }
+            else{
+                repulser = true;
+            }
+        }
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
     void Draw(SDL_Renderer* renderer) {
-        DrawVelocity(renderer);
+        //DrawVelocity(renderer);
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
@@ -259,6 +283,98 @@ public:
         circle->setVel(obj2VelCpy);
     }
 
+    double constrain(double a, double b, double c)
+    {
+        if (a<b)
+            return b;
+        else if(a > c)
+            return c;
+        else
+            return a;
+    }
+
+    void attracterAlgorithm(Circle* circ)
+    {
+     Vec2 force = this->position;
+     force.sub(circ->position);
+     double distanceSq = constrain(force.magnitudeSq(), 25, 2500);
+     int G = 2;
+     double strength = ((this->getMass() * circ->getMass())/distanceSq)*G;
+     force.setMag(strength);
+     circ->ApplyForce(force);
+    }
+
+    void attractCircles(vector<Circle*> circles)
+    {
+        for (int c = 0; c < (int) circles.size(); c++)
+        {
+           if(circles[c]->getAtracter()==true)
+           {
+               for (int k = 0; k < (int) circles.size(); k++)
+               {
+                    if (c!=k)
+                    {
+                        circles[c]->attracterAlgorithm(circles[k]);
+                    }
+               }
+           }
+        }
+    }
+
+    void repulserAlgorithm(Circle* circ)
+        {
+         Vec2 force = this->position;
+         force.sub(circ->position);
+         double distanceSq = constrain(force.magnitudeSq(), 25, 2500);
+         int G = 2;
+         double strength = ((this->getMass() * circ->getMass())/distanceSq)*G;
+         force.setMag(-1*(strength));
+         circ->ApplyForce(force);
+        }
+
+    void repulseCircle(vector<Circle*> circles)
+    {
+        for (int c = 0; c < (int) circles.size(); c++)
+        {
+           if(circles[c]->getRepulser()==true)
+           {
+               for (int k = 0; k < (int) circles.size(); k++)
+               {
+                    if (c!=k)
+                    {
+                        circles[c]->repulserAlgorithm(circles[k]);
+                    }
+               }
+           }
+        }
+    }
+
+    void drag(double c)
+    {
+       Vec2 drag = this->velocity;
+       drag.Normalize();
+       drag.multiply(-1);
+       double speedSq = this->velocity.magnitudeSq();
+       drag.setMag(c*speedSq);
+       this->ApplyForce(drag);
+    }
+
+    void friction(int height)
+    {
+     //check if bottom of canvas, have the HEIGHT macro in main
+     double diff = height - (this->position.getY() + this->getRadius());
+     double mu = 0.01;
+     if (diff < 1)
+     {
+        Vec2 friction = this->velocity;
+        friction.Normalize();
+        friction.multiply(-1);
+        double normal = this->mass;
+        friction.setMag(mu*normal);
+        this->ApplyForce(friction);
+     }
+    }
+
     void setCollisionWithBoundary(bool collided) { collisionWithBoundary = collided; }
     void setCollisionWithCircle(bool collided) { collisionWithCircle = collided; }
     bool getCollisionWithBoundary() { return collisionWithBoundary; }
@@ -269,7 +385,9 @@ public:
     bool getBottomCollision() { return bottomCollision; }
     bool getLeftCollision() { return leftCollision; }
     bool getRightCollision() { return rightCollision; }
-    
+
+    bool getAtracter(){return attracter;}
+    bool getRepulser(){return repulser;}
 
     void resetCollisions() {
         topCollision = false;
