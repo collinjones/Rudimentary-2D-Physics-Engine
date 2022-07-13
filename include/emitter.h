@@ -15,14 +15,13 @@ public:
 
     void Emit(vector<Circle*> *circles) {
         if(circles->size() <= 2) {
-            Vec2 a(0, 0);
             Vec2 vel(rand() % 3 + 1 , rand() % 3 + 1);
             SDL_Color color;
             color.r = rand() % 255 + 1;
             color.g = rand() % 255 + 1;
             color.b = rand() % 255 + 1;
             color.a = 255;
-            circles->push_back(new Circle(pos, vel, a, 3, color));
+            circles->push_back(new Circle(pos, vel, 3, color));
             //int rdmNumber = rand()%2;
 //            int rdmNumber = 0;
 //            if (rdmNumber == 0)

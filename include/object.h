@@ -20,10 +20,10 @@ class Object {
 
     public:
 
-        Object(Vec2 pos, Vec2 vel, Vec2 acc, double m, SDL_Color col) {
+        Object(Vec2 pos, Vec2 vel, double m, SDL_Color col) {
             position = pos;
             velocity = vel;
-            acceleration = acc;
+            acceleration = Vec2(0, 0);
             mass = m;
             color = col;
         }

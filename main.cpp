@@ -41,7 +41,6 @@ class Simulation {
             }
         }
 
-
         void RightClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_RIGHT){
                 int posX;
@@ -73,7 +72,7 @@ class Simulation {
                 color.g = rand() % 255 + 1;
                 color.b = rand() % 255 + 1;
                 color.a = 255;
-                pegs.push_back(new Peg(pos, 1, color));
+                pegs.push_back(new Peg(pos, 3, color));
             }
         }
 
@@ -109,13 +108,13 @@ class Simulation {
                 }
             }
         }
+
         void AKeyPressed(SDL_KeyboardEvent& k) {
                     if(k.keysym.scancode == SDL_SCANCODE_A){
                         int posX;
                         int posY;
                         int random = rand()%6+3;
                         SDL_GetMouseState(&posX, &posY);
-                        Vec2 a(0, 0);
                         Vec2 vel(0,0);
                         Vec2 pos(posX, posY);
                         SDL_Color color;
@@ -123,28 +122,28 @@ class Simulation {
                         color.g = rand() % 255 + 1;
                         color.b = rand() % 255 + 1;
                         color.a = 255;
-                        circles.push_back(new Circle(pos, vel , a, random, color,true));
+                        circles.push_back(new Circle(pos, vel, random, color,true));
                     }
                 }
 
-         void KKeyPressed(SDL_KeyboardEvent& k)
-          {
-             if(k.keysym.scancode == SDL_SCANCODE_K){
-                 int posX;
-                 int posY;
-                 int random = rand()%6+3;
-                 SDL_GetMouseState(&posX, &posY);
-                 Vec2 a(0, 0);
-                 Vec2 vel(0,0);
-                 Vec2 pos(posX, posY);
-                 SDL_Color color;
-                 color.r = rand() % 255 + 1;
-                 color.g = rand() % 255 + 1;
-                 color.b = rand() % 255 + 1;
-                 color.a = 255;
-                 circles.push_back(new Circle(pos, vel , a, random, color,false));
-             }
-         }
+        void KKeyPressed(SDL_KeyboardEvent& k)
+        {
+            if(k.keysym.scancode == SDL_SCANCODE_K)
+            {
+                int posX;
+                int posY;
+                int random = rand()%6+3;
+                SDL_GetMouseState(&posX, &posY);
+                Vec2 vel(0,0);
+                Vec2 pos(posX, posY);
+                SDL_Color color;
+                color.r = rand() % 255 + 1;
+                color.g = rand() % 255 + 1;
+                color.b = rand() % 255 + 1;
+                color.a = 255;
+                circles.push_back(new Circle(pos, vel, random, color,false));
+            }
+        }
 
         void GeneratePachinko() {
             for (int y = 2; y < 12; y+= 1) {
@@ -175,6 +174,17 @@ class Simulation {
             }
         }
 
+        void GenerateSolarSystem() {
+            Circle* sun = GenerateSun(WIDTH/2, HEIGHT/2, 0, 0, 10, 252, 229, 112);
+            Circle* planet1 = GeneratePlanet(WIDTH/2 + 100, HEIGHT/2, 0, -3.5, 2, 88, 199, 78);
+            Circle* planet2 = GeneratePlanet(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
+            Circle* planet3 = GeneratePlanet(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
+            circles.push_back(sun);
+            circles.push_back(planet1);
+            circles.push_back(planet2);
+            circles.push_back(planet3);
+        }
+
         Simulation() {
             linePointASelected = false;
             boxPointASelected = false;
@@ -188,6 +198,7 @@ class Simulation {
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             gravity.setVec(0, 0.0);
             // GeneratePachinko();
+            GenerateSolarSystem();
 
         }
 
@@ -199,14 +210,34 @@ class Simulation {
         }
 
         Circle* GenerateCircle (Vec2 pos, Vec2 vel, double mass) {
-            Vec2 a(0, 0);
-
             SDL_Color color;
             color.r = rand() % 255 + 1;
             color.g = rand() % 255 + 1;
             color.b = rand() % 255 + 1;
             color.a = 255;
-            return new Circle(pos, vel, a, mass, color);
+            return new Circle(pos, vel, mass, color);
+        }
+
+        Circle* GenerateSun(int px, int py, int vx, int vy, double m, int r, int g, int b) {
+            Vec2 pos(px, py);
+            Vec2 vel(vx, vy);
+            SDL_Color color;
+            color.r = r;
+            color.g = g;
+            color.b = b;
+            color.a = 255;
+            return new Circle(pos, vel, m, color, true);
+        }
+
+        Circle* GeneratePlanet(int px, int py, int vx, int vy, double m, int r, int g, int b) {
+            Vec2 pos(px, py);
+            Vec2 vel(vx, vy);
+            SDL_Color color;
+            color.r = r;
+            color.g = g;
+            color.b = b;
+            color.a = 255;
+            return new Circle(pos, vel, m, color);
         }
 
         /* MAIN SIMULATION LOOP */
@@ -238,13 +269,11 @@ class Simulation {
                     /* Update the position of a circle */
                     circles[c]->Update();
 
-                    //friction test
                     circles[c]->friction(HEIGHT);
-                    //attracter test
                     circles[c]->attractCircles(circles);
                     circles[c]->repulseCircle(circles);
 
-                    /* Check for and resolve collisions against the borders, line segments, and other circles */
+                    /* COLLISION DETECTION AND RESOLUTION */
                     circles[c]->CollisionEdges(WIDTH, HEIGHT);
                     circles[c]->CollisionBoundaries(boundaries, renderer);
                     circles[c]->CollisionCircles(circles);
@@ -273,7 +302,6 @@ class Simulation {
                     /* Reset collisions flag to false and draw the circle */
                     circles[c]->setCollisionWithBoundary(false);
                     circles[c]->setCollisionWithCircle(false);
-                    // circles[c]->debugging_setCircleToMouse();
                     circles[c]->Draw(renderer);
                 }
 
@@ -360,8 +388,8 @@ class Simulation {
         SDL_Renderer* renderer = NULL;
         SDL_Event e;
 
-        const int WIDTH = 600;
-        const int HEIGHT = 700;
+        const int WIDTH = 1000;
+        const int HEIGHT = 800;
         const int FRAMERATE = 60;
 
         int init_error;
