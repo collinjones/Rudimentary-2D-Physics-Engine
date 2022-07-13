@@ -36,7 +36,7 @@ class Simulation {
                     SDL_GetMouseState(&posX, &posY);
                     if(posX != pA.getX() && posY != pA.getY()) {
                         pB.setVec(posX, posY);
-                        boundaries.push_back(new Boundary(pA, pB));
+                        boundaries.push_back(shapeFact->createBoundary(pA,pB));
                         linePointASelected = false;
                     }
 
@@ -49,7 +49,7 @@ class Simulation {
                 int posX;
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
-                emitters.push_back(new Emitter((double) posX, (double) posY));
+                emitters.push_back(shapeFact->createEmitter((double) posX, (double) posY));
             }
 
             // int posX;
@@ -70,12 +70,7 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
 
-                SDL_Color color;
-                color.r = rand() % 255 + 1;
-                color.g = rand() % 255 + 1;
-                color.b = rand() % 255 + 1;
-                color.a = 255;
-                pegs.push_back(new Peg(pos, 3, color));
+                pegs.push_back(shapeFact->createPeg(pos,3));
             }
         }
 
@@ -106,7 +101,7 @@ class Simulation {
                     else {
                         height = secondPosY - boxPosY;
                     }
-                    rectangles.push_back(new Rectangle(boxPosX, boxPosY, width, height));
+                    rectangles.push_back(shapeFact->createRectangle(boxPosX, boxPosY, width, height));
                     boxPointASelected = false;
                 }
             }
@@ -120,12 +115,8 @@ class Simulation {
                         SDL_GetMouseState(&posX, &posY);
                         Vec2 vel(0,0);
                         Vec2 pos(posX, posY);
-                        SDL_Color color;
-                        color.r = rand() % 255 + 1;
-                        color.g = rand() % 255 + 1;
-                        color.b = rand() % 255 + 1;
-                        color.a = 255;
-                        circles.push_back(new Circle(pos, vel, random, color,true));
+
+                        circles.push_back(shapeFact->createCircle(pos, vel, random,true));
                     }
                 }
 
@@ -139,12 +130,8 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 vel(0,0);
                 Vec2 pos(posX, posY);
-                SDL_Color color;
-                color.r = rand() % 255 + 1;
-                color.g = rand() % 255 + 1;
-                color.b = rand() % 255 + 1;
-                color.a = 255;
-                circles.push_back(new Circle(pos, vel, random, color,false));
+
+                circles.push_back(shapeFact->createCircle(pos, vel, random,false));
             }
         }
 
@@ -153,27 +140,19 @@ class Simulation {
                 for (int x = 0; x < WIDTH; x += 50) {
                     if (y % 2 == 1){
                         Vec2 pos(x, y*50);
-                        SDL_Color color;
-                        color.r = rand() % 255 + 1;
-                        color.g = rand() % 255 + 1;
-                        color.b = rand() % 255 + 1;
-                        color.a = 255;
-                        pegs.push_back(new Peg(pos, 3, color));
+
+                        pegs.push_back(shapeFact->createPeg(pos,3));
                     }
                     else {
                         Vec2 pos(x + 25, y*50);
-                        SDL_Color color;
-                        color.r = rand() % 255 + 1;
-                        color.g = rand() % 255 + 1;
-                        color.b = rand() % 255 + 1;
-                        color.a = 255;
-                        pegs.push_back(new Peg(pos, 3, color));
+
+                        pegs.push_back(shapeFact->createPeg(pos,3));
                     }
                 }
             }
 
             for(int x = 0; x < WIDTH; x += 50) {
-                rectangles.push_back(new Rectangle(x, HEIGHT-300, 10, 300));
+                rectangles.push_back(shapeFact->createRectangle(x, HEIGHT-300, 10, 300));
             }
         }
 
@@ -198,8 +177,8 @@ class Simulation {
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-            //renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            renderer = singletonRenderer::getRenderer(window);
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            //renderer = singletonRenderer::getRenderer(window);
             gravity.setVec(0, 0.0);
             // GeneratePachinko();
             GenerateSolarSystem();
@@ -389,8 +368,8 @@ class Simulation {
         
     private:
         SDL_Window* window = NULL;
-       // SDL_Renderer* renderer = NULL;
-        SDL_Renderer* renderer;
+        SDL_Renderer* renderer = NULL;
+        //SDL_Renderer* renderer;
         SDL_Event e;
 
         const int WIDTH = 1000;
@@ -415,6 +394,8 @@ class Simulation {
 
         int boxPosX;
         int boxPosY;
+
+        shapeFactory* shapeFact = new shapeFactory();
 };
 
 

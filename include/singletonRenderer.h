@@ -12,7 +12,7 @@ class singletonRenderer{
     public:
         static SDL_Renderer* getRenderer(SDL_Window* window)
         {
-            if (renderer ==NULL)
+            if (renderer == NULL)
             {
                 renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             }
