@@ -174,12 +174,12 @@ class Simulation {
         void GenerateSolarSystem() {
             Circle* sun = GenerateSun(WIDTH/2, HEIGHT/2, 0, 0, 10, 252, 229, 112);
             Circle* planet1 = GeneratePlanet(WIDTH/2 + 100, HEIGHT/2, 0, -3.5, 2, 88, 199, 78);
-            // Circle* planet2 = GeneratePlanet(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
-            // Circle* planet3 = GeneratePlanet(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
+            Circle* planet2 = GeneratePlanet(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
+            Circle* planet3 = GeneratePlanet(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
             circles.push_back(sun);
             circles.push_back(planet1);
-            // circles.push_back(planet2);
-            // circles.push_back(planet3);
+            circles.push_back(planet2);
+            circles.push_back(planet3);
         }
 
         Simulation() {
@@ -196,8 +196,8 @@ class Simulation {
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             
-            // GeneratePachinko();
-            GenerateSolarSystem();
+            GeneratePachinko();
+            // GenerateSolarSystem();
 
         }
 
@@ -321,6 +321,7 @@ class Simulation {
                     }
                 }
 
+                /* Only attract and repel each circle once */
                 AttractCircles(circles);
                 RepelCircles(circles);
 
@@ -329,32 +330,34 @@ class Simulation {
                     /* Update the position of a circle */
                     circles[c]->Update();
 
+                    /* Apply friction to circle if they are rolling on ground */
                     circles[c]->Friction(HEIGHT);
 
                     /* COLLISION DETECTION AND RESOLUTION */
-                    circles[c]->WrapAround(WIDTH, HEIGHT);
+                    circles[c]->CollisionEdges(WIDTH, HEIGHT);
                     circles[c]->CollisionBoundaries(boundaries);
                     circles[c]->CollisionCircles(circles);
                     circles[c]->CollisionPegs(pegs);
                     circles[c]->CollisionRectangles(rectangles);
+                    circles[c]->ApplyForce(gravity);
                     
-                    /* If circle is colliding with another circle or line, don't apply gravity */
-                    /* This is a hacky solution to preventing objects from clipping into eachother */
-                    /* Once we have repulsion implemented, we can repulse objects when they intersect */
-                    if(!circles[c]->getCollisionWithCircle()) {
-                        circles[c]->ApplyForce(gravity);
-                    }
-                    else {
-                        Vec2 reverseGravity(0, -0.1);
-                        circles[c]->ApplyForce(reverseGravity);
-                    }
-                    if(!circles[c]->getCollisionWithBoundary()) {
-                        circles[c]->ApplyForce(gravity);
-                    }
-                    else {
-                        Vec2 reverseGravity(0, -0.1);
-                        circles[c]->ApplyForce(reverseGravity);
-                    }
+                    // /* If circle is colliding with another circle or line, don't apply gravity */
+                    // /* This is a hacky solution to preventing objects from clipping into eachother */
+                    // /* Once we have repulsion implemented, we can repulse objects when they intersect */
+                    // if(!circles[c]->getCollisionWithCircle()) {
+                    //     circles[c]->ApplyForce(gravity);
+                    // }
+                    // else {
+                    //     Vec2 reverseGravity(0, -0.1);
+                    //     circles[c]->ApplyForce(reverseGravity);
+                    // }
+                    // if(!circles[c]->getCollisionWithBoundary()) {
+                    //     circles[c]->ApplyForce(gravity);
+                    // }
+                    // else {
+                    //     Vec2 reverseGravity(0, -0.1);
+                    //     circles[c]->ApplyForce(reverseGravity);
+                    // }
 
 
                     /* Reset collisions flag to false and draw the circle */
@@ -419,8 +422,8 @@ class Simulation {
         //SDL_Renderer* renderer;
         SDL_Event e;
 
-        const int WIDTH = 1000;
-        const int HEIGHT = 800;
+        const int WIDTH = 600;
+        const int HEIGHT = 1000;
         const int FRAMERATE = 60;
 
         int init_error;
