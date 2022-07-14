@@ -301,6 +301,12 @@ class Simulation {
             
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
+
+                // cout << "== STATS == " << endl;
+                // cout << "Number of Balls on screen: " << circles.size() << endl;
+                // cout << "Number of Pegs on screen: " << pegs.size() << endl;
+                // cout << "Number of Rectangles on screen: " << rectangles.size() << endl;
+                // cout << "Number of lines on screen: " << boundaries.size() << endl;
                 
                 /* Check for events */
                 while (SDL_PollEvent(&e)){
@@ -339,18 +345,13 @@ class Simulation {
                     circles[c]->CollisionCircles(circles);
                     circles[c]->CollisionPegs(pegs);
                     circles[c]->CollisionRectangles(rectangles);
-                    circles[c]->ApplyForce(gravity);
                     
                     // /* If circle is colliding with another circle or line, don't apply gravity */
                     // /* This is a hacky solution to preventing objects from clipping into eachother */
                     // /* Once we have repulsion implemented, we can repulse objects when they intersect */
-                    // if(!circles[c]->getCollisionWithCircle()) {
-                    //     circles[c]->ApplyForce(gravity);
-                    // }
-                    // else {
-                    //     Vec2 reverseGravity(0, -0.1);
-                    //     circles[c]->ApplyForce(reverseGravity);
-                    // }
+                    if(!circles[c]->getCollisionWithCircle()) {
+                        circles[c]->ApplyForce(gravity);
+                    }
                     // if(!circles[c]->getCollisionWithBoundary()) {
                     //     circles[c]->ApplyForce(gravity);
                     // }

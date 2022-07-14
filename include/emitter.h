@@ -20,7 +20,7 @@ public:
     }
 
     void Emit(vector<Circle*> *circles) {
-        if(numObjects <= 2) {
+        if(numObjects <= 20) {
             Vec2 vel(rand() % 3 + 1 , rand() % 3 + 1);
             SDL_Color color;
             color.r = rand() % 255 + 1;

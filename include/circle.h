@@ -37,7 +37,6 @@ public:
         ;
     }
 
-    /* Constructor - calls Object constructor */
     Circle(Vec2 pos, Vec2 vel, double m, SDL_Color col) 
     : Object(pos, vel, m, col) {  
         radius = m * 3;
@@ -49,6 +48,7 @@ public:
         leftCollision = false;
         rightCollision = false;
     }
+
     /* true for the bool means attracter and false means repulser*/
     Circle(Vec2 pos, Vec2 vel, double m, SDL_Color col, bool attractOrRepulse)
         : Object(pos, vel, m, col) {
@@ -85,15 +85,17 @@ public:
         }
     }
 
+    /* Draws the velocity of the object represented as a line */
     void DrawVelocity(SDL_Renderer* renderer) {
-        /* Draws the velocity of the object represented as a line */
         Vec2 velPos((position.getX() + velocity.getX()*8), (position.getY() + velocity.getY()*8));
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, color.a);
         SDL_RenderDrawLine(renderer, position.getX(), position.getY(), velPos.getX(), velPos.getY());
     }
 
+    /* This stackoverflow post helped me implement this code */
+    /* https://stackoverflow.com/questions/16417891/how-can-i-find-a-normal-vector-of-a-2d-line */
+    /* Calculate bounce vector given incoming velocity vector and normal vector */
     void LineBounce(Vec2 normal) {
-        /* Calculate bounce vector given incoming velocity vector and normal vector */
         Vec2 tmp;
         normal.multiply(-2 * velocity.Dot(normal));
         tmp = normal;
@@ -205,6 +207,7 @@ public:
         }
     }
 
+    /* This is my altered version of the collision resolution algorithm */
     void ResolveCollisionPeg(Peg* peg) {
         /* Resolves a collision with another peg */
 
@@ -302,6 +305,7 @@ public:
             return a;
     }
 
+    /* Both Attract and Repel force algorithms come from NoC book */
     void Attract(Circle* circ)
     {
         Vec2 force = this->position;
