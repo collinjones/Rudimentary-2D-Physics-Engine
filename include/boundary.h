@@ -35,7 +35,7 @@ public:
         SDL_RenderDrawLine(renderer, start.getX(), start.getY(), end.getX(), end.getY());
     }
 
-    bool CircleIntersect(Vec2 pos, double rad, SDL_Renderer* renderer) {
+    bool CircleIntersect(Vec2 pos, double rad) {
 
         /* Check if either end intesects the circle */
         bool inside1 = start.IntersectCircle(pos, rad);

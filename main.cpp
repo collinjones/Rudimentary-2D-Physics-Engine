@@ -63,6 +63,19 @@ class Simulation {
             // circles.push_back(new Circle(Vec2(posX, posY), Vec2(0, 0), Vec2(0, 0), 3, color));
         }
 
+        void GKeyPressed(SDL_KeyboardEvent& k) {
+            if(k.keysym.scancode == SDL_SCANCODE_G){
+                if(!gravOn) {
+                    gravity.setVec(0, 0.1);
+                    gravOn = true;
+                }
+                else{
+                    gravity.setVec(0, 0);
+                    gravOn = false;
+                }       
+            }
+        }
+
         void PKeyPressed(SDL_KeyboardEvent& k) {
             if(k.keysym.scancode == SDL_SCANCODE_P){
                 int posX;
@@ -76,10 +89,12 @@ class Simulation {
 
         void RKeyHeld(SDL_KeyboardEvent& k) {
             if (k.keysym.scancode == SDL_SCANCODE_R) {
+
                 if(!boxPointASelected) {
                     SDL_GetMouseState(&boxPosX, &boxPosY);
                     boxPointASelected = true;
                 }
+
                 else {
                     int secondPosX;
                     int secondPosY;
@@ -168,6 +183,8 @@ class Simulation {
         }
 
         Simulation() {
+            gravOn = false;
+            gravity.setVec(0, 0);
             linePointASelected = false;
             boxPointASelected = false;
             srand (time(NULL));
@@ -178,10 +195,9 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            //renderer = singletonRenderer::getRenderer(window);
-            gravity.setVec(0, 0.0);
+            
             // GeneratePachinko();
-            GenerateSolarSystem();
+            //GenerateSolarSystem();
 
         }
 
@@ -223,6 +239,63 @@ class Simulation {
             return new Circle(pos, vel, m, color);
         }
 
+        void AttractCircles(vector<Circle*> circles) {
+            for (int c = 0; c < (int) circles.size(); c++) {
+                if(circles[c]->getAtracter()) {
+                    for (int k = 0; k < (int) circles.size(); k++) {
+                        if (c!=k) {
+                            circles[c]->Attract(circles[k]);
+                        }
+                    }
+                }
+            }
+        }
+
+        void RepelCircles(vector<Circle*> circles) {
+            for (int c = 0; c < (int) circles.size(); c++) {
+                if(circles[c]->getRepulser()) {
+                    for (int k = 0; k < (int) circles.size(); k++) {
+                        if (c!=k) {
+                            circles[c]->Repel(circles[k]);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* If an origin point is selected, draw the outline of the box while the user moves their mouse */
+        void DrawBoxOutline() {
+            int tempPosX;
+            int tempPosY;
+            int tempWidth;
+            int tempHeight;
+            SDL_Rect* rect = new SDL_Rect();
+            
+            SDL_GetMouseState(&tempPosX, &tempPosY);
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            if(tempPosX < boxPosX) {
+                tempWidth = boxPosX - tempPosX;
+                tempWidth *= -1;
+            }
+            else {
+                tempWidth = tempPosX - boxPosX;
+            }
+
+            if(tempPosY < boxPosY) {
+                tempHeight = boxPosY - tempPosY;
+                tempHeight *= -1;
+            }
+            else {
+                tempHeight = tempPosY - boxPosY;
+            }
+
+            rect->x = boxPosX;
+            rect->y = boxPosY;
+            rect->w = tempWidth;
+            rect->h = tempHeight;
+            SDL_RenderDrawRect(renderer, rect);
+        }
+
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
             
@@ -244,23 +317,25 @@ class Simulation {
                         PKeyPressed(e.key);
                         AKeyPressed(e.key);
                         KKeyPressed(e.key);
+                        GKeyPressed(e.key);
                     }
                 }
+
+                AttractCircles(circles);
+                RepelCircles(circles);
 
                 /* Update and render circles on screen */
                 for (int c = 0; c < (int) circles.size(); c++) {
                     /* Update the position of a circle */
                     circles[c]->Update();
 
-                    circles[c]->friction(HEIGHT);
-                    circles[c]->attractCircles(circles);
-                    circles[c]->repulseCircle(circles);
+                    circles[c]->Friction(HEIGHT);
 
                     /* COLLISION DETECTION AND RESOLUTION */
                     circles[c]->CollisionEdges(WIDTH, HEIGHT);
-                    circles[c]->CollisionBoundaries(boundaries, renderer);
+                    circles[c]->CollisionBoundaries(boundaries);
                     circles[c]->CollisionCircles(circles);
-                    circles[c]->CollisionPegs(pegs, renderer);
+                    circles[c]->CollisionPegs(pegs);
                     circles[c]->CollisionRectangles(rectangles);
                     
                     /* If circle is colliding with another circle or line, don't apply gravity */
@@ -288,41 +363,13 @@ class Simulation {
                     circles[c]->Draw(renderer);
                 }
 
+                if (boxPointASelected) {
+                    DrawBoxOutline();
+                }
+
                 /* Draw all of the lines (boundaries) */
                 for(int i = 0; i < (int) boundaries.size(); i++) {
                     boundaries[i]->Draw(renderer);
-                }
-
-                if (boxPointASelected) {
-                    int tempPosX;
-                    int tempPosY;
-                    int tempWidth;
-                    int tempHeight;
-
-                    SDL_Rect* rect = new SDL_Rect();
-                    SDL_GetMouseState(&tempPosX, &tempPosY);
-                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                    if(tempPosX < boxPosX) {
-                        tempWidth = boxPosX - tempPosX;
-                        tempWidth *= -1;
-                    }
-                    else {
-                        tempWidth = tempPosX - boxPosX;
-                    }
-
-                    if(tempPosY < boxPosY) {
-                        tempHeight = boxPosY - tempPosY;
-                        tempHeight *= -1;
-                    }
-                    else {
-                        tempHeight = tempPosY - boxPosY;
-                    }
- 
-                    rect->x = boxPosX;
-                    rect->y = boxPosY;
-                    rect->w = tempWidth;
-                    rect->h = tempHeight;
-                    SDL_RenderDrawRect(renderer, rect);
                 }
 
                 for(int i = 0; i < (int) rectangles.size(); i++) {
@@ -391,6 +438,8 @@ class Simulation {
         bool boxPointASelected;
         Vec2 pA;
         Vec2 pB;
+
+        bool gravOn;
 
         int boxPosX;
         int boxPosY;
