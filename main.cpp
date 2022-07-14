@@ -13,10 +13,7 @@
 #include "include/singletonRenderer.h"
 #include "include/shapeFactory.h"
 
-
 using namespace std;
-
-#define PI 3.14
 
 class Simulation {
     public:
@@ -299,99 +296,113 @@ class Simulation {
             SDL_RenderDrawRect(renderer, rect);
         }
 
+        void DrawStaticObjects() {
+            /* Draw all of the lines (boundaries) */
+            for(int i = 0; i < (int) boundaries.size(); i++) {
+                boundaries[i]->Draw(renderer);
+            }
+
+            for(int i = 0; i < (int) rectangles.size(); i++) {
+                rectangles[i]->Draw(renderer);
+            }
+
+            for(int i = 0; i < (int) pegs.size(); i++) {
+                pegs[i]->Draw(renderer);
+            }
+
+            for(int i = 0; i < (int) emitters.size(); i++) {
+                emitters[i]->Emit(&circles);
+            }
+        }
+
+        void EventHandler() {
+            /* Check for events */
+            while (SDL_PollEvent(&e)){
+                if (e.type == SDL_QUIT){
+                    quit_flag = true;
+                }
+                if (e.type == SDL_MOUSEBUTTONDOWN) {
+                    LeftClick(e.button);
+                    RightClick(e.button);
+                    
+                }
+                if (e.type == SDL_KEYDOWN) {
+                    RKeyHeld(e.key);
+                    PKeyPressed(e.key);
+                    AKeyPressed(e.key);
+                    KKeyPressed(e.key);
+                    GKeyPressed(e.key);
+                }
+            }
+        }
+
+        void ProcessCircles() {
+            /* Update and render circles on screen */
+            for (int c = 0; c < (int) circles.size(); c++) {
+
+                /* Apply friction to circle if they are rolling on ground */
+                circles[c]->Friction(HEIGHT);
+
+                /* COLLISION DETECTION AND RESOLUTION */
+                circles[c]->CollisionEdges(WIDTH, HEIGHT);
+                circles[c]->CollisionBoundaries(boundaries);
+                circles[c]->CollisionCircles(circles);
+                circles[c]->CollisionPegs(pegs);
+                circles[c]->CollisionRectangles(rectangles);
+                
+                /* If circle is colliding with another circle or line, don't apply gravity */
+                /* This is a hacky solution to preventing objects from clipping into eachother */
+                if(!circles[c]->getCollisionWithCircle()) {
+                    circles[c]->ApplyForce(gravity);
+                }
+                else {
+                    Vec2 reverseGravity(0, -0.11);
+                    circles[c]->ApplyForce(reverseGravity);
+                }
+                if(!circles[c]->getCollisionWithBoundary()) {
+                    circles[c]->ApplyForce(gravity);
+                }
+                else {
+                    Vec2 reverseGravity(0, -0.5);
+                    circles[c]->ApplyForce(reverseGravity);
+                }
+
+                /* Reset collisions flag to false and draw the circle */
+                circles[c]->setCollisionWithBoundary(false);
+                circles[c]->setCollisionWithCircle(false);
+
+                /* Update the circle then draw it */
+                circles[c]->Update();
+                circles[c]->Draw(renderer);
+            }
+        }
+
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
             
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
+                EventHandler();
 
                 // cout << "== STATS == " << endl;
                 // cout << "Number of Balls on screen: " << circles.size() << endl;
                 // cout << "Number of Pegs on screen: " << pegs.size() << endl;
                 // cout << "Number of Rectangles on screen: " << rectangles.size() << endl;
                 // cout << "Number of lines on screen: " << boundaries.size() << endl;
-                
-                /* Check for events */
-                while (SDL_PollEvent(&e)){
-                    if (e.type == SDL_QUIT){
-                        quit_flag = true;
-                    }
-                    if (e.type == SDL_MOUSEBUTTONDOWN) {
-                        LeftClick(e.button);
-                        RightClick(e.button);
-                        
-                    }
-                    if (e.type == SDL_KEYDOWN) {
-                        RKeyHeld(e.key);
-                        PKeyPressed(e.key);
-                        AKeyPressed(e.key);
-                        KKeyPressed(e.key);
-                        GKeyPressed(e.key);
-                    }
-                }
 
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
                 RepelCircles(circles);
 
-                /* Update and render circles on screen */
-                for (int c = 0; c < (int) circles.size(); c++) {
-                    /* Update the position of a circle */
-                    circles[c]->Update();
+                ProcessCircles();
 
-                    /* Apply friction to circle if they are rolling on ground */
-                    circles[c]->Friction(HEIGHT);
-
-                    /* COLLISION DETECTION AND RESOLUTION */
-                    circles[c]->CollisionEdges(WIDTH, HEIGHT);
-                    circles[c]->CollisionBoundaries(boundaries);
-                    circles[c]->CollisionCircles(circles);
-                    circles[c]->CollisionPegs(pegs);
-                    circles[c]->CollisionRectangles(rectangles);
-                    
-                    // /* If circle is colliding with another circle or line, don't apply gravity */
-                    // /* This is a hacky solution to preventing objects from clipping into eachother */
-                    // /* Once we have repulsion implemented, we can repulse objects when they intersect */
-                    if(!circles[c]->getCollisionWithCircle()) {
-                        circles[c]->ApplyForce(gravity);
-                    }
-                    if(!circles[c]->getCollisionWithBoundary()) {
-                        circles[c]->ApplyForce(gravity);
-                    }
-                    else {
-                        Vec2 reverseGravity(0, -0.5);
-                        circles[c]->ApplyForce(reverseGravity);
-                    }
-
-
-                    /* Reset collisions flag to false and draw the circle */
-                    circles[c]->setCollisionWithBoundary(false);
-                    circles[c]->setCollisionWithCircle(false);
-                    circles[c]->Draw(renderer);
-                }
-
+                /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
                 if (boxPointASelected) {
                     DrawBoxOutline();
                 }
 
-                /* Draw all of the lines (boundaries) */
-                for(int i = 0; i < (int) boundaries.size(); i++) {
-                    boundaries[i]->Draw(renderer);
-                }
-
-                for(int i = 0; i < (int) rectangles.size(); i++) {
-                    rectangles[i]->Draw(renderer);
-                }
-
-                for(int i = 0; i < (int) pegs.size(); i++) {
-                    pegs[i]->Draw(renderer);
-                }
-
-                for(int i = 0; i < (int) emitters.size(); i++) {
-                    emitters[i]->Emit(&circles);
-                }
-               
-                
+                /* Draw the static objects, present the renderer, then delay by 1sec/FRAMERATE */
+                DrawStaticObjects();
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
             }
@@ -460,7 +471,6 @@ int WinMain () {
     Simulation physics_engine;
 
     // Check for any initialization errors
-    
     if(physics_engine.CheckForErrors()) return EXIT_FAILURE;
     physics_engine.MainLoop();
 
