@@ -193,8 +193,8 @@ class Simulation {
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             
-            GeneratePachinko();
-            // GenerateSolarSystem();
+            // GeneratePachinko();
+            GenerateSolarSystem();
 
         }
 
@@ -222,7 +222,7 @@ class Simulation {
             color.g = g;
             color.b = b;
             color.a = 255;
-            return new Circle(pos, vel, m, color, true);
+            return new Circle(pos, vel, m, color, false);
         }
 
         /* Generates a "planet" - duplicate of GenerateCircle but different inputs.. */
@@ -437,7 +437,7 @@ class Simulation {
         //SDL_Renderer* renderer;
         SDL_Event e;
 
-        const int WIDTH = 600;
+        const int WIDTH = 1000;
         const int HEIGHT = 1000;
         const int FRAMERATE = 60;
 

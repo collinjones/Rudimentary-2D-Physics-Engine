@@ -72,7 +72,7 @@ public:
 
     /* Circle drawing algorithm https://stackoverflow.com/questions/28346989/drawing-and-filling-a-circle */
     void Draw(SDL_Renderer* renderer) {
-        //DrawVelocity(renderer);
+        DrawVelocity(renderer);
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
