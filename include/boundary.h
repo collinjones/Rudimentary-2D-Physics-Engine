@@ -1,3 +1,4 @@
+/* A boundary object is a line from posA to posB */
 #ifndef _BOUNDARY_
 #define _BOUNDARY_ 
 
@@ -35,7 +36,8 @@ public:
         SDL_RenderDrawLine(renderer, start.getX(), start.getY(), end.getX(), end.getY());
     }
 
-    bool CircleIntersect(Vec2 pos, double rad, SDL_Renderer* renderer) {
+    /* https://www.jeffreythompson.org/collision-detection/circle-circle.php */
+    bool CircleIntersect(Vec2 pos, double rad) {
 
         /* Check if either end intesects the circle */
         bool inside1 = start.IntersectCircle(pos, rad);
@@ -67,6 +69,7 @@ public:
         return false;
     }
 
+    /* https://www.jeffreythompson.org/collision-detection/circle-circle.php */
     bool PointIntersect(Vec2 point) {
         double dist1 = point.Distance(start);
         double dist2 = point.Distance(end);
@@ -79,7 +82,7 @@ public:
         
     
     }
-
+    /* https://www.jeffreythompson.org/collision-detection/line-circle.php */
     void CalcLineNormal() {
         /* Calculates and sets the normal vector of the boundary */
         double dx = end.getX() - start.getX();

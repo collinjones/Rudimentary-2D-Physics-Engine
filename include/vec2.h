@@ -1,3 +1,4 @@
+/* A 2 dimensional vector class and related methods */
 #ifndef _VEC2_
 #define _VEC2_ 
 #include <math.h>
@@ -40,11 +41,6 @@ public:
         vec.x -= v.getX();
         vec.y -= v.getY();
     }
-
-//    Vec2 subVec(Vec2 v) {
-//        Vec2 returnVec = new Vec2(vec.x-v.getX(),vec.y-v.getY());
-//        return returnVec;
-//    }
 
     /* Limit this vectors magnitude to the mag passed in */
     void limit(double mag) {
@@ -128,6 +124,7 @@ public:
         setVec(vec.x / magnitude(), vec.y / magnitude());
     }
 
+    /* Checks if the vector is inside of a circle */
     bool IntersectCircle(Vec2 pos, double rad) {
         double dist = Distance(pos);
         if(dist <= rad) {

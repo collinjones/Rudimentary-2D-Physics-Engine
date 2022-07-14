@@ -1,4 +1,5 @@
-
+/* VecMath is used to return a new vector instead of performing 
+   the operation on a vector itself. */
 
 #ifndef _VECMATH_
 #define _VECMATH_
@@ -16,18 +17,6 @@ public:
         Vec2 newVec(v1.getX() * scalar, v1.getY() * scalar);
         return newVec;
     }  
-
-    static void div(Vec2* v, double scalar) {
-        v->setX(v->getX() / scalar);
-        v->setY(v->getY() / scalar);
-    }
-
-    /* Normalize a vector */
-    static Vec2 normalize(Vec2 v) {
-        double mag = v.magnitude();
-        div(&v, mag);
-        return v;
-    }
     
 };
 

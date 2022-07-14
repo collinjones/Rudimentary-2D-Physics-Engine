@@ -18,14 +18,12 @@ class shapeFactory{
         }
 
         Circle* createCircle(Vec2 pos, Vec2 vel, double m){
-            Vec2 acc(0, 0);
             SDL_Color col = {.r=255,.g=0,.b=0,.a=255};
             Circle* crc = new Circle(pos, vel, m, col);
             return crc;
         }
 
         Circle* createCircle(Vec2 pos, Vec2 vel, double m, bool attractOrRepulse){
-            Vec2 acc(0, 0);
             Circle* crc;
             if(attractOrRepulse == true)
             {

@@ -1,3 +1,4 @@
+/* A rectangle object that interacts with circle objects */
 #ifndef _RECTANGLE_
 #define _RECTANGLE_
 
@@ -21,6 +22,7 @@ public:
     void Draw(SDL_Renderer* renderer) {
         SDL_SetRenderDrawColor(renderer, 100, 100, 0, 255);
         SDL_RenderDrawRect(renderer, &rect);
+        Fill(renderer);
     }
 
     void Fill(SDL_Renderer* renderer) {
@@ -28,7 +30,7 @@ public:
         SDL_RenderFillRect(renderer, &rect);
     }
 
-    bool CollisionWithCircle(int cx, int cy, double rad, Vec2* closestPointToRect, bool* leftCollision, bool* rightCollision, bool* topCollision, bool* bottomCollision) {
+    bool CollisionWithCircle(int cx, int cy, double rad, bool* leftCollision, bool* rightCollision, bool* topCollision, bool* bottomCollision) {
         double testX = cx;
         double testY = cy;
 
@@ -60,7 +62,6 @@ public:
             testY = rect.y + rect.h;
         }
 
-        closestPointToRect->setVec(testX, testY);
         double distX = cx-testX;
         double distY = cy-testY;
         double dist = sqrt( (distX*distX) + (distY*distY) );
