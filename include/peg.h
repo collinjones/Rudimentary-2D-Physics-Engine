@@ -1,3 +1,4 @@
+/* A peg is a circle object that does not move, it is static */
 #ifndef _PEG_
 #define _PEG_
 

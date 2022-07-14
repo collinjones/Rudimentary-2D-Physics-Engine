@@ -1,3 +1,5 @@
+/* An emitter is just an object that spits many other objects */
+
 #ifndef _EMITTER_
 #define _EMITTER_
 

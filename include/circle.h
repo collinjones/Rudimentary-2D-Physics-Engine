@@ -306,6 +306,7 @@ public:
     }
 
     /* Both Attract and Repel force algorithms come from NoC book */
+    /* F = (G(m1 * m2)/r^2) * r hat */
     void Attract(Circle* circ)
     {
         Vec2 force = this->position;
