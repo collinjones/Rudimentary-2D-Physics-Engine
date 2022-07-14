@@ -170,9 +170,9 @@ class Simulation {
 
         void GenerateSolarSystem() {
             Circle* sun = GenerateSun(WIDTH/2, HEIGHT/2, 0, 0, 10, 252, 229, 112);
-            Circle* planet1 = GenerateCircle(WIDTH/2 + 100, HEIGHT/2, 0, -3.5, 2, 88, 199, 78);
-            Circle* planet2 = GenerateCircle(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
-            Circle* planet3 = GenerateCircle(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
+            Circle* planet1 = GenerateCircle(WIDTH/2 + 100, HEIGHT/2, 0, -4, 2, 88, 199, 78);
+            Circle* planet2 = GenerateCircle(WIDTH/2 + 200, HEIGHT/2, 0, -6, 4, 88, 199, 78);
+            Circle* planet3 = GenerateCircle(WIDTH/2 + 300, HEIGHT/2, 0, -8, 4, 88, 199, 78);
             circles.push_back(sun);
             circles.push_back(planet1);
             circles.push_back(planet2);
@@ -222,7 +222,7 @@ class Simulation {
             color.g = g;
             color.b = b;
             color.a = 255;
-            return new Circle(pos, vel, m, color, false);
+            return new Circle(pos, vel, m, color, true);
         }
 
         /* Generates a "planet" - duplicate of GenerateCircle but different inputs.. */
@@ -381,7 +381,7 @@ class Simulation {
         int MainLoop() {
             
             while (!quit_flag) {
-                FillScreen(0,0,0,255);
+                FillScreen(25,25,25,255);
                 EventHandler();
 
                 // cout << "== STATS == " << endl;
@@ -410,7 +410,7 @@ class Simulation {
         }
 
         void FillScreen(int r, int g, int b, int a){
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_SetRenderDrawColor(renderer, r, g, b, 255);
             SDL_RenderClear(renderer);
         }
 
