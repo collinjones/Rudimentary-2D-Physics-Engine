@@ -173,9 +173,9 @@ class Simulation {
 
         void GenerateSolarSystem() {
             Circle* sun = GenerateSun(WIDTH/2, HEIGHT/2, 0, 0, 10, 252, 229, 112);
-            Circle* planet1 = GeneratePlanet(WIDTH/2 + 100, HEIGHT/2, 0, -3.5, 2, 88, 199, 78);
-            Circle* planet2 = GeneratePlanet(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
-            Circle* planet3 = GeneratePlanet(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
+            Circle* planet1 = GenerateCircle(WIDTH/2 + 100, HEIGHT/2, 0, -3.5, 2, 88, 199, 78);
+            Circle* planet2 = GenerateCircle(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
+            Circle* planet3 = GenerateCircle(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
             circles.push_back(sun);
             circles.push_back(planet1);
             circles.push_back(planet2);
@@ -228,7 +228,8 @@ class Simulation {
             return new Circle(pos, vel, m, color, true);
         }
 
-        Circle* GeneratePlanet(int px, int py, int vx, int vy, double m, int r, int g, int b) {
+        /* Generates a "planet" - duplicate of GenerateCircle but different inputs.. */
+        Circle* GenerateCircle(int px, int py, int vx, int vy, double m, int r, int g, int b) {
             Vec2 pos(px, py);
             Vec2 vel(vx, vy);
             SDL_Color color;
@@ -239,6 +240,7 @@ class Simulation {
             return new Circle(pos, vel, m, color);
         }
 
+        /* Loops through all circles to find attractors, then attracts every circle to that attractor circle */
         void AttractCircles(vector<Circle*> circles) {
             for (int c = 0; c < (int) circles.size(); c++) {
                 if(circles[c]->getAtracter()) {
@@ -251,6 +253,7 @@ class Simulation {
             }
         }
 
+        /* Loops through all circles to find repellers, then repels every circle from that repeller circle */
         void RepelCircles(vector<Circle*> circles) {
             for (int c = 0; c < (int) circles.size(); c++) {
                 if(circles[c]->getRepulser()) {
@@ -352,13 +355,13 @@ class Simulation {
                     if(!circles[c]->getCollisionWithCircle()) {
                         circles[c]->ApplyForce(gravity);
                     }
-                    // if(!circles[c]->getCollisionWithBoundary()) {
-                    //     circles[c]->ApplyForce(gravity);
-                    // }
-                    // else {
-                    //     Vec2 reverseGravity(0, -0.1);
-                    //     circles[c]->ApplyForce(reverseGravity);
-                    // }
+                    if(!circles[c]->getCollisionWithBoundary()) {
+                        circles[c]->ApplyForce(gravity);
+                    }
+                    else {
+                        Vec2 reverseGravity(0, -0.5);
+                        circles[c]->ApplyForce(reverseGravity);
+                    }
 
 
                     /* Reset collisions flag to false and draw the circle */
