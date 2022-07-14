@@ -174,12 +174,12 @@ class Simulation {
         void GenerateSolarSystem() {
             Circle* sun = GenerateSun(WIDTH/2, HEIGHT/2, 0, 0, 10, 252, 229, 112);
             Circle* planet1 = GeneratePlanet(WIDTH/2 + 100, HEIGHT/2, 0, -3.5, 2, 88, 199, 78);
-            Circle* planet2 = GeneratePlanet(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
-            Circle* planet3 = GeneratePlanet(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
+            // Circle* planet2 = GeneratePlanet(WIDTH/2 + 200, HEIGHT/2, 0, -5.5, 4, 88, 199, 78);
+            // Circle* planet3 = GeneratePlanet(WIDTH/2 + 300, HEIGHT/2, 0, -7.5, 4, 88, 199, 78);
             circles.push_back(sun);
             circles.push_back(planet1);
-            circles.push_back(planet2);
-            circles.push_back(planet3);
+            // circles.push_back(planet2);
+            // circles.push_back(planet3);
         }
 
         Simulation() {
@@ -197,7 +197,7 @@ class Simulation {
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             
             // GeneratePachinko();
-            //GenerateSolarSystem();
+            GenerateSolarSystem();
 
         }
 
@@ -332,7 +332,7 @@ class Simulation {
                     circles[c]->Friction(HEIGHT);
 
                     /* COLLISION DETECTION AND RESOLUTION */
-                    circles[c]->CollisionEdges(WIDTH, HEIGHT);
+                    circles[c]->WrapAround(WIDTH, HEIGHT);
                     circles[c]->CollisionBoundaries(boundaries);
                     circles[c]->CollisionCircles(circles);
                     circles[c]->CollisionPegs(pegs);

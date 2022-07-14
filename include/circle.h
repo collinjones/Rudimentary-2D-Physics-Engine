@@ -122,6 +122,13 @@ public:
         }
     }
 
+    void WrapAround(int WIDTH, int HEIGHT) {
+        if (position.getX() < - radius) position.setX(WIDTH + radius);
+        if (position.getY() < - radius) position.setY(HEIGHT + radius);
+        if (position.getX() > WIDTH + radius) position.setX(-radius);
+        if (position.getY() > HEIGHT + radius) position.setY(-radius);
+    }
+
     /* Checks all boundaries in list for collision */
     void CollisionBoundaries(vector<Boundary*> boundaries) {
         for (int i = 0; i < (int) boundaries.size(); i++) {
