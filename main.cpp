@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <vector>
 #include <stdlib.h>     /* srand, rand */
@@ -12,6 +13,8 @@
 #include "include/emitter.h"
 #include "include/singletonRenderer.h"
 #include "include/shapeFactory.h"
+#include "include/button.h"
+#include "include/toggle_button.h"
 
 using namespace std;
 
@@ -20,24 +23,14 @@ class Simulation {
 
         void LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
-                if(!linePointASelected) {
-                    int posX;
-                    int posY;
-                    SDL_GetMouseState(&posX, &posY);
-                    pA.setVec(posX, posY);
-                    linePointASelected = true;
-                }
-                else {
-                    int posX;
-                    int posY;
-                    SDL_GetMouseState(&posX, &posY);
-                    if(posX != pA.getX() && posY != pA.getY()) {
-                        pB.setVec(posX, posY);
-                        boundaries.push_back(shapeFact->createBoundary(pA,pB));
-                        linePointASelected = false;
-                    }
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+                for (int i = 0; i < (int) buttons.size(); i++) {
+                    buttons[i]->ProcessClick(posX, posY);
                 }
             }
+
         }
 
         void RightClick(SDL_MouseButtonEvent& b) {
@@ -179,6 +172,8 @@ class Simulation {
         }
 
         Simulation() {
+            
+            TTF_Init();
             gravOn = false;
             gravity.setVec(0, 0);
             linePointASelected = false;
@@ -191,7 +186,11 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            
+
+            SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
+            SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
+            buttons.push_back(new ToggleButton(400, 200, 100, 25, c, c, "Gravity On", "Gravity Off"));
+            buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Create Circle"));
             // GeneratePachinko();
             GenerateSolarSystem();
 
@@ -314,6 +313,16 @@ class Simulation {
             }
         }
 
+        void HandleUI(TTF_Font* font) {
+            for (int i = 0; i < (int) buttons.size(); i++) {
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+                SDL_Color White = {255, 255, 255};
+                buttons[i]->Update(renderer, posX, posY, White, font);
+            }
+        }
+
         void EventHandler() {
             /* Check for events */
             while (SDL_PollEvent(&e)){
@@ -378,16 +387,12 @@ class Simulation {
 
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
+            TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);\
             
             while (!quit_flag) {
                 FillScreen(25,25,25,255);
                 EventHandler();
-
-                // cout << "== STATS == " << endl;
-                // cout << "Number of Balls on screen: " << circles.size() << endl;
-                // cout << "Number of Pegs on screen: " << pegs.size() << endl;
-                // cout << "Number of Rectangles on screen: " << rectangles.size() << endl;
-                // cout << "Number of lines on screen: " << boundaries.size() << endl;
+                HandleUI(Sans);
 
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
@@ -448,6 +453,8 @@ class Simulation {
         vector<Boundary*> boundaries;  
         vector<Peg*> pegs;
         vector<Emitter*> emitters;
+
+        vector<Button*> buttons;
 
         Vec2 gravity;
 
