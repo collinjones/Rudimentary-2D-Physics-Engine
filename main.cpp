@@ -12,6 +12,7 @@
 #include "include/emitter.h"
 #include "include/singletonRenderer.h"
 #include "include/shapeFactory.h"
+#include "include/LWindow.h"
 
 using namespace std;
 
@@ -222,7 +223,7 @@ class Simulation {
             color.g = g;
             color.b = b;
             color.a = 255;
-            return new Circle(pos, vel, m, color, false);
+            return new Circle(pos, vel, m, color, true);
         }
 
         /* Generates a "planet" - duplicate of GenerateCircle but different inputs.. */
@@ -379,7 +380,7 @@ class Simulation {
 
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
-            
+
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
                 EventHandler();
@@ -437,8 +438,8 @@ class Simulation {
         //SDL_Renderer* renderer;
         SDL_Event e;
 
-        const int WIDTH = 1000;
-        const int HEIGHT = 1000;
+        const int WIDTH = 600;
+        const int HEIGHT = 500;
         const int FRAMERATE = 60;
 
         int init_error;
