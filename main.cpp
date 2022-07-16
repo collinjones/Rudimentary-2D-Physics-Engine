@@ -443,7 +443,7 @@ class Simulation {
 
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
-            TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);\
+            TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
             
             while (!quit_flag) {
                 FillScreen(25,25,25,255);
