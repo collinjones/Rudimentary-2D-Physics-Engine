@@ -11,7 +11,6 @@ using namespace std;
 class Text {
     
 private:
-
     SDL_Rect* rect;
 
 public:

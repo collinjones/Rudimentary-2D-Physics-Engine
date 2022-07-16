@@ -211,6 +211,9 @@ class Simulation {
             SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
             SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
             SDL_Color c3 = {.r = 50, .g=60, .b=187, .a=255};
+
+            /* Main setting */
+            /* System of buttons */
             toggleButtons.push_back(new ToggleButton(400, 200, 200, 25, c, c, "Toggle Status: ON", "Toggle Status: OFF"));
             buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Event Button"));
             displays.push_back(new DisplayPanel(100, 525, 100, 25, c3));

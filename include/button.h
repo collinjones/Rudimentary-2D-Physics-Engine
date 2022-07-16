@@ -14,10 +14,10 @@ protected:
 
     SDL_Color fillColor;
     SDL_Color hoverColor;
-
     SDL_Color originalColor;
     SDL_Color borderColor;
     const int hoverOffset = 50;
+    
     bool mouseOver;
     const char* str;
     Text* text;
