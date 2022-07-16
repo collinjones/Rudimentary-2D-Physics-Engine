@@ -58,7 +58,6 @@ public:
         dinglePosition.setY(constrain(y, start.getY(), start.getY() + bounds.h));
         int result =  1 + (100 - 1) * ((dinglePosition.getY() - start.getY()) / (end.getY() - start.getY()));
         currentValue = result;
-        cout << "Current Value: " << currentValue << endl;
     }
 
     /* Constrains a between b and c */

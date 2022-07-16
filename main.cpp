@@ -206,8 +206,8 @@ class Simulation {
             SDL_Color c3 = {.r = 50, .g=60, .b=187, .a=255};
             toggleButtons.push_back(new ToggleButton(400, 200, 100, 25, c, c, "Gravity On", "Gravity Off"));
             buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Create Circle"));
-            displays.push_back(new DisplayPanel(100, 500, 150, 50, c3));
-            sliders.push_back(new Slider(700, 600, 50, 100));
+            displays.push_back(new DisplayPanel(100, 500, 100, 50, c3));
+            sliders.push_back(new Slider(150, 575, 50, 100));
 
             // GeneratePachinko();
             GenerateSolarSystem();
