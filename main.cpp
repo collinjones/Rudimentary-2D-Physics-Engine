@@ -186,14 +186,20 @@ class Simulation {
 
         Simulation() {
             
-            TTF_Init();
-            leftButtonHeld = false;
+            TTF_Init();  /* Init TrueType Fonts */
+
+            /* Gravity off at startup */
             gravOn = false;
-            gravity.setVec(0, 0);
+            gravity.setVec(0, 0.0);
+
+            /* Set user control booleans */
+            leftButtonHeld = false;
             linePointASelected = false;
             boxPointASelected = false;
-            srand (time(NULL));
             quit_flag = false;
+
+            /* Creating window and renderer */
+            srand (time(NULL));
             init_error = SDL_Init( SDL_INIT_VIDEO );
             window = SDL_CreateWindow("Physics Engine",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -201,6 +207,7 @@ class Simulation {
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+            /* EXAMPLE UI ELEMENTS: BUTTON, TOGGLE BUTTON, DISPLAY PANEL, and SLIDER */
             SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
             SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
             SDL_Color c3 = {.r = 50, .g=60, .b=187, .a=255};
@@ -209,6 +216,7 @@ class Simulation {
             displays.push_back(new DisplayPanel(100, 525, 100, 25, c3));
             sliders.push_back(new Slider(150, 575, 50, 100));
 
+            /* Initialize simulation on startup */
             // GeneratePachinko();
             GenerateSolarSystem();
         }
@@ -331,6 +339,7 @@ class Simulation {
             }
         }
 
+        /* Handles additional user interaction with UI */
         void UIHandler(TTF_Font* font) {
 
             SDL_Color White = {255, 255, 255};
