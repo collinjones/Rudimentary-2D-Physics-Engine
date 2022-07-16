@@ -41,13 +41,11 @@ public:
                 SetUnclickedColor();
                 activated = false;
             }
-            
         }
     }
 
     void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font){
         MouseOverBehavior(renderer, mx, my);
-        Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         if (!activated) {
             text->Render(renderer, textColor, font, offText);
         }
@@ -66,6 +64,7 @@ public:
     }
 
     void Draw(SDL_Renderer* renderer, int r, int g, int b) {
+        cout << r << endl;
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderFillRect(renderer, &button);
         SDL_RenderDrawRect(renderer, &button);  

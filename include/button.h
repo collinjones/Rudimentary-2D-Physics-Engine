@@ -42,7 +42,6 @@ public:
 
     void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
         MouseOverBehavior(renderer, mx, my);
-        Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         text->Render(renderer, textColor, font, str);
     }
 
@@ -60,10 +59,11 @@ public:
 
     void MouseOverBehavior(SDL_Renderer* renderer, float px, float py) {
         if (IsMouseOver(px, py)) {
-            fillColor = hoverColor;
+            cout << "mousing over" << endl;
+            Draw(renderer, hoverColor.r, hoverColor.g, hoverColor.b);
         }
         else {
-            fillColor = originalColor;
+            Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         }
     }
 
