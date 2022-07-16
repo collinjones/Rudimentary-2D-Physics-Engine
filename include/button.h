@@ -2,7 +2,6 @@
 #define _BUTTON_
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include "text.h"
 

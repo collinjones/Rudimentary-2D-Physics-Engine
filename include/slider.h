@@ -2,7 +2,6 @@
 #define _SLIDER_
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include "text.h"
 #include "vec2.h"
