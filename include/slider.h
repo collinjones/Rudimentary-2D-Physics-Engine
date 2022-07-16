@@ -16,7 +16,7 @@ protected:
     Vec2 dinglePosition;
     Vec2 start; 
     Vec2 end;
-    const int radius = 10;
+    const int radius = 8;
     const int diameter = radius * 2;
     int currentValue;
     bool clicked;
@@ -39,9 +39,9 @@ public:
     }
 
     void Draw(SDL_Renderer* renderer) {
-        SDL_SetRenderDrawColor(renderer,0,0,0,255);
+        SDL_SetRenderDrawColor(renderer,220,220,220,255);
         SDL_RenderDrawLine(renderer, (int) start.getX(), (int) start.getY(), (int) end.getX(), (int) end.getY());
-        SDL_SetRenderDrawColor(renderer,200,200,200,255);
+        SDL_SetRenderDrawColor(renderer,160,160,160,255);
         for (int w = 0; w < diameter; w++) {
             for (int h = 0; h < diameter; h++) {
                 double dx = radius - w;
