@@ -326,7 +326,7 @@ class Simulation {
             }
             for (int i = 0; i < (int) displays.size(); i++) {
                 SDL_Color White = {255, 255, 255};
-                string c_size = std::to_string(circles.size());
+                string c_size = "Circles: " + std::to_string(circles.size());
                 char const* c_char = c_size.c_str();
                 displays[i]->Update(renderer, White, font, c_char);
             }
