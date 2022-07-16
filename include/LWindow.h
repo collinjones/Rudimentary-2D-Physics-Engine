@@ -24,8 +24,9 @@ class LWindow
 		LWindow();
 
 		//Creates window
-		bool init();
-
+		//bool init();
+        bool init1();
+        bool init2();
 		//Handles window events
 		void handleEvent( SDL_Event& e );
 
@@ -53,7 +54,6 @@ class LWindow
 		SDL_Window* mWindow;
 		SDL_Renderer* mRenderer;
 		unsigned int mWindowID; //made unsigned
-
 		//Window dimensions
 		int mWidth;
 		int mHeight;
@@ -86,12 +86,49 @@ LWindow::LWindow()
 	mFullScreen = false;
 	mShown = false;
 	mWindowID = -1;
-
 	mWidth = 0;
 	mHeight = 0;
 }
 
-bool LWindow::init()
+bool LWindow::init1()
+{
+   //Create window
+   	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+   	if( mWindow != NULL )
+   	{
+   		mMouseFocus = true;
+   		mKeyboardFocus = true;
+   		mWidth = SCREEN_WIDTH;
+   		mHeight = SCREEN_HEIGHT;
+
+   		//Create renderer for window
+   		mRenderer = SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED );
+   		if( mRenderer == NULL )
+   		{
+   			printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+   			SDL_DestroyWindow( mWindow );
+   			mWindow = NULL;
+   		}
+   		else
+   		{
+   			//Initialize renderer color
+   			SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+   			//Grab window identifier
+   			mWindowID = SDL_GetWindowID( mWindow );
+   			//Flag as opened
+   			mShown = true;
+   		}
+   	}
+   	else
+   	{
+   		printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+   	}
+
+   	return mWindow != NULL && mRenderer != NULL;
+}
+
+bool LWindow::init2()
 {
 	//Create window
 	mWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
@@ -117,7 +154,6 @@ bool LWindow::init()
 
 			//Grab window identifier
 			mWindowID = SDL_GetWindowID( mWindow );
-
 			//Flag as opened
 			mShown = true;
 		}
@@ -211,7 +247,7 @@ void LWindow::handleEvent( SDL_Event& e )
 		if( updateCaption )
 		{
 			std::stringstream caption;
-			caption << "SDL Tutorial - ID: " << mWindowID << " MouseFocus:" << ( ( mMouseFocus ) ? "On" : "Off" ) << " KeyboardFocus:" << ( ( mKeyboardFocus ) ? "On" : "Off" );
+			caption << "Physics Engine - ID: " << mWindowID << " MouseFocus:" << ( ( mMouseFocus ) ? "On" : "Off" ) << " KeyboardFocus:" << ( ( mKeyboardFocus ) ? "On" : "Off" );
 			SDL_SetWindowTitle( mWindow, caption.str().c_str() );
 		}
 	}

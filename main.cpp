@@ -188,7 +188,7 @@ class Simulation {
             srand (time(NULL));
             quit_flag = false;
             init_error = SDL_Init( SDL_INIT_VIDEO );
-            window = SDL_CreateWindow("Physics Engine",
+            window = SDL_CreateWindow("Physics Engine----",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -380,98 +380,81 @@ class Simulation {
 
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
-
+            if( !init() )
+            {
+                printf( "Failed to initialize!\n" );
+            }
+            else
+            {
+                //Initialize the rest of the windows
+                for( int i = 1; i < TOTAL_WINDOWS; ++i )
+                {
+                    gWindows[ i ].init2();
+                    cout<<i;
+                }
+            }
             while (!quit_flag) {
-            //Start up SDL and create window
-            	if( !init() )
-            	{
-            		printf( "Failed to initialize!\n" );
-            	}
-            	else
-            	{
-            		//Initialize the rest of the windows
-            		for( int i = 1; i < TOTAL_WINDOWS; ++i )
-            		{
-            			gWindows[ i ].init();
-            		}
 
-            		//Main loop flag
-            		//bool quit = false;
+                //Handle events on queue
+                while( SDL_PollEvent( &e ) != 0 )
+                {
+                    //User requests quit
+                    if( e.type == SDL_QUIT )
+                    {
+                        quit_flag = true;
+                    }
 
-            		//Event handler
-            		SDL_Event f;
+                    //Handle window events
+                    for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                    {
+                        gWindows[ i ].handleEvent( e );
+                    }
 
-            		//While application is running
-            		while( !quit_flag )
-            		{
-            			//Handle events on queue
-            			while( SDL_PollEvent( &f ) != 0 )
-            			{
-            				//User requests quit
-            				if( f.type == SDL_QUIT )
-            				{
-            					quit_flag = true;
-            				}
+                    //Pull up window
+                    if( e.type == SDL_KEYDOWN )
+                    {
+                        switch( e.key.keysym.sym )
+                        {
+                            case SDLK_1:
+                            gWindows[ 0 ].focus();
+                            break;
 
-            				//Handle window events
-            				for( int i = 0; i < TOTAL_WINDOWS; ++i )
-            				{
-            					gWindows[ i ].handleEvent( f );
-            				}
+                            case SDLK_2:
+                            gWindows[ 1 ].focus();
+                            break;
 
-            				//Pull up window
-            				if( f.type == SDL_KEYDOWN )
-            				{
-            					switch( f.key.keysym.sym )
-            					{
-            						case SDLK_1:
-            						gWindows[ 0 ].focus();
-            						break;
+                            case SDLK_3:
+                            gWindows[ 2 ].focus();
+                            break;
+                        }
+                    }
+                }
 
-            						case SDLK_2:
-            						gWindows[ 1 ].focus();
-            						break;
+                //Update all windows
+                for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                {
+                    gWindows[ i ].render();
+                }
 
-            						case SDLK_3:
-            						gWindows[ 2 ].focus();
-            						break;
-            					}
-            				}
-            			}
+                //Check all windows
+                bool allWindowsClosed = true;
+                for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                {
+                    if( gWindows[ i ].isShown() )
+                    {
+                        allWindowsClosed = false;
+                        break;
+                    }
+                }
 
-            			//Update all windows
-            			for( int i = 0; i < TOTAL_WINDOWS; ++i )
-            			{
-            				gWindows[ i ].render();
-            			}
-
-            			//Check all windows
-            			bool allWindowsClosed = true;
-            			for( int i = 0; i < TOTAL_WINDOWS; ++i )
-            			{
-            				if( gWindows[ i ].isShown() )
-            				{
-            					allWindowsClosed = false;
-            					break;
-            				}
-            			}
-
-            			//Application closed all windows
-            			if( allWindowsClosed )
-            			{
-            				quit_flag = true;
-            			}
-            		}
-            	}
+                //Application closed all windows
+                if( allWindowsClosed )
+                {
+                    quit_flag = true;
+                }
 
                 FillScreen(0,0,0,255);
                 EventHandler();
-
-                // cout << "== STATS == " << endl;
-                // cout << "Number of Balls on screen: " << circles.size() << endl;
-                // cout << "Number of Pegs on screen: " << pegs.size() << endl;
-                // cout << "Number of Rectangles on screen: " << rectangles.size() << endl;
-                // cout << "Number of lines on screen: " << boundaries.size() << endl;
 
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
@@ -489,9 +472,10 @@ class Simulation {
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
             }
+
+
             return 0;
-            //Free resources and close SDL
-            close();
+
         }
 
         void FillScreen(int r, int g, int b, int a){
@@ -570,7 +554,7 @@ bool init()
 		}
 
 		//Create window
-		if( !gWindows[ 0 ].init() )
+		if( !gWindows[ 0 ].init1() )
 		{
 			printf( "Window 0 could not be created!\n" );
 			success = false;

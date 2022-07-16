@@ -34,7 +34,7 @@ bool init()
 		}
 
 		//Create window
-		if( !gWindows[ 0 ].init() )
+		if( !gWindows[ 0 ].init1() )
 		{
 			printf( "Window 0 could not be created!\n" );
 			success = false;
@@ -68,7 +68,7 @@ int main( int argc, char* args[] )
 		//Initialize the rest of the windows
 		for( int i = 1; i < TOTAL_WINDOWS; ++i )
 		{
-			gWindows[ i ].init();
+			gWindows[ i ].init2();
 		}
 
 		//Main loop flag
