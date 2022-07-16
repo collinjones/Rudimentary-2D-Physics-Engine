@@ -401,6 +401,10 @@ class Simulation {
         }
 
         void ProcessCircles() {
+
+            AttractCircles(circles);
+            RepelCircles(circles);
+
             /* Update and render circles on screen */
             for (int c = 0; c < (int) circles.size(); c++) {
 
@@ -449,16 +453,7 @@ class Simulation {
                 FillScreen(25,25,25,255);
                 EventHandler();
                 UIHandler(Sans);
-
-                /* Only attract and repel each circle once */
-                AttractCircles(circles);
-                RepelCircles(circles);
-
                 ProcessCircles();
-
-                
-
-                /* Draw the static objects, present the renderer, then delay by 1sec/FRAMERATE */
                 DrawStaticObjects();
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
