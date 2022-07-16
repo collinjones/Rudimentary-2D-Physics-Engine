@@ -452,7 +452,6 @@ class Simulation {
                 {
                     quit_flag = true;
                 }
-
                 FillScreen(0,0,0,255);
                 EventHandler();
 
