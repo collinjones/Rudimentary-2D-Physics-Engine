@@ -10,14 +10,16 @@ using namespace std;
 
 class Text {
     
-public:
+private:
+
     SDL_Rect* rect;
 
+public:
     Text () {
         rect = nullptr;
     }
 
-    Text (SDL_Rect* r, const char* str) {
+    Text (SDL_Rect* r) {
         rect = r;
     }
 

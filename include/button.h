@@ -12,10 +12,14 @@ class Button {
 
 protected:
     SDL_Rect button;
+
     SDL_Color fillColor;
+    SDL_Color hoverColor;
+
+    SDL_Color originalColor;
     SDL_Color borderColor;
+    const int hoverOffset = 50;
     bool mouseOver;
-    int hoverOffset;
     const char* str;
     Text* text;
 
@@ -27,42 +31,40 @@ public:
         button.w = w;
         button.h = h;
         fillColor = fColor;
-        hoverOffset = 50;
+        originalColor = fillColor;
+        hoverColor.r = fColor.r + hoverOffset;
+        hoverColor.g = fColor.g + hoverOffset;
+        hoverColor.b = fColor.b + hoverOffset;
         borderColor = bColor;
         mouseOver = false;
         str = s;
-        text = new Text(&button, str);
+        text = new Text(&button);
     }
 
-    virtual void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
+    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
         MouseOverBehavior(renderer, mx, my);
-        Draw(renderer);
+        Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         text->Render(renderer, textColor, font, str);
     }
 
-    virtual void Draw(SDL_Renderer* renderer) {
-        SDL_RenderDrawRect(renderer, &button);  
-    }
-
-    void Fill(SDL_Renderer* renderer, int r, int g, int b) {
+    void Draw(SDL_Renderer* renderer, int r, int g, int b) {
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderFillRect(renderer, &button);
         SDL_RenderDrawRect(renderer, &button); 
     }
 
-    virtual void ProcessClick(float px, float py) {
+    void ProcessClick(float px, float py) {
         if (mouseOver) {
-            ;
-            // Clicked!
+            cout << "clicked a regular button" << endl;
         }
     }
 
     void MouseOverBehavior(SDL_Renderer* renderer, float px, float py) {
         if (IsMouseOver(px, py)) {
-            Fill(renderer, fillColor.r + hoverOffset, fillColor.g + hoverOffset, fillColor.b + hoverOffset);
+            fillColor = hoverColor;
         }
         else {
-            Fill(renderer, fillColor.r, fillColor.g, fillColor.b);
+            fillColor = originalColor;
         }
     }
 

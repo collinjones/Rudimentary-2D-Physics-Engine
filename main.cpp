@@ -15,7 +15,7 @@
 #include "include/shapeFactory.h"
 #include "include/button.h"
 #include "include/toggleButton.h"
-#include "include/displayBoard.h"
+#include "include/displayPanel.h"
 #include "include/slider.h"
 
 using namespace std;
@@ -28,9 +28,15 @@ class Simulation {
                 int posX;
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
+
                 for (int i = 0; i < (int) buttons.size(); i++) {
                     buttons[i]->ProcessClick(posX, posY);
                 }
+
+                for (int i = 0; i < (int) toggleButtons.size(); i++) {
+                    toggleButtons[i]->ProcessClick(posX, posY);
+                }
+
                 for (int i = 0; i < (int) sliders.size(); i++) {
                     if (sliders[i]->mouseOver(posX, posY)){
                         if(b.type == SDL_MOUSEBUTTONDOWN){
@@ -79,7 +85,6 @@ class Simulation {
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
-
                 pegs.push_back(shapeFact->createPeg(pos,3));
             }
         }
@@ -198,14 +203,14 @@ class Simulation {
 
             SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
             SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
-            SDL_Color c3 = {.r = 50, .g=100, .b=200, .a=255};
-            buttons.push_back(new ToggleButton(400, 200, 100, 25, c, c, "Gravity On", "Gravity Off"));
+            SDL_Color c3 = {.r = 50, .g=60, .b=187, .a=255};
+            toggleButtons.push_back(new ToggleButton(400, 200, 100, 25, c, c, "Gravity On", "Gravity Off"));
             buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Create Circle"));
-            displays.push_back(new DisplayBoard(500, 200, 100, 25, c3, c3, "Circles: "));
+            displays.push_back(new DisplayPanel(100, 500, 150, 50, c3));
             sliders.push_back(new Slider(700, 600, 50, 100));
+
             // GeneratePachinko();
             GenerateSolarSystem();
-
         }
 
         ~Simulation(){
@@ -327,19 +332,21 @@ class Simulation {
         }
 
         void UIHandler(TTF_Font* font) {
+
+            SDL_Color White = {255, 255, 255};
+            int posX;
+            int posY;
+            SDL_GetMouseState(&posX, &posY);
+            Slider* sliderRef;
+            
             for (int i = 0; i < (int) buttons.size(); i++) {
-                int posX;
-                int posY;
-                SDL_GetMouseState(&posX, &posY);
-                SDL_Color White = {255, 255, 255};
                 buttons[i]->Update(renderer, posX, posY, White, font);
             }
-            for (int i = 0; i < (int) displays.size(); i++) {
-                SDL_Color White = {255, 255, 255};
-                string c_size = "Circles: " + std::to_string(circles.size());
-                char const* c_char = c_size.c_str();
-                displays[i]->Update(renderer, White, font, c_char);
+
+            for (int i = 0; i < (int) toggleButtons.size(); i++) {
+                toggleButtons[i]->Update(renderer, posX, posY, White, font);
             }
+
             for (int i = 0; i < (int) sliders.size(); i++) {
                 sliders[i]->Draw(renderer);
                 if (leftButtonHeld) {
@@ -350,9 +357,16 @@ class Simulation {
                     if(sliders[i]->GetClicked()) {
                         sliders[i]->SetDinglePosition(posY);
                     }
-                    
                 }
+                sliderRef = sliders[i];
             }
+
+            for (int i = 0; i < (int) displays.size(); i++) {
+                string circlesSize = "Slider: " + to_string(sliderRef->GetCurrentValue());
+                char const* circlesSize_char = circlesSize.c_str();
+                displays[i]->Update(renderer, White, font, circlesSize_char);
+            }
+            
         }
 
         void EventHandler() {
@@ -378,6 +392,11 @@ class Simulation {
                     KKeyPressed(e.key);
                     GKeyPressed(e.key);
                 }
+            }
+
+            /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
+            if (boxPointASelected) {
+                DrawBoxOutline();
             }
         }
 
@@ -437,10 +456,7 @@ class Simulation {
 
                 ProcessCircles();
 
-                /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
-                if (boxPointASelected) {
-                    DrawBoxOutline();
-                }
+                
 
                 /* Draw the static objects, present the renderer, then delay by 1sec/FRAMERATE */
                 DrawStaticObjects();
@@ -492,7 +508,8 @@ class Simulation {
         vector<Peg*> pegs;
         vector<Emitter*> emitters;
         vector<Button*> buttons;
-        vector<DisplayBoard*> displays;
+        vector<ToggleButton*> toggleButtons;
+        vector<DisplayPanel*> displays;
         vector<Slider*> sliders;
 
         Vec2 gravity;

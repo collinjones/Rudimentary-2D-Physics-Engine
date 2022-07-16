@@ -29,6 +29,7 @@ public:
         bounds.w = w;
         bounds.h = h;
         clicked = false;
+        currentValue = 1;
         
         dinglePosition.setX(x);
         dinglePosition.setY(y);
@@ -93,6 +94,7 @@ public:
 
     void SetClicked(bool c) { clicked = c; }
     bool GetClicked() { return clicked; }
+    int GetCurrentValue() { return currentValue; }
 
 };
 

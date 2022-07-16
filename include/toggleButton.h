@@ -2,6 +2,7 @@
 #define _TOGGLEBUTTON_
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include "button.h"
 
@@ -31,6 +32,7 @@ public:
 
     void ProcessClick(float px, float py) {
         if (mouseOver) {
+            cout << "clicked a toggle button" << endl;
             if (!activated) {
                 SetClickedColor();
                 activated = true; 
@@ -45,7 +47,7 @@ public:
 
     void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font){
         MouseOverBehavior(renderer, mx, my);
-        Draw(renderer);
+        Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         if (!activated) {
             text->Render(renderer, textColor, font, offText);
         }
@@ -63,7 +65,9 @@ public:
         fillColor = offColor;
     }
 
-    void Draw(SDL_Renderer* renderer) {
+    void Draw(SDL_Renderer* renderer, int r, int g, int b) {
+        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        SDL_RenderFillRect(renderer, &button);
         SDL_RenderDrawRect(renderer, &button);  
     }
 
