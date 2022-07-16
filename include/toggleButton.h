@@ -33,16 +33,26 @@ public:
         if (mouseOver) {
             if (!activated) {
                 SetClickedColor();
-                text->SetText(onText);
                 activated = true; 
             }
             else {
                 SetUnclickedColor();
-                text->SetText(offText);
                 activated = false;
             }
             
         }
+    }
+
+    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font){
+        MouseOverBehavior(renderer, mx, my);
+        Draw(renderer);
+        if (!activated) {
+            text->Render(renderer, textColor, font, offText);
+        }
+        else {
+            text->Render(renderer, textColor, font, onText);
+        }
+        
     }
 
     void SetClickedColor() {

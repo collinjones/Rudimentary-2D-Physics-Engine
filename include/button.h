@@ -16,11 +16,12 @@ protected:
     SDL_Color borderColor;
     bool mouseOver;
     int hoverOffset;
+    const char* str;
     Text* text;
 
 public:
 
-    Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* str) {
+    Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* s) {
         button.x = x;
         button.y = y;
         button.w = w;
@@ -29,17 +30,14 @@ public:
         hoverOffset = 50;
         borderColor = bColor;
         mouseOver = false;
+        str = s;
         text = new Text(&button, str);
     }
 
-    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
+    virtual void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
         MouseOverBehavior(renderer, mx, my);
         Draw(renderer);
-        RenderText(renderer, textColor, font);
-    }
-
-    void RenderText(SDL_Renderer* renderer, SDL_Color c, TTF_Font* font) {
-        text->Render(renderer, c, font);
+        text->Render(renderer, textColor, font, str);
     }
 
     virtual void Draw(SDL_Renderer* renderer) {
@@ -54,7 +52,8 @@ public:
 
     virtual void ProcessClick(float px, float py) {
         if (mouseOver) {
-            cout << "Clicked a regular button!" << endl;
+            ;
+            // Clicked!
         }
     }
 

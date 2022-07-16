@@ -14,7 +14,8 @@
 #include "include/singletonRenderer.h"
 #include "include/shapeFactory.h"
 #include "include/button.h"
-#include "include/toggle_button.h"
+#include "include/toggleButton.h"
+#include "include/displayBoard.h"
 
 using namespace std;
 
@@ -189,8 +190,10 @@ class Simulation {
 
             SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
             SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
+            SDL_Color c3 = {.r = 50, .g=100, .b=200, .a=255};
             buttons.push_back(new ToggleButton(400, 200, 100, 25, c, c, "Gravity On", "Gravity Off"));
             buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Create Circle"));
+            displays.push_back(new DisplayBoard(500, 200, 100, 25, c3, c3, "Circles: "));
             // GeneratePachinko();
             GenerateSolarSystem();
 
@@ -320,6 +323,12 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
                 SDL_Color White = {255, 255, 255};
                 buttons[i]->Update(renderer, posX, posY, White, font);
+            }
+            for (int i = 0; i < (int) displays.size(); i++) {
+                SDL_Color White = {255, 255, 255};
+                string c_size = std::to_string(circles.size());
+                char const* c_char = c_size.c_str();
+                displays[i]->Update(renderer, White, font, c_char);
             }
         }
 
@@ -455,6 +464,7 @@ class Simulation {
         vector<Emitter*> emitters;
 
         vector<Button*> buttons;
+        vector<DisplayBoard*> displays;
 
         Vec2 gravity;
 

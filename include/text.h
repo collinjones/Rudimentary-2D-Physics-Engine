@@ -9,9 +9,9 @@
 using namespace std;
 
 class Text {
+    
 public:
     SDL_Rect* rect;
-    const char* text;
 
     Text () {
         rect = nullptr;
@@ -19,19 +19,14 @@ public:
 
     Text (SDL_Rect* r, const char* str) {
         rect = r;
-        text = str;
     }
 
     void SetRect(SDL_Rect* r) {
         rect = r;
     }
 
-    void SetText(const char* str) {
-        text = str;
-    }
-
-    void Render (SDL_Renderer* renderer, SDL_Color color, TTF_Font* font) {
-        SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, text, color);
+    void Render (SDL_Renderer* renderer, SDL_Color color, TTF_Font* font, const char* msg) {
+        SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, msg, color);
         SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
         SDL_RenderCopy(renderer, message, NULL, rect);
     }
