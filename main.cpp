@@ -461,12 +461,17 @@ class Simulation {
             			{
             				quit_flag = true;
             			}
-
             		}
             	}
 
                 FillScreen(0,0,0,255);
                 EventHandler();
+
+                // cout << "== STATS == " << endl;
+                // cout << "Number of Balls on screen: " << circles.size() << endl;
+                // cout << "Number of Pegs on screen: " << pegs.size() << endl;
+                // cout << "Number of Rectangles on screen: " << rectangles.size() << endl;
+                // cout << "Number of lines on screen: " << boundaries.size() << endl;
 
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
