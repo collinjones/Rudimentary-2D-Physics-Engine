@@ -64,7 +64,6 @@ public:
     }
 
     void Draw(SDL_Renderer* renderer, int r, int g, int b) {
-        cout << r << endl;
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderFillRect(renderer, &button);
         SDL_RenderDrawRect(renderer, &button);  

@@ -59,7 +59,6 @@ public:
 
     void MouseOverBehavior(SDL_Renderer* renderer, float px, float py) {
         if (IsMouseOver(px, py)) {
-            cout << "mousing over" << endl;
             Draw(renderer, hoverColor.r, hoverColor.g, hoverColor.b);
         }
         else {
