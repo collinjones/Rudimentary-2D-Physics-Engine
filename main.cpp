@@ -16,6 +16,7 @@
 #include "include/button.h"
 #include "include/toggleButton.h"
 #include "include/displayBoard.h"
+#include "include/slider.h"
 
 using namespace std;
 
@@ -30,8 +31,14 @@ class Simulation {
                 for (int i = 0; i < (int) buttons.size(); i++) {
                     buttons[i]->ProcessClick(posX, posY);
                 }
+                for (int i = 0; i < (int) sliders.size(); i++) {
+                    if (sliders[i]->mouseOver(posX, posY)){
+                        if(b.type == SDL_MOUSEBUTTONDOWN){
+                            leftButtonHeld = true;
+                        } 
+                    }
+                }
             }
-
         }
 
         void RightClick(SDL_MouseButtonEvent& b) {
@@ -175,6 +182,7 @@ class Simulation {
         Simulation() {
             
             TTF_Init();
+            leftButtonHeld = false;
             gravOn = false;
             gravity.setVec(0, 0);
             linePointASelected = false;
@@ -194,6 +202,7 @@ class Simulation {
             buttons.push_back(new ToggleButton(400, 200, 100, 25, c, c, "Gravity On", "Gravity Off"));
             buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Create Circle"));
             displays.push_back(new DisplayBoard(500, 200, 100, 25, c3, c3, "Circles: "));
+            sliders.push_back(new Slider(700, 600, 50, 100));
             // GeneratePachinko();
             GenerateSolarSystem();
 
@@ -203,6 +212,7 @@ class Simulation {
             SDL_DestroyRenderer( renderer );
             SDL_DestroyWindow( window );
             SDL_Quit();
+            TTF_Quit();
             cout << "EXIT SUCCESS" << endl;
         }
 
@@ -316,7 +326,7 @@ class Simulation {
             }
         }
 
-        void HandleUI(TTF_Font* font) {
+        void UIHandler(TTF_Font* font) {
             for (int i = 0; i < (int) buttons.size(); i++) {
                 int posX;
                 int posY;
@@ -330,6 +340,19 @@ class Simulation {
                 char const* c_char = c_size.c_str();
                 displays[i]->Update(renderer, White, font, c_char);
             }
+            for (int i = 0; i < (int) sliders.size(); i++) {
+                sliders[i]->Draw(renderer);
+                if (leftButtonHeld) {
+                    sliders[i]->SetClicked(true);
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    if(sliders[i]->GetClicked()) {
+                        sliders[i]->SetDinglePosition(posY);
+                    }
+                    
+                }
+            }
         }
 
         void EventHandler() {
@@ -341,7 +364,12 @@ class Simulation {
                 if (e.type == SDL_MOUSEBUTTONDOWN) {
                     LeftClick(e.button);
                     RightClick(e.button);
-                    
+                }
+                if (e.type == SDL_MOUSEBUTTONUP) {
+                    leftButtonHeld = false;
+                    for (int i = 0; i < (int) sliders.size(); i++) {
+                        sliders[i]->SetClicked(false);
+                    }
                 }
                 if (e.type == SDL_KEYDOWN) {
                     RKeyHeld(e.key);
@@ -401,7 +429,7 @@ class Simulation {
             while (!quit_flag) {
                 FillScreen(25,25,25,255);
                 EventHandler();
-                HandleUI(Sans);
+                UIHandler(Sans);
 
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
@@ -456,15 +484,16 @@ class Simulation {
 
         int init_error;
         bool quit_flag;
+        bool leftButtonHeld;
 
         vector<Circle*> circles;
         vector<Rectangle*> rectangles; 
         vector<Boundary*> boundaries;  
         vector<Peg*> pegs;
         vector<Emitter*> emitters;
-
         vector<Button*> buttons;
         vector<DisplayBoard*> displays;
+        vector<Slider*> sliders;
 
         Vec2 gravity;
 
