@@ -35,6 +35,7 @@ public:
         /* Centering text */
         copy.x += rect->w * .10;
         copy.w -= rect->w * .20;
+        
         SDL_RenderCopy(renderer, message, NULL, &copy);
     }
 
