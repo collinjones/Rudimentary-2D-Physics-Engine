@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <vector>
 #include <stdlib.h>     /* srand, rand */
@@ -12,6 +13,10 @@
 #include "include/emitter.h"
 #include "include/singletonRenderer.h"
 #include "include/shapeFactory.h"
+#include "include/button.h"
+#include "include/toggleButton.h"
+#include "include/displayPanel.h"
+#include "include/slider.h"
 
 using namespace std;
 
@@ -20,21 +25,23 @@ class Simulation {
 
         void LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
-                if(!linePointASelected) {
-                    int posX;
-                    int posY;
-                    SDL_GetMouseState(&posX, &posY);
-                    pA.setVec(posX, posY);
-                    linePointASelected = true;
+                int posX;
+                int posY;
+                SDL_GetMouseState(&posX, &posY);
+
+                for (int i = 0; i < (int) buttons.size(); i++) {
+                    buttons[i]->ProcessClick(posX, posY);
                 }
-                else {
-                    int posX;
-                    int posY;
-                    SDL_GetMouseState(&posX, &posY);
-                    if(posX != pA.getX() && posY != pA.getY()) {
-                        pB.setVec(posX, posY);
-                        boundaries.push_back(shapeFact->createBoundary(pA,pB));
-                        linePointASelected = false;
+
+                for (int i = 0; i < (int) toggleButtons.size(); i++) {
+                    toggleButtons[i]->ProcessClick(posX, posY);
+                }
+
+                for (int i = 0; i < (int) sliders.size(); i++) {
+                    if (sliders[i]->mouseOver(posX, posY)){
+                        if(b.type == SDL_MOUSEBUTTONDOWN){
+                            leftButtonHeld = true;
+                        } 
                     }
                 }
             }
@@ -78,7 +85,6 @@ class Simulation {
                 int posY;
                 SDL_GetMouseState(&posX, &posY);
                 Vec2 pos(posX, posY);
-
                 pegs.push_back(shapeFact->createPeg(pos,3));
             }
         }
@@ -179,28 +185,50 @@ class Simulation {
         }
 
         Simulation() {
+            
+            TTF_Init();  /* Init TrueType Fonts */
+
+            /* Gravity off at startup */
             gravOn = false;
-            gravity.setVec(0, 0);
+            gravity.setVec(0, 0.0);
+
+            /* Set user control booleans */
+            leftButtonHeld = false;
             linePointASelected = false;
             boxPointASelected = false;
-            srand (time(NULL));
             quit_flag = false;
+
+            /* Creating window and renderer */
+            srand (time(NULL));
             init_error = SDL_Init( SDL_INIT_VIDEO );
             window = SDL_CreateWindow("Physics Engine",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            
+
+            /* EXAMPLE UI ELEMENTS: BUTTON, TOGGLE BUTTON, DISPLAY PANEL, and SLIDER */
+            SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
+            SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
+            SDL_Color c3 = {.r = 50, .g=60, .b=187, .a=255};
+
+            /* Main setting */
+            /* System of buttons */
+            toggleButtons.push_back(new ToggleButton(400, 200, 200, 25, c, c, "Toggle Status: ON", "Toggle Status: OFF"));
+            buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Event Button"));
+            displays.push_back(new DisplayPanel(100, 525, 100, 25, c3));
+            sliders.push_back(new Slider(150, 575, 50, 100));
+
+            /* Initialize simulation on startup */
             // GeneratePachinko();
             GenerateSolarSystem();
-
         }
 
         ~Simulation(){
             SDL_DestroyRenderer( renderer );
             SDL_DestroyWindow( window );
             SDL_Quit();
+            TTF_Quit();
             cout << "EXIT SUCCESS" << endl;
         }
 
@@ -314,6 +342,45 @@ class Simulation {
             }
         }
 
+        /* Handles additional user interaction with UI */
+        void UIHandler(TTF_Font* font) {
+
+            SDL_Color White = {255, 255, 255};
+            int posX;
+            int posY;
+            SDL_GetMouseState(&posX, &posY);
+            Slider* sliderRef;
+            
+            for (int i = 0; i < (int) buttons.size(); i++) {
+                buttons[i]->Update(renderer, posX, posY, White, font);
+            }
+
+            for (int i = 0; i < (int) toggleButtons.size(); i++) {
+                toggleButtons[i]->Update(renderer, posX, posY, White, font);
+            }
+
+            for (int i = 0; i < (int) sliders.size(); i++) {
+                sliders[i]->Draw(renderer);
+                if (leftButtonHeld) {
+                    sliders[i]->SetClicked(true);
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    if(sliders[i]->GetClicked()) {
+                        sliders[i]->SetDinglePosition(posY);
+                    }
+                }
+                sliderRef = sliders[i];
+            }
+
+            for (int i = 0; i < (int) displays.size(); i++) {
+                string circlesSize = "Slider: " + to_string(sliderRef->GetCurrentValue());
+                char const* circlesSize_char = circlesSize.c_str();
+                displays[i]->Update(renderer, White, font, circlesSize_char);
+            }
+            
+        }
+
         void EventHandler() {
             /* Check for events */
             while (SDL_PollEvent(&e)){
@@ -323,7 +390,12 @@ class Simulation {
                 if (e.type == SDL_MOUSEBUTTONDOWN) {
                     LeftClick(e.button);
                     RightClick(e.button);
-                    
+                }
+                if (e.type == SDL_MOUSEBUTTONUP) {
+                    leftButtonHeld = false;
+                    for (int i = 0; i < (int) sliders.size(); i++) {
+                        sliders[i]->SetClicked(false);
+                    }
                 }
                 if (e.type == SDL_KEYDOWN) {
                     RKeyHeld(e.key);
@@ -333,9 +405,18 @@ class Simulation {
                     GKeyPressed(e.key);
                 }
             }
+
+            /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
+            if (boxPointASelected) {
+                DrawBoxOutline();
+            }
         }
 
         void ProcessCircles() {
+
+            AttractCircles(circles);
+            RepelCircles(circles);
+
             /* Update and render circles on screen */
             for (int c = 0; c < (int) circles.size(); c++) {
 
@@ -378,29 +459,13 @@ class Simulation {
 
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
+            TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
             
             while (!quit_flag) {
                 FillScreen(25,25,25,255);
                 EventHandler();
-
-                // cout << "== STATS == " << endl;
-                // cout << "Number of Balls on screen: " << circles.size() << endl;
-                // cout << "Number of Pegs on screen: " << pegs.size() << endl;
-                // cout << "Number of Rectangles on screen: " << rectangles.size() << endl;
-                // cout << "Number of lines on screen: " << boundaries.size() << endl;
-
-                /* Only attract and repel each circle once */
-                AttractCircles(circles);
-                RepelCircles(circles);
-
+                UIHandler(Sans);
                 ProcessCircles();
-
-                /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
-                if (boxPointASelected) {
-                    DrawBoxOutline();
-                }
-
-                /* Draw the static objects, present the renderer, then delay by 1sec/FRAMERATE */
                 DrawStaticObjects();
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
@@ -442,12 +507,17 @@ class Simulation {
 
         int init_error;
         bool quit_flag;
+        bool leftButtonHeld;
 
         vector<Circle*> circles;
         vector<Rectangle*> rectangles; 
         vector<Boundary*> boundaries;  
         vector<Peg*> pegs;
         vector<Emitter*> emitters;
+        vector<Button*> buttons;
+        vector<ToggleButton*> toggleButtons;
+        vector<DisplayPanel*> displays;
+        vector<Slider*> sliders;
 
         Vec2 gravity;
 
