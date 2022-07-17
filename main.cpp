@@ -481,31 +481,32 @@ class Simulation {
             }
         }
 
-        void ExtraWindowHandler()
-        {
-        //Update all windows
-        for( int i = 0; i < TOTAL_WINDOWS; ++i )
-        {
-            gWindows[ i ].render();
-        }
-
-        //Check all windows
-        bool allWindowsClosed = true;
-        for( int i = 0; i < TOTAL_WINDOWS; ++i )
-        {
-            if( gWindows[ i ].isShown() )
-            {
-                allWindowsClosed = false;
-                break;
-            }
-        }
-
-        //Application closed all windows
-        if( allWindowsClosed )
-        {
-            quit_flag = true;
-        }
-       }
+//        void ExtraWindowHandler()
+//        {
+//        //Update all windows
+//        for( int i = 0; i < TOTAL_WINDOWS; ++i )
+//        {
+//            gWindows[ i ].LWFillScreen();
+//            gWindows[ i ].LWRenderPresent();
+//        }
+//
+//        //Check all windows
+//        bool allWindowsClosed = true;
+//        for( int i = 0; i < TOTAL_WINDOWS; ++i )
+//        {
+//            if( gWindows[ i ].isShown() )
+//            {
+//                allWindowsClosed = false;
+//                break;
+//            }
+//        }
+//
+//        //Application closed all windows
+//        if( allWindowsClosed )
+//        {
+//            quit_flag = true;
+//        }
+//       }
 
         void handleLWUI(TTF_Font* font)
         {

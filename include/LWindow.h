@@ -39,7 +39,7 @@ class LWindow
 		void focus();
 
 		//Shows windows contents
-		void render();
+		//void render();
 
 		//Deallocates internals
 		void free();
@@ -58,6 +58,7 @@ class LWindow
         void LWUIHandler(TTF_Font* font);
         void LWRenderPresent();
         void LWFillScreen();
+        void LWLeftClick(SDL_MouseButtonEvent& b);
 	private:
 		//Window data
 		SDL_Window* mWindow;
@@ -183,9 +184,36 @@ bool LWindow::init2()
 	return mWindow != NULL && mRenderer != NULL;
 }
 
+void LWindow:: LWLeftClick(SDL_MouseButtonEvent& b) {
+  if(b.button == SDL_BUTTON_LEFT){
+      int posX;
+      int posY;
+      SDL_GetMouseState(&posX, &posY);
+
+      for (int i = 0; i < (int) LWButtons.size(); i++) {
+          LWButtons[i]->ProcessClick(posX, posY);
+      }
+
+      for (int i = 0; i < (int) LWToggleButtons.size(); i++) {
+          LWToggleButtons[i]->ProcessClick(posX, posY);
+      }
+
+//      for (int i = 0; i < (int) LWSliders.size(); i++) {
+//          if (LWSliders[i]->mouseOver(posX, posY)){
+//              if(b.type == SDL_MOUSEBUTTONDOWN){
+//                  leftButtonHeld = true;
+//              }
+//          }
+//      }
+  }
+}
+
 void LWindow::handleEvent( SDL_Event& e )
 {
 	//If an event was detected for this window
+	if (e.type == SDL_MOUSEBUTTONDOWN && e.window.windowID == mWindowID) {
+        LWLeftClick(e.button);
+    }
 	if( e.type == SDL_WINDOWEVENT && e.window.windowID == mWindowID )
 	{
 		//Caption update flag
@@ -193,6 +221,7 @@ void LWindow::handleEvent( SDL_Event& e )
 
 		switch( e.window.event )
 		{
+
 			//Window appeared
 			case SDL_WINDOWEVENT_SHOWN:
 			mShown = true;
@@ -258,6 +287,8 @@ void LWindow::handleEvent( SDL_Event& e )
 			case SDL_WINDOWEVENT_CLOSE:
 			SDL_HideWindow( mWindow );
 			break;
+
+
 		}
 
 		//Update window caption with new data
@@ -271,22 +302,22 @@ void LWindow::handleEvent( SDL_Event& e )
 }
 
 void LWindow::LWUIHandler(TTF_Font* font) {
-//made it here, constant
-SDL_Color White = {255, 255, 255};
-int posX;
-int posY;
-SDL_GetMouseState(&posX, &posY);
+    //made it here, constant
+    SDL_Color White = {255, 255, 255};
+    int posX;
+    int posY;
+    SDL_GetMouseState(&posX, &posY);
 
-for (int i = 0; i < (int) LWButtons.size(); i++) {
-  LWButtons[i]->Update(mRenderer, posX, posY, White, font);
-//did not enter here, good
-}
+    for (int i = 0; i < (int) LWButtons.size(); i++) {
+      LWButtons[i]->Update(mRenderer, posX, posY, White, font);
+    //did not enter here, good
+    }
 
-for (int i = 0; i < (int) LWToggleButtons.size(); i++) {
-  //made it here constant
-  LWToggleButtons[i]->Update(mRenderer, posX, posY, White, font);
-  //exited here, constant
-}
+    for (int i = 0; i < (int) LWToggleButtons.size(); i++) {
+      //made it here constant
+      LWToggleButtons[i]->Update(mRenderer, posX, posY, White, font);
+      //exited here, constant
+    }
 
 }
 void LWindow::focus()
@@ -312,18 +343,6 @@ void LWindow::LWRenderPresent()
     SDL_RenderPresent( mRenderer );
 }
 
-//void LWindow::render()
-//{
-//	if( !mMinimized )
-//	{
-//		//Clear screen
-//		SDL_SetRenderDrawColor( mRenderer, 0, 0, 0, 0xFF );
-//		SDL_RenderClear( mRenderer );
-//
-//		//Update screen
-//		SDL_RenderPresent( mRenderer );
-//	}
-//}
 
 void LWindow::free()
 {
