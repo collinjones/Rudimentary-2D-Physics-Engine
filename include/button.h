@@ -46,6 +46,7 @@ public:
     }
 
     void Draw(SDL_Renderer* renderer, int r, int g, int b) {
+//continuosly in draw it seems, rgb: 100,100,0
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderFillRect(renderer, &button);
         SDL_RenderDrawRect(renderer, &button); 
@@ -58,10 +59,13 @@ public:
     }
 
     void MouseOverBehavior(SDL_Renderer* renderer, float px, float py) {
+    //made it here constantly. Believe the button location is there, just can not see the button
         if (IsMouseOver(px, py)) {
+         //cout<< "here2";
             Draw(renderer, hoverColor.r, hoverColor.g, hoverColor.b);
         }
         else {
+        //cout<<"---------";
             Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         }
     }

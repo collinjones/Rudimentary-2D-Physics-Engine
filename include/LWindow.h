@@ -10,13 +10,17 @@ and may not be redistributed without written permission.*/
 #include <stdio.h>
 #include <string>
 #include <sstream>
+#include "toggleButton.h"
+#include "displayPanel.h"
+#include "slider.h"
+#include "button.h"
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 500;
-const int SCREEN_HEIGHT = 100;
+const int SCREEN_WIDTH = 200;
+const int SCREEN_HEIGHT = 80;
 
 //Total windows
-const int TOTAL_WINDOWS = 4;
+const int TOTAL_WINDOWS = 1;
 
 class LWindow
 {
@@ -50,6 +54,10 @@ class LWindow
 		bool isMinimized();
 		bool isShown();
 
+        SDL_Renderer* getRenderer();
+        void LWUIHandler(TTF_Font* font);
+        void LWRenderPresent();
+        void LWFillScreen();
 	private:
 		//Window data
 		SDL_Window* mWindow;
@@ -65,6 +73,11 @@ class LWindow
 		bool mFullScreen;
 		bool mMinimized;
 		bool mShown;
+
+		vector<Button*> LWButtons;
+		vector<ToggleButton*> LWToggleButtons;
+        vector<DisplayPanel*> LWDisplays;
+        vector<Slider*> LWSliders;
 };
 
 //Starts up SDL and creates window
@@ -95,6 +108,7 @@ bool LWindow::init1()
 {
    //Create window
    	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+    SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
    	if( mWindow != NULL )
    	{
    		mMouseFocus = true;
@@ -119,6 +133,8 @@ bool LWindow::init1()
    			mWindowID = SDL_GetWindowID( mWindow );
    			//Flag as opened
    			mShown = true;
+
+            LWToggleButtons.push_back(new ToggleButton(50, 50, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF"));
    		}
    	}
    	else
@@ -151,7 +167,7 @@ bool LWindow::init2()
 		else
 		{
 			//Initialize renderer color
-			SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+			SDL_SetRenderDrawColor( mRenderer, 0, 0, 0, 0xFF );
 
 			//Grab window identifier
 			mWindowID = SDL_GetWindowID( mWindow );
@@ -254,6 +270,25 @@ void LWindow::handleEvent( SDL_Event& e )
 	}
 }
 
+void LWindow::LWUIHandler(TTF_Font* font) {
+//made it here, constant
+SDL_Color White = {255, 255, 255};
+int posX;
+int posY;
+SDL_GetMouseState(&posX, &posY);
+
+for (int i = 0; i < (int) LWButtons.size(); i++) {
+  LWButtons[i]->Update(mRenderer, posX, posY, White, font);
+//did not enter here, good
+}
+
+for (int i = 0; i < (int) LWToggleButtons.size(); i++) {
+  //made it here constant
+  LWToggleButtons[i]->Update(mRenderer, posX, posY, White, font);
+  //exited here, constant
+}
+
+}
 void LWindow::focus()
 {
 	//Restore window if needed
@@ -266,18 +301,29 @@ void LWindow::focus()
 	SDL_RaiseWindow( mWindow );
 }
 
-void LWindow::render()
+void LWindow::LWFillScreen()
 {
-	if( !mMinimized )
-	{
-		//Clear screen
-		SDL_SetRenderDrawColor( mRenderer, 0, 0, 0, 0xFF );
-		SDL_RenderClear( mRenderer );
-
-		//Update screen
-		SDL_RenderPresent( mRenderer );
-	}
+    SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+    SDL_RenderClear(mRenderer);
 }
+
+void LWindow::LWRenderPresent()
+{
+    SDL_RenderPresent( mRenderer );
+}
+
+//void LWindow::render()
+//{
+//	if( !mMinimized )
+//	{
+//		//Clear screen
+//		SDL_SetRenderDrawColor( mRenderer, 0, 0, 0, 0xFF );
+//		SDL_RenderClear( mRenderer );
+//
+//		//Update screen
+//		SDL_RenderPresent( mRenderer );
+//	}
+//}
 
 void LWindow::free()
 {
@@ -320,6 +366,10 @@ bool LWindow::isMinimized()
 bool LWindow::isShown()
 {
 	return mShown;
-};
+}
 
+SDL_Renderer* LWindow::getRenderer()
+{
+    return mRenderer;
+};
  #endif

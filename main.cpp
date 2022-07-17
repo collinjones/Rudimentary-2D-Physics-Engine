@@ -344,24 +344,24 @@ class Simulation {
         }
 
         /* Handles additional user interaction with UI */
-        void UIHandler(TTF_Font* font) {
+        void UIHandler(TTF_Font* font, SDL_Renderer * cRenderer) {
 
             SDL_Color White = {255, 255, 255};
             int posX;
             int posY;
             SDL_GetMouseState(&posX, &posY);
             Slider* sliderRef;
-            
+
             for (int i = 0; i < (int) buttons.size(); i++) {
-                buttons[i]->Update(renderer, posX, posY, White, font);
+                buttons[i]->Update(cRenderer, posX, posY, White, font);
             }
 
             for (int i = 0; i < (int) toggleButtons.size(); i++) {
-                toggleButtons[i]->Update(renderer, posX, posY, White, font);
+                toggleButtons[i]->Update(cRenderer, posX, posY, White, font);
             }
 
             for (int i = 0; i < (int) sliders.size(); i++) {
-                sliders[i]->Draw(renderer);
+                sliders[i]->Draw(cRenderer);
                 if (leftButtonHeld) {
                     sliders[i]->SetClicked(true);
                     int posX;
@@ -411,23 +411,23 @@ class Simulation {
                     gWindows[ i ].handleEvent( e );
                 }
                 //Pull up window
-                if( e.type == SDL_KEYDOWN )
-                {
-                    switch( e.key.keysym.sym )
-                    {
-                        case SDLK_1:
-                        gWindows[ 0 ].focus();
-                        break;
-
-                        case SDLK_2:
-                        gWindows[ 1 ].focus();
-                        break;
-
-                        case SDLK_3:
-                        gWindows[ 2 ].focus();
-                        break;
-                    }
-                }
+//                if( e.type == SDL_KEYDOWN )
+//                {
+//                    switch( e.key.keysym.sym )
+//                    {
+//                        case SDLK_1:
+//                        gWindows[ 0 ].focus();
+//                        break;
+//
+//                        case SDLK_2:
+//                        gWindows[ 1 ].focus();
+//                        break;
+//
+//                        case SDLK_3:
+//                        gWindows[ 2 ].focus();
+//                        break;
+//                    }
+//                }
             }
 
             /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
@@ -507,6 +507,32 @@ class Simulation {
         }
        }
 
+        void handleLWUI(TTF_Font* font)
+        {
+
+        for( int i = 0; i < TOTAL_WINDOWS; ++i )
+        {
+            gWindows[ i ].LWUIHandler(font);
+        }
+
+        }
+
+        void handleLWFillScreen()
+        {
+            for( int i = 0; i < TOTAL_WINDOWS; ++i )
+            {
+                gWindows[ i ].LWFillScreen();
+            }
+        }
+
+        void handleLWRenderPresent()
+        {
+            for( int i = 0; i < TOTAL_WINDOWS; ++i )
+            {
+                gWindows[ i ].LWRenderPresent();
+            }
+        }
+
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
             TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
@@ -524,16 +550,18 @@ class Simulation {
                 }
             }
             while (!quit_flag) {
-
                 FillScreen(0,0,0,255);
+                handleLWFillScreen();
                 EventHandler();
-                ExtraWindowHandler();
-                UIHandler(Sans);
+                UIHandler(Sans,renderer);
+                handleLWUI(Sans);
+
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
                 RepelCircles(circles);
                 ProcessCircles();
                 DrawStaticObjects();
+                handleLWRenderPresent();
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
             }
