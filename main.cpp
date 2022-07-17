@@ -17,6 +17,7 @@
 #include "include/toggleButton.h"
 #include "include/displayPanel.h"
 #include "include/slider.h"
+#include "include/LWindow.h"
 
 using namespace std;
 
@@ -201,7 +202,7 @@ class Simulation {
             /* Creating window and renderer */
             srand (time(NULL));
             init_error = SDL_Init( SDL_INIT_VIDEO );
-            window = SDL_CreateWindow("Physics Engine",
+            window = SDL_CreateWindow("Physics Engine----",
                 SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -464,13 +465,96 @@ class Simulation {
             while (!quit_flag) {
                 FillScreen(25,25,25,255);
                 EventHandler();
+                
+
+            if( !init() )
+            {
+                printf( "Failed to initialize!\n" );
+            }
+            else
+            {
+                //Initialize the rest of the windows
+                for( int i = 1; i < TOTAL_WINDOWS; ++i )
+                {
+                    gWindows[ i ].init2();
+                    cout<<i;
+                }
+            }
+            while (!quit_flag) {
+
+                //Handle events on queue
+                while( SDL_PollEvent( &e ) != 0 )
+                {
+                //cout<<"HERE";
+                    //User requests quit
+                    if( e.type == SDL_QUIT )
+                    {
+                        quit_flag = true;
+                    }
+
+                    //Handle window events
+                    for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                    {
+                        gWindows[ i ].handleEvent( e );
+                    }
+
+                    //Pull up window
+                    if( e.type == SDL_KEYDOWN )
+                    {
+                        switch( e.key.keysym.sym )
+                        {
+                            case SDLK_1:
+                            gWindows[ 0 ].focus();
+                            break;
+
+                            case SDLK_2:
+                            gWindows[ 1 ].focus();
+                            break;
+
+                            case SDLK_3:
+                            gWindows[ 2 ].focus();
+                            break;
+                        }
+                    }
+                }
+
+                //Update all windows
+                for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                {
+                    gWindows[ i ].render();
+                }
+
+                //Check all windows
+                bool allWindowsClosed = true;
+                for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                {
+                    if( gWindows[ i ].isShown() )
+                    {
+                        allWindowsClosed = false;
+                        break;
+                    }
+                }
+
+                //Application closed all windows
+                if( allWindowsClosed )
+                {
+                    quit_flag = true;
+                }
+                FillScreen(0,0,0,255);
+                EventHandler();
                 UIHandler(Sans);
+                /* Only attract and repel each circle once */
+                AttractCircles(circles);
+                RepelCircles(circles);
                 ProcessCircles();
                 DrawStaticObjects();
                 SDL_RenderPresent(renderer);
                 SDL_Delay(1000 / FRAMERATE);
             }
+
+
             return 0;
+
         }
 
         void FillScreen(int r, int g, int b, int a){
@@ -501,8 +585,8 @@ class Simulation {
         //SDL_Renderer* renderer;
         SDL_Event e;
 
-        const int WIDTH = 800;
-        const int HEIGHT = 800;
+        const int WIDTH = 600;
+        const int HEIGHT = 500;
         const int FRAMERATE = 60;
 
         int init_error;
@@ -534,6 +618,47 @@ class Simulation {
         shapeFactory* shapeFact = new shapeFactory();
 };
 
+bool init()
+{
+	//Initialization flag
+	bool success = true;
+
+	//Initialize SDL
+	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+	{
+		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+		success = false;
+	}
+	else
+	{
+		//Set texture filtering to linear
+		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+		{
+			printf( "Warning: Linear texture filtering not enabled!" );
+		}
+
+		//Create window
+		if( !gWindows[ 0 ].init1() )
+		{
+			printf( "Window 0 could not be created!\n" );
+			success = false;
+		}
+	}
+
+	return success;
+}
+
+void close()
+{
+	//Destroy windows
+	for( int i = 0; i < TOTAL_WINDOWS; ++i )
+	{
+		gWindows[ i ].free();
+	}
+
+	//Quit SDL subsystems
+	SDL_Quit();
+}
 
 int WinMain () {
 
