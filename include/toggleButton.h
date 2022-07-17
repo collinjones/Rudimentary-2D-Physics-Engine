@@ -15,11 +15,11 @@ private:
     SDL_Color offColor;
     const char* offText;
     const char* onText;
-
+    int ID;
 public:
 
-    ToggleButton(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* str, const char* toggleStr) 
-    : Button(x, y, w, h, fColor, bColor, str) {
+    ToggleButton(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* str, const char* toggleStr,int myID)
+    : Button(x, y, w, h, fColor, bColor, str,myID) {
         activated = false;
         offColor = fColor;
         onColor.r = fColor.r + hoverOffset;
@@ -27,21 +27,25 @@ public:
         onColor.b = fColor.b + hoverOffset; 
         onText = str;
         offText = toggleStr;
+        ID = myID;
     }
 
-    void ProcessClick(float px, float py) {
+    int ProcessClick(float px, float py) {
         if (mouseOver) {
             if (!activated) {
                 cout << "clicked a toggle button ON" << endl;
                 SetClickedColor();
-                activated = true; 
+                activated = true;
+                return 0;
             }
             else {
                 cout << "clicked a toggle button OFF" << endl;
                 SetUnclickedColor();
                 activated = false;
+                return 1;
             }
         }
+        return -1;
     }
 
     void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font){
@@ -71,6 +75,10 @@ public:
         SDL_RenderDrawRect(renderer, &button);  
     }
 
+    int getId()
+    {
+    return ID;
+    }
     
 
 };

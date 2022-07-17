@@ -21,10 +21,12 @@ protected:
     bool mouseOver;
     const char* str;
     Text* text;
+    //id: 1 is gravity on off
+    int ID;
 
 public:
 
-    Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* s) {
+    Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* s,int myID) {
         button.x = x;
         button.y = y;
         button.w = w;
@@ -38,6 +40,7 @@ public:
         mouseOver = false;
         str = s;
         text = new Text(&button);
+        ID=myID;
     }
 
     void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
@@ -52,10 +55,11 @@ public:
         SDL_RenderDrawRect(renderer, &button); 
     }
 
-    void ProcessClick(float px, float py) {
+    int ProcessClick(float px, float py) {
         if (mouseOver) {
             cout << "clicked a regular button" << endl;
         }
+        return -1;
     }
 
     void MouseOverBehavior(SDL_Renderer* renderer, float px, float py) {
@@ -83,7 +87,9 @@ public:
         return false;
     }
 
-    
+    int getID(){
+    return ID;
+    }
 
 };
 
