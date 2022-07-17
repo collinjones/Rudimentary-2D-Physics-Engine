@@ -405,6 +405,29 @@ class Simulation {
                     KKeyPressed(e.key);
                     GKeyPressed(e.key);
                 }
+                //Handle window events
+                for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                {
+                    gWindows[ i ].handleEvent( e );
+                }
+                //Pull up window
+                if( e.type == SDL_KEYDOWN )
+                {
+                    switch( e.key.keysym.sym )
+                    {
+                        case SDLK_1:
+                        gWindows[ 0 ].focus();
+                        break;
+
+                        case SDLK_2:
+                        gWindows[ 1 ].focus();
+                        break;
+
+                        case SDLK_3:
+                        gWindows[ 2 ].focus();
+                        break;
+                    }
+                }
             }
 
             /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
@@ -458,14 +481,35 @@ class Simulation {
             }
         }
 
+        void ExtraWindowHandler()
+        {
+        //Update all windows
+        for( int i = 0; i < TOTAL_WINDOWS; ++i )
+        {
+            gWindows[ i ].render();
+        }
+
+        //Check all windows
+        bool allWindowsClosed = true;
+        for( int i = 0; i < TOTAL_WINDOWS; ++i )
+        {
+            if( gWindows[ i ].isShown() )
+            {
+                allWindowsClosed = false;
+                break;
+            }
+        }
+
+        //Application closed all windows
+        if( allWindowsClosed )
+        {
+            quit_flag = true;
+        }
+       }
+
         /* MAIN SIMULATION LOOP */
         int MainLoop() {
             TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
-            
-            while (!quit_flag) {
-                FillScreen(25,25,25,255);
-                EventHandler();
-                
 
             if( !init() )
             {
@@ -477,71 +521,13 @@ class Simulation {
                 for( int i = 1; i < TOTAL_WINDOWS; ++i )
                 {
                     gWindows[ i ].init2();
-                    cout<<i;
                 }
             }
             while (!quit_flag) {
 
-                //Handle events on queue
-                while( SDL_PollEvent( &e ) != 0 )
-                {
-                //cout<<"HERE";
-                    //User requests quit
-                    if( e.type == SDL_QUIT )
-                    {
-                        quit_flag = true;
-                    }
-
-                    //Handle window events
-                    for( int i = 0; i < TOTAL_WINDOWS; ++i )
-                    {
-                        gWindows[ i ].handleEvent( e );
-                    }
-
-                    //Pull up window
-                    if( e.type == SDL_KEYDOWN )
-                    {
-                        switch( e.key.keysym.sym )
-                        {
-                            case SDLK_1:
-                            gWindows[ 0 ].focus();
-                            break;
-
-                            case SDLK_2:
-                            gWindows[ 1 ].focus();
-                            break;
-
-                            case SDLK_3:
-                            gWindows[ 2 ].focus();
-                            break;
-                        }
-                    }
-                }
-
-                //Update all windows
-                for( int i = 0; i < TOTAL_WINDOWS; ++i )
-                {
-                    gWindows[ i ].render();
-                }
-
-                //Check all windows
-                bool allWindowsClosed = true;
-                for( int i = 0; i < TOTAL_WINDOWS; ++i )
-                {
-                    if( gWindows[ i ].isShown() )
-                    {
-                        allWindowsClosed = false;
-                        break;
-                    }
-                }
-
-                //Application closed all windows
-                if( allWindowsClosed )
-                {
-                    quit_flag = true;
-                }
                 FillScreen(0,0,0,255);
                 EventHandler();
+                ExtraWindowHandler();
                 UIHandler(Sans);
                 /* Only attract and repel each circle once */
                 AttractCircles(circles);
@@ -585,8 +571,8 @@ class Simulation {
         //SDL_Renderer* renderer;
         SDL_Event e;
 
-        const int WIDTH = 600;
-        const int HEIGHT = 500;
+        const int WIDTH = 750;
+        const int HEIGHT = 700;
         const int FRAMERATE = 60;
 
         int init_error;
