@@ -395,7 +395,9 @@ class Simulation {
             {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
+                SDL_SetWindowGrab(window, SDL_TRUE);
                 EventHandler(true,1);
+                SDL_SetWindowGrab(window, SDL_FALSE);
              }
 
             else if (type ==6)
