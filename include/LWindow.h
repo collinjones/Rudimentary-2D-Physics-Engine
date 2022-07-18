@@ -55,6 +55,7 @@ class LWindow
 		bool isShown();
 
         SDL_Renderer* getRenderer();
+        SDL_Window* getWindow();
         void LWUIHandler(TTF_Font* font);
         void LWRenderPresent();
         void LWFillScreen();
@@ -405,11 +406,11 @@ void LWindow::LWUIHandler(TTF_Font* font) {
     SDL_GetMouseState(&posX, &posY);
 
     for (int i = 0; i < (int) LWButtons.size(); i++) {
-      LWButtons[i]->Update(mRenderer, posX, posY, White, font);
+      LWButtons[i]->Update(mRenderer, posX, posY, White, font, mWindow);
     }
 
     for (int i = 0; i < (int) LWToggleButtons.size(); i++) {
-      LWToggleButtons[i]->Update(mRenderer, posX, posY, White, font);
+      LWToggleButtons[i]->Update(mRenderer, posX, posY, White, font, mWindow);
     }
 
 }
@@ -484,4 +485,7 @@ SDL_Renderer* LWindow::getRenderer()
 {
     return mRenderer;
 };
+SDL_Window* LWindow::getWindow() { 
+    return mWindow;
+}
  #endif
