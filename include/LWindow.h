@@ -139,6 +139,8 @@ bool LWindow::init1()
    			mShown = true;
 
             LWToggleButtons.push_back(new ToggleButton(50, 20, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF",-1));
+            SDL_SetWindowPosition(mWindow, 85,110);
+
    		}
    	}
    	else
@@ -181,6 +183,7 @@ bool LWindow::init2()
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add Normal Circle",2));
 			LWButtons.push_back(new Button(20, 50, 150, 25, c, c, "Add Attracter Circle",3));
 			LWButtons.push_back(new Button(20, 80, 150, 25, c, c, "Add Repeler Circle",4));
+			SDL_SetWindowPosition(mWindow, 85,280);
 		}
 	}
 	else
@@ -221,6 +224,7 @@ bool LWindow::init3()
 			//Flag as opened
 			mShown = true;
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add line",5));
+			SDL_SetWindowPosition(mWindow, 85,480);
 		}
 	}
 	else
@@ -261,6 +265,7 @@ bool LWindow::init4()
 			//Flag as opened
 			mShown = true;
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add box",6));
+			SDL_SetWindowPosition(mWindow, 85,600);
 		}
 	}
 	else
