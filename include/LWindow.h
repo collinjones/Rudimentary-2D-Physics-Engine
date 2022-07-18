@@ -20,7 +20,7 @@ const int SCREEN_WIDTH = 200;
 const int SCREEN_HEIGHT = 80;
 
 //Total windows
-const int TOTAL_WINDOWS = 2;
+const int TOTAL_WINDOWS = 3;
 
 class LWindow
 {
@@ -32,6 +32,7 @@ class LWindow
 		//1 for grav, 2 for circle, 3 for line, 4 for rect
         bool init1();
         bool init2();
+        bool init3();
 		//Handles window events
 		void handleEvent( SDL_Event& e );
 
@@ -150,7 +151,7 @@ bool LWindow::init1()
 bool LWindow::init2()
 {
 	//Create window
-	mWindow = SDL_CreateWindow( "Physics Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT+50, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+   	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT+50, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
     SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
 	if( mWindow != NULL )
 	{
@@ -179,6 +180,46 @@ bool LWindow::init2()
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add Normal Circle",2));
 			LWButtons.push_back(new Button(20, 50, 150, 25, c, c, "Add Attracter Circle",3));
 			LWButtons.push_back(new Button(20, 80, 150, 25, c, c, "Add Repeler Circle",4));
+		}
+	}
+	else
+	{
+		printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+	}
+
+	return mWindow != NULL && mRenderer != NULL;
+}
+
+bool LWindow::init3()
+{
+	//Create window
+   	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+    SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
+	if( mWindow != NULL )
+	{
+		mMouseFocus = true;
+		mKeyboardFocus = true;
+		mWidth = SCREEN_WIDTH;
+		mHeight = SCREEN_HEIGHT;
+
+		//Create renderer for window
+		mRenderer = SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+		if( mRenderer == NULL )
+		{
+			printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+			SDL_DestroyWindow( mWindow );
+			mWindow = NULL;
+		}
+		else
+		{
+			//Initialize renderer color
+			SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+			//Grab window identifier
+			mWindowID = SDL_GetWindowID( mWindow );
+			//Flag as opened
+			mShown = true;
+			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add line",5));
 		}
 	}
 	else

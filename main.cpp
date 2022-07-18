@@ -24,134 +24,134 @@ using namespace std;
 class Simulation {
     public:
 //0: grav on, 1: grav off, 2: add normal circle, 3: add attractor, 4: add repeler
-        void LeftClick(SDL_MouseButtonEvent& b) {
-            if(b.button == SDL_BUTTON_LEFT){
-                int posX;
-                int posY;
-                SDL_GetMouseState(&posX, &posY);
-
-                for (int i = 0; i < (int) buttons.size(); i++) {
-                    buttons[i]->ProcessClick(posX, posY,1);
-                }
-
-                for (int i = 0; i < (int) toggleButtons.size(); i++) {
-                    toggleButtons[i]->ProcessClick(posX, posY);
-                }
-
-                for (int i = 0; i < (int) sliders.size(); i++) {
-                    if (sliders[i]->mouseOver(posX, posY)){
-                        if(b.type == SDL_MOUSEBUTTONDOWN){
-                            leftButtonHeld = true;
-                        } 
-                    }
-                }
-            }
-        }
-
-        void RightClick(SDL_MouseButtonEvent& b) {
-            if(b.button == SDL_BUTTON_RIGHT){
-                int posX;
-                int posY;
-                SDL_GetMouseState(&posX, &posY);
-                emitters.push_back(shapeFact->createEmitter((double) posX, (double) posY));
-            }
-
-            // int posX;
-            // int posY;
-            // SDL_GetMouseState(&posX, &posY);
-            // SDL_Color color;
-            // color.r = rand() % 255 + 1;
-            // color.g = rand() % 255 + 1;
-            // color.b = rand() % 255 + 1;
-            // color.a = 255;
-            // circles.push_back(new Circle(Vec2(posX, posY), Vec2(0, 0), Vec2(0, 0), 3, color));
-        }
-
-        void GKeyPressed(SDL_KeyboardEvent& k) {
-            if(k.keysym.scancode == SDL_SCANCODE_G){
-                if(!gravOn) {
-                    gravity.setVec(0, 0.1);
-                    gravOn = true;
-                }
-                else{
-                    gravity.setVec(0, 0);
-                    gravOn = false;
-                }       
-            }
-        }
-
-        void PKeyPressed(SDL_KeyboardEvent& k) {
-            if(k.keysym.scancode == SDL_SCANCODE_P){
-                int posX;
-                int posY;
-                SDL_GetMouseState(&posX, &posY);
-                Vec2 pos(posX, posY);
-                pegs.push_back(shapeFact->createPeg(pos,3));
-            }
-        }
-
-        void RKeyHeld(SDL_KeyboardEvent& k) {
-            if (k.keysym.scancode == SDL_SCANCODE_R) {
-
-                if(!boxPointASelected) {
-                    SDL_GetMouseState(&boxPosX, &boxPosY);
-                    boxPointASelected = true;
-                }
-
-                else {
-                    int secondPosX;
-                    int secondPosY;
-                    int width;
-                    int height;
-                    SDL_GetMouseState(&secondPosX, &secondPosY);
-                    if(secondPosX < boxPosX) {
-                        width = boxPosX - secondPosX;
-                        boxPosX -= width;
-                    }
-                    else {
-                        width = secondPosX - boxPosX;
-                    }
-
-                    if(secondPosY < boxPosY) {
-                        height = boxPosY - secondPosY;
-                        boxPosY -= height;
-                    }
-                    else {
-                        height = secondPosY - boxPosY;
-                    }
-                    rectangles.push_back(shapeFact->createRectangle(boxPosX, boxPosY, width, height));
-                    boxPointASelected = false;
-                }
-            }
-        }
-
-        void AKeyPressed(SDL_KeyboardEvent& k) {
-                    if(k.keysym.scancode == SDL_SCANCODE_A){
-                        int posX;
-                        int posY;
-                        int random = rand()%6+3;
-                        SDL_GetMouseState(&posX, &posY);
-                        Vec2 vel(0,0);
-                        Vec2 pos(posX, posY);
-
-                        circles.push_back(shapeFact->createCircle(pos, vel, random,true));
-                    }
-                }
-
-        void KKeyPressed(SDL_KeyboardEvent& k)
-        {
-            if(k.keysym.scancode == SDL_SCANCODE_K)
-            {
-                int posX;
-                int posY;
-                int random = rand()%6+3;
-                SDL_GetMouseState(&posX, &posY);
-                Vec2 vel(0,0);
-                Vec2 pos(posX, posY);
-
-                circles.push_back(shapeFact->createCircle(pos, vel, random,false));
-            }
-        }
+//        void LeftClick(SDL_MouseButtonEvent& b) {
+//            if(b.button == SDL_BUTTON_LEFT){
+//                int posX;
+//                int posY;
+//                SDL_GetMouseState(&posX, &posY);
+//
+//                for (int i = 0; i < (int) buttons.size(); i++) {
+//                    buttons[i]->ProcessClick(posX, posY,1);
+//                }
+//
+//                for (int i = 0; i < (int) toggleButtons.size(); i++) {
+//                    toggleButtons[i]->ProcessClick(posX, posY);
+//                }
+//
+//                for (int i = 0; i < (int) sliders.size(); i++) {
+//                    if (sliders[i]->mouseOver(posX, posY)){
+//                        if(b.type == SDL_MOUSEBUTTONDOWN){
+//                            leftButtonHeld = true;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        void RightClick(SDL_MouseButtonEvent& b) {
+//            if(b.button == SDL_BUTTON_RIGHT){
+//                int posX;
+//                int posY;
+//                SDL_GetMouseState(&posX, &posY);
+//                emitters.push_back(shapeFact->createEmitter((double) posX, (double) posY));
+//            }
+//
+//            // int posX;
+//            // int posY;
+//            // SDL_GetMouseState(&posX, &posY);
+//            // SDL_Color color;
+//            // color.r = rand() % 255 + 1;
+//            // color.g = rand() % 255 + 1;
+//            // color.b = rand() % 255 + 1;
+//            // color.a = 255;
+//            // circles.push_back(new Circle(Vec2(posX, posY), Vec2(0, 0), Vec2(0, 0), 3, color));
+//        }
+//
+//        void GKeyPressed(SDL_KeyboardEvent& k) {
+//            if(k.keysym.scancode == SDL_SCANCODE_G){
+//                if(!gravOn) {
+//                    gravity.setVec(0, 0.1);
+//                    gravOn = true;
+//                }
+//                else{
+//                    gravity.setVec(0, 0);
+//                    gravOn = false;
+//                }
+//            }
+//        }
+//
+//        void PKeyPressed(SDL_KeyboardEvent& k) {
+//            if(k.keysym.scancode == SDL_SCANCODE_P){
+//                int posX;
+//                int posY;
+//                SDL_GetMouseState(&posX, &posY);
+//                Vec2 pos(posX, posY);
+//                pegs.push_back(shapeFact->createPeg(pos,3));
+//            }
+//        }
+//
+//        void RKeyHeld(SDL_KeyboardEvent& k) {
+//            if (k.keysym.scancode == SDL_SCANCODE_R) {
+//
+//                if(!boxPointASelected) {
+//                    SDL_GetMouseState(&boxPosX, &boxPosY);
+//                    boxPointASelected = true;
+//                }
+//
+//                else {
+//                    int secondPosX;
+//                    int secondPosY;
+//                    int width;
+//                    int height;
+//                    SDL_GetMouseState(&secondPosX, &secondPosY);
+//                    if(secondPosX < boxPosX) {
+//                        width = boxPosX - secondPosX;
+//                        boxPosX -= width;
+//                    }
+//                    else {
+//                        width = secondPosX - boxPosX;
+//                    }
+//
+//                    if(secondPosY < boxPosY) {
+//                        height = boxPosY - secondPosY;
+//                        boxPosY -= height;
+//                    }
+//                    else {
+//                        height = secondPosY - boxPosY;
+//                    }
+//                    rectangles.push_back(shapeFact->createRectangle(boxPosX, boxPosY, width, height));
+//                    boxPointASelected = false;
+//                }
+//            }
+//        }
+//
+//        void AKeyPressed(SDL_KeyboardEvent& k) {
+//                    if(k.keysym.scancode == SDL_SCANCODE_A){
+//                        int posX;
+//                        int posY;
+//                        int random = rand()%6+3;
+//                        SDL_GetMouseState(&posX, &posY);
+//                        Vec2 vel(0,0);
+//                        Vec2 pos(posX, posY);
+//
+//                        circles.push_back(shapeFact->createCircle(pos, vel, random,true));
+//                    }
+//                }
+//
+//        void KKeyPressed(SDL_KeyboardEvent& k)
+//        {
+//            if(k.keysym.scancode == SDL_SCANCODE_K)
+//            {
+//                int posX;
+//                int posY;
+//                int random = rand()%6+3;
+//                SDL_GetMouseState(&posX, &posY);
+//                Vec2 vel(0,0);
+//                Vec2 pos(posX, posY);
+//
+//                circles.push_back(shapeFact->createCircle(pos, vel, random,false));
+//            }
+//        }
 
         void GeneratePachinko() {
             for (int y = 2; y < 12; y+= 1) {
@@ -428,23 +428,23 @@ class Simulation {
                 if (e.type == SDL_QUIT){
                     quit_flag = true;
                 }
-                if (e.type == SDL_MOUSEBUTTONDOWN) {
-                    LeftClick(e.button);
-                    RightClick(e.button);
-                }
-                if (e.type == SDL_MOUSEBUTTONUP) {
-                    leftButtonHeld = false;
-                    for (int i = 0; i < (int) sliders.size(); i++) {
-                        sliders[i]->SetClicked(false);
-                    }
-                }
-                if (e.type == SDL_KEYDOWN) {
-                    RKeyHeld(e.key);
-                    PKeyPressed(e.key);
-                    AKeyPressed(e.key);
-                    KKeyPressed(e.key);
-                    GKeyPressed(e.key);
-                }
+//                if (e.type == SDL_MOUSEBUTTONDOWN) {
+//                    LeftClick(e.button);
+//                    RightClick(e.button);
+//                }
+//                if (e.type == SDL_MOUSEBUTTONUP) {
+//                    leftButtonHeld = false;
+//                    for (int i = 0; i < (int) sliders.size(); i++) {
+//                        sliders[i]->SetClicked(false);
+//                    }
+//                }
+//                if (e.type == SDL_KEYDOWN) {
+//                    RKeyHeld(e.key);
+//                    PKeyPressed(e.key);
+//                    AKeyPressed(e.key);
+//                    KKeyPressed(e.key);
+//                    GKeyPressed(e.key);
+//                }
                 //Handle window events
                 for( int i = 0; i < TOTAL_WINDOWS; ++i )
                 {
@@ -588,6 +588,7 @@ class Simulation {
             else
             {
                 gWindows[ 1 ].init2();
+                gWindows[2].init3();
             }
             while (!quit_flag) {
                 FillScreen(0,0,0,255);

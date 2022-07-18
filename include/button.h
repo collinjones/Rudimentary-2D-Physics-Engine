@@ -60,17 +60,24 @@ public:
                 cout << "clicked the normal circle button" << endl;
                 return 2;
             }
-            if (whichButton ==3)
+            else if (whichButton ==3)
             {
                 cout << "clicked the attracter circle button" << endl;
                 return 3;
             }
-            if (whichButton ==4)
+            else if (whichButton ==4)
             {
                 cout << "clicked the repeler circle button" << endl;
                 return 4;
             }
-
+            else if (whichButton ==5)
+            {
+                cout << "clicked the add line button" << endl;
+                return 5;
+            }
+            else
+            {;
+            }
         }
         return -1;
     }
