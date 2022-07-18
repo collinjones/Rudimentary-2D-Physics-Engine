@@ -23,7 +23,7 @@ using namespace std;
 
 class Simulation {
     public:
-
+//0: grav on, 1: grav off, 2: add normal circle, 3: add attractor, 4: add repeler
         void LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
                 int posX;
@@ -31,7 +31,7 @@ class Simulation {
                 SDL_GetMouseState(&posX, &posY);
 
                 for (int i = 0; i < (int) buttons.size(); i++) {
-                    buttons[i]->ProcessClick(posX, posY);
+                    buttons[i]->ProcessClick(posX, posY,1);
                 }
 
                 for (int i = 0; i < (int) toggleButtons.size(); i++) {
@@ -394,6 +394,30 @@ class Simulation {
                 gravity.setVec(0, 0);
                 gravOn = false;
             }
+            else if (type ==2)
+            {
+                int random = rand()%3+3;
+                Vec2 vel(0,0);
+                Vec2 pos(200, 200);
+
+                circles.push_back(shapeFact->createCircle(pos, vel, random));
+            }
+            else if (type ==3)
+            {
+                int random = rand()%3+3;
+                Vec2 vel(0,0);
+                Vec2 pos(200, 200);
+
+                circles.push_back(shapeFact->createCircle(pos, vel, random,true));
+            }
+            else if (type ==4)
+            {
+                int random = rand()%3+3;
+                Vec2 vel(0,0);
+                Vec2 pos(200, 200);
+
+                circles.push_back(shapeFact->createCircle(pos, vel, random,false));
+            }
             else{
             ;
             }
@@ -563,11 +587,7 @@ class Simulation {
             }
             else
             {
-                //Initialize the rest of the windows
-                for( int i = 1; i < TOTAL_WINDOWS; ++i )
-                {
-                    gWindows[ i ].init2();
-                }
+                gWindows[ 1 ].init2();
             }
             while (!quit_flag) {
                 FillScreen(0,0,0,255);

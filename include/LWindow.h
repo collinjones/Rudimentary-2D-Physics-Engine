@@ -20,7 +20,7 @@ const int SCREEN_WIDTH = 200;
 const int SCREEN_HEIGHT = 80;
 
 //Total windows
-const int TOTAL_WINDOWS = 1;
+const int TOTAL_WINDOWS = 2;
 
 class LWindow
 {
@@ -29,7 +29,7 @@ class LWindow
 		LWindow();
 
 		//Creates window
-		//bool init();
+		//1 for grav, 2 for circle, 3 for line, 4 for rect
         bool init1();
         bool init2();
 		//Handles window events
@@ -136,7 +136,7 @@ bool LWindow::init1()
    			//Flag as opened
    			mShown = true;
 
-            LWToggleButtons.push_back(new ToggleButton(50, 50, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF",1));
+            LWToggleButtons.push_back(new ToggleButton(50, 20, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF",-1));
    		}
    	}
    	else
@@ -150,7 +150,8 @@ bool LWindow::init1()
 bool LWindow::init2()
 {
 	//Create window
-	mWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+	mWindow = SDL_CreateWindow( "Physics Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT+50, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+    SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
 	if( mWindow != NULL )
 	{
 		mMouseFocus = true;
@@ -169,12 +170,15 @@ bool LWindow::init2()
 		else
 		{
 			//Initialize renderer color
-			SDL_SetRenderDrawColor( mRenderer, 0, 0, 0, 0xFF );
+			SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 			//Grab window identifier
 			mWindowID = SDL_GetWindowID( mWindow );
 			//Flag as opened
 			mShown = true;
+			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add Normal Circle",2));
+			LWButtons.push_back(new Button(20, 50, 150, 25, c, c, "Add Attracter Circle",3));
+			LWButtons.push_back(new Button(20, 80, 150, 25, c, c, "Add Repeler Circle",4));
 		}
 	}
 	else
@@ -192,7 +196,7 @@ int LWindow:: LWLeftClick(SDL_MouseButtonEvent& b) {
       SDL_GetMouseState(&posX, &posY);
 
       for (int i = 0; i < (int) LWButtons.size(); i++) {
-          int temp = LWButtons[i]->ProcessClick(posX, posY);
+          int temp = LWButtons[i]->ProcessClick(posX, posY, LWButtons[i]->getID());
           if (temp!=-1)
           {
             return temp;

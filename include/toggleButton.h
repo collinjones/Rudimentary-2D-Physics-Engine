@@ -15,11 +15,11 @@ private:
     SDL_Color offColor;
     const char* offText;
     const char* onText;
-    int ID;
+    int id;
 public:
 
-    ToggleButton(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* str, const char* toggleStr,int myID)
-    : Button(x, y, w, h, fColor, bColor, str,myID) {
+    ToggleButton(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* str, const char* toggleStr, int myID)
+    : Button(x, y, w, h, fColor, bColor, str, myID) {
         activated = false;
         offColor = fColor;
         onColor.r = fColor.r + hoverOffset;
@@ -27,7 +27,7 @@ public:
         onColor.b = fColor.b + hoverOffset; 
         onText = str;
         offText = toggleStr;
-        ID = myID;
+        id = myID;
     }
 
     int ProcessClick(float px, float py) {
@@ -75,12 +75,10 @@ public:
         SDL_RenderDrawRect(renderer, &button);  
     }
 
-    int getId()
+    int getID()
     {
-    return ID;
+        return id;
     }
-    
-
 };
 
 #endif
