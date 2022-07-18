@@ -49,61 +49,6 @@ class Simulation {
             }
             return true;
         }
-//        void LeftClick(SDL_MouseButtonEvent& b) {
-//            if(b.button == SDL_BUTTON_LEFT){
-//                int posX;
-//                int posY;
-//                SDL_GetMouseState(&posX, &posY);
-//
-//                for (int i = 0; i < (int) buttons.size(); i++) {
-//                    buttons[i]->ProcessClick(posX, posY,1);
-//                }
-//
-//                for (int i = 0; i < (int) toggleButtons.size(); i++) {
-//                    toggleButtons[i]->ProcessClick(posX, posY);
-//                }
-//
-//                for (int i = 0; i < (int) sliders.size(); i++) {
-//                    if (sliders[i]->mouseOver(posX, posY)){
-//                        if(b.type == SDL_MOUSEBUTTONDOWN){
-//                            leftButtonHeld = true;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        void RightClick(SDL_MouseButtonEvent& b) {
-//            if(b.button == SDL_BUTTON_RIGHT){
-//                int posX;
-//                int posY;
-//                SDL_GetMouseState(&posX, &posY);
-//                emitters.push_back(shapeFact->createEmitter((double) posX, (double) posY));
-//            }
-//
-//            // int posX;
-//            // int posY;
-//            // SDL_GetMouseState(&posX, &posY);
-//            // SDL_Color color;
-//            // color.r = rand() % 255 + 1;
-//            // color.g = rand() % 255 + 1;
-//            // color.b = rand() % 255 + 1;
-//            // color.a = 255;
-//            // circles.push_back(new Circle(Vec2(posX, posY), Vec2(0, 0), Vec2(0, 0), 3, color));
-//        }
-//
-//        void GKeyPressed(SDL_KeyboardEvent& k) {
-//            if(k.keysym.scancode == SDL_SCANCODE_G){
-//                if(!gravOn) {
-//                    gravity.setVec(0, 0.1);
-//                    gravOn = true;
-//                }
-//                else{
-//                    gravity.setVec(0, 0);
-//                    gravOn = false;
-//                }
-//            }
-//        }
 //
 //        void PKeyPressed(SDL_KeyboardEvent& k) {
 //            if(k.keysym.scancode == SDL_SCANCODE_P){
@@ -115,40 +60,43 @@ class Simulation {
 //            }
 //        }
 //
-//        void RKeyHeld(SDL_KeyboardEvent& k) {
-//            if (k.keysym.scancode == SDL_SCANCODE_R) {
-//
-//                if(!boxPointASelected) {
-//                    SDL_GetMouseState(&boxPosX, &boxPosY);
-//                    boxPointASelected = true;
-//                }
-//
-//                else {
-//                    int secondPosX;
-//                    int secondPosY;
-//                    int width;
-//                    int height;
-//                    SDL_GetMouseState(&secondPosX, &secondPosY);
-//                    if(secondPosX < boxPosX) {
-//                        width = boxPosX - secondPosX;
-//                        boxPosX -= width;
-//                    }
-//                    else {
-//                        width = secondPosX - boxPosX;
-//                    }
-//
-//                    if(secondPosY < boxPosY) {
-//                        height = boxPosY - secondPosY;
-//                        boxPosY -= height;
-//                    }
-//                    else {
-//                        height = secondPosY - boxPosY;
-//                    }
-//                    rectangles.push_back(shapeFact->createRectangle(boxPosX, boxPosY, width, height));
-//                    boxPointASelected = false;
-//                }
-//            }
-//        }
+        bool rectLeftClick(SDL_MouseButtonEvent& b) {
+             if(b.button == SDL_BUTTON_LEFT) {
+
+                if(!boxPointASelected) {
+                    SDL_GetMouseState(&boxPosX, &boxPosY);
+                    boxPointASelected = true;
+                    return true;
+                }
+
+                else {
+                    int secondPosX;
+                    int secondPosY;
+                    int width;
+                    int height;
+                    SDL_GetMouseState(&secondPosX, &secondPosY);
+                    if(secondPosX < boxPosX) {
+                        width = boxPosX - secondPosX;
+                        boxPosX -= width;
+                    }
+                    else {
+                        width = secondPosX - boxPosX;
+                    }
+
+                    if(secondPosY < boxPosY) {
+                        height = boxPosY - secondPosY;
+                        boxPosY -= height;
+                    }
+                    else {
+                        height = secondPosY - boxPosY;
+                    }
+                    rectangles.push_back(shapeFact->createRectangle(boxPosX, boxPosY, width, height));
+                    boxPointASelected = false;
+                    return false;
+                }
+            }
+            return true;
+        }
 //
 //        void AKeyPressed(SDL_KeyboardEvent& k) {
 //                    if(k.keysym.scancode == SDL_SCANCODE_A){
@@ -447,35 +395,46 @@ class Simulation {
             {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
-                EventHandler(true);
+                EventHandler(true,1);
              }
 
             else if (type ==6)
             {
-
-                /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
-                if (boxPointASelected) {
-                    DrawBoxOutline();
-                }
+                SDL_ShowWindow( window );
+                SDL_RaiseWindow( window );
+                EventHandler(true,2);
             }
             else{
             ;
             }
         }
 
-        void EventHandler(bool drawOnMain) {
+        void EventHandler(bool drawOnMain, int boxOrLine) {
             /* Check for events */
-            if (drawOnMain)
+            if (drawOnMain && boxOrLine == 1)
             {
             bool loop= true;
                 while(loop)
                 {
                     while (SDL_PollEvent(&e)){
-                    //cout<<"here";
                         if (e.type == SDL_MOUSEBUTTONDOWN) {
-                        //cout << "in" << endl;
                             loop = LeftClick(e.button);
-                            //drawOnMain = false;
+                        }
+                    }
+                }
+            }
+            if (drawOnMain && boxOrLine == 2)
+            {
+            bool loop= true;
+                while(loop)
+                {
+                    while (SDL_PollEvent(&e)){
+                        if (e.type == SDL_MOUSEBUTTONDOWN) {
+                            loop = rectLeftClick(e.button);
+                            /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
+                            if (boxPointASelected) {
+                                DrawBoxOutline();
+                            }
                         }
                     }
                 }
@@ -484,9 +443,6 @@ class Simulation {
                 if (e.type == SDL_QUIT){
                     quit_flag = true;
                 }
-//                if (e.type == SDL_KEYDOWN) {
-//                    RKeyHeld(e.key);
-//                }
                 //Handle window events
                 for( int i = 0; i < TOTAL_WINDOWS; ++i )
                 {
@@ -583,11 +539,12 @@ class Simulation {
             {
                 gWindows[ 1 ].init2();
                 gWindows[2].init3();
+                gWindows[3].init4();
             }
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
                 handleLWFillScreen();
-                EventHandler(false);
+                EventHandler(false,-1);
                 UIHandler(Sans,renderer);
                 handleLWUI(Sans);
 

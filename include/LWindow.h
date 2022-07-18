@@ -20,7 +20,7 @@ const int SCREEN_WIDTH = 200;
 const int SCREEN_HEIGHT = 80;
 
 //Total windows
-const int TOTAL_WINDOWS = 3;
+const int TOTAL_WINDOWS = 4;
 
 class LWindow
 {
@@ -33,6 +33,7 @@ class LWindow
         bool init1();
         bool init2();
         bool init3();
+        bool init4();
 		//Handles window events
 		void handleEvent( SDL_Event& e );
 
@@ -229,7 +230,7 @@ bool LWindow::init3()
 
 	return mWindow != NULL && mRenderer != NULL;
 }
-/*
+
 bool LWindow::init4()
 {
 	//Create window
@@ -269,7 +270,7 @@ bool LWindow::init4()
 
 	return mWindow != NULL && mRenderer != NULL;
 }
-*/
+
 int LWindow:: LWLeftClick(SDL_MouseButtonEvent& b) {
   if(b.button == SDL_BUTTON_LEFT){
       int posX;

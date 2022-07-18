@@ -75,6 +75,11 @@ public:
                 cout << "clicked the add line button" << endl;
                 return 5;
             }
+            else if (whichButton ==6)
+            {
+                cout << "clicked the add box button" << endl;
+                return 6;
+            }
             else
             {;
             }
