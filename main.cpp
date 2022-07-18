@@ -511,7 +511,7 @@ class Simulation {
 
             for( int i = 0; i < TOTAL_WINDOWS; ++i )
             {
-                gWindows[ i ].LWUIHandler(font, currentFocus);
+                gWindows[ i ].LWUIHandler(font);
             }
 
         }

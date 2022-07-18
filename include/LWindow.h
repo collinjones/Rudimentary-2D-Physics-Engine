@@ -58,7 +58,7 @@ class LWindow
 
         SDL_Renderer* getRenderer();
         SDL_Window* getWindow();
-        void LWUIHandler(TTF_Font* font, SDL_Window* currentWin);
+        void LWUIHandler(TTF_Font* font);
         void LWRenderPresent();
         void LWFillScreen();
         int LWLeftClick(SDL_MouseButtonEvent& b);
@@ -401,7 +401,7 @@ void LWindow::handleEvent( SDL_Event& e )
 	}
 }
 
-void LWindow::LWUIHandler(TTF_Font* font, SDL_Window* currentWin) {
+void LWindow::LWUIHandler(TTF_Font* font) {
     SDL_Color White = {255, 255, 255};
     int posX;
     int posY;

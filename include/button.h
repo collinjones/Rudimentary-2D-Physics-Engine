@@ -91,7 +91,6 @@ public:
 
     void MouseOverBehavior(SDL_Renderer* renderer, float px, float py, SDL_Window* currentWin) {
         if (IsMouseOver(px, py) && SDL_GetMouseFocus() == currentWin) {
-            cout << "Drawing hover state" << endl;
             Draw(renderer, hoverColor.r, hoverColor.g, hoverColor.b);
         }
         else {
