@@ -326,11 +326,11 @@ class Simulation {
             Slider* sliderRef;
 
             for (int i = 0; i < (int) buttons.size(); i++) {
-                buttons[i]->Update(cRenderer, posX, posY, White, font);
+                buttons[i]->Update(cRenderer, posX, posY, White, font, SDL_GetMouseFocus());
             }
 
             for (int i = 0; i < (int) toggleButtons.size(); i++) {
-                toggleButtons[i]->Update(cRenderer, posX, posY, White, font);
+                toggleButtons[i]->Update(cRenderer, posX, posY, White, font, SDL_GetMouseFocus());
             }
 
             for (int i = 0; i < (int) sliders.size(); i++) {
@@ -504,12 +504,15 @@ class Simulation {
         }
 
         void handleLWUI(TTF_Font* font)
-        {
+        {   
+            SDL_Window * currentFocus = SDL_GetMouseFocus();
+            SDL_RaiseWindow(currentFocus);
 
-        for( int i = 0; i < TOTAL_WINDOWS; ++i )
-        {
-            gWindows[ i ].LWUIHandler(font);
-        }
+
+            for( int i = 0; i < TOTAL_WINDOWS; ++i )
+            {
+                gWindows[ i ].LWUIHandler(font, currentFocus);
+            }
 
         }
 
@@ -547,7 +550,7 @@ class Simulation {
                 FillScreen(0,0,0,255);
                 handleLWFillScreen();
                 EventHandler(false,-1);
-                UIHandler(Sans,renderer);
+                //UIHandler(Sans,renderer);
                 handleLWUI(Sans);
 
                 /* Only attract and repel each circle once */

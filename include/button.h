@@ -22,6 +22,8 @@ protected:
     const char* str;
     Text* text;
     int id;
+
+    
 public:
 
     Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* s, int myID) {
@@ -41,8 +43,8 @@ public:
         id = myID;
     }
 
-    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font) {
-        MouseOverBehavior(renderer, mx, my);
+    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font, SDL_Window* currentWin) {
+        MouseOverBehavior(renderer, mx, my, currentWin);
         text->Render(renderer, textColor, font, str);
     }
 
@@ -87,14 +89,12 @@ public:
         return -1;
     }
 
-    void MouseOverBehavior(SDL_Renderer* renderer, float px, float py) {
-    //made it here constantly. Believe the button location is there, just can not see the button
-        if (IsMouseOver(px, py)) {
-         //cout<< "here2";
+    void MouseOverBehavior(SDL_Renderer* renderer, float px, float py, SDL_Window* currentWin) {
+        if (IsMouseOver(px, py) && SDL_GetMouseFocus() == currentWin) {
+            cout << "Drawing hover state" << endl;
             Draw(renderer, hoverColor.r, hoverColor.g, hoverColor.b);
         }
         else {
-        //cout<<"---------";
             Draw(renderer, fillColor.r, fillColor.g, fillColor.b);
         }
     }

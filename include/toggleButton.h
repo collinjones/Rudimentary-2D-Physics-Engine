@@ -48,9 +48,9 @@ public:
         return -1;
     }
 
-    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font){
+    void Update(SDL_Renderer* renderer, int mx, int my, SDL_Color textColor, TTF_Font* font, SDL_Window* currentWin){
         //made it here constantly
-        MouseOverBehavior(renderer, mx, my);
+        MouseOverBehavior(renderer, mx, my, currentWin);
        //made it here constantly
         if (!activated) {
             text->Render(renderer, textColor, font, offText);
