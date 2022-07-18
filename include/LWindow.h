@@ -229,7 +229,47 @@ bool LWindow::init3()
 
 	return mWindow != NULL && mRenderer != NULL;
 }
+/*
+bool LWindow::init4()
+{
+	//Create window
+   	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+    SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
+	if( mWindow != NULL )
+	{
+		mMouseFocus = true;
+		mKeyboardFocus = true;
+		mWidth = SCREEN_WIDTH;
+		mHeight = SCREEN_HEIGHT;
 
+		//Create renderer for window
+		mRenderer = SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+		if( mRenderer == NULL )
+		{
+			printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+			SDL_DestroyWindow( mWindow );
+			mWindow = NULL;
+		}
+		else
+		{
+			//Initialize renderer color
+			SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+			//Grab window identifier
+			mWindowID = SDL_GetWindowID( mWindow );
+			//Flag as opened
+			mShown = true;
+			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add box",6));
+		}
+	}
+	else
+	{
+		printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+	}
+
+	return mWindow != NULL && mRenderer != NULL;
+}
+*/
 int LWindow:: LWLeftClick(SDL_MouseButtonEvent& b) {
   if(b.button == SDL_BUTTON_LEFT){
       int posX;

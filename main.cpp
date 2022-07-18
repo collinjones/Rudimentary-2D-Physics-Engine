@@ -24,6 +24,31 @@ using namespace std;
 class Simulation {
     public:
 //0: grav on, 1: grav off, 2: add normal circle, 3: add attractor, 4: add repeler
+        bool LeftClick(SDL_MouseButtonEvent& b) {
+            if(b.button == SDL_BUTTON_LEFT){
+                if(!linePointASelected) {
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    pA.setVec(posX, posY);
+                    linePointASelected = true;
+                    return true;
+                }
+                else {
+                    int posX;
+                    int posY;
+                    SDL_GetMouseState(&posX, &posY);
+                    if(posX != pA.getX() && posY != pA.getY()) {
+                        pB.setVec(posX, posY);
+                        boundaries.push_back(new Boundary(pA, pB));
+                        linePointASelected = false;
+                        return false;
+                    }
+
+                }
+            }
+            return true;
+        }
 //        void LeftClick(SDL_MouseButtonEvent& b) {
 //            if(b.button == SDL_BUTTON_LEFT){
 //                int posX;
@@ -418,32 +443,49 @@ class Simulation {
 
                 circles.push_back(shapeFact->createCircle(pos, vel, random,false));
             }
+            else if (type ==5)
+            {
+                SDL_ShowWindow( window );
+                SDL_RaiseWindow( window );
+                EventHandler(true);
+             }
+
+            else if (type ==6)
+            {
+
+                /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
+                if (boxPointASelected) {
+                    DrawBoxOutline();
+                }
+            }
             else{
             ;
             }
         }
-        void EventHandler() {
+
+        void EventHandler(bool drawOnMain) {
             /* Check for events */
+            if (drawOnMain)
+            {
+            bool loop= true;
+                while(loop)
+                {
+                    while (SDL_PollEvent(&e)){
+                    //cout<<"here";
+                        if (e.type == SDL_MOUSEBUTTONDOWN) {
+                        //cout << "in" << endl;
+                            loop = LeftClick(e.button);
+                            //drawOnMain = false;
+                        }
+                    }
+                }
+            }
             while (SDL_PollEvent(&e)){
                 if (e.type == SDL_QUIT){
                     quit_flag = true;
                 }
-//                if (e.type == SDL_MOUSEBUTTONDOWN) {
-//                    LeftClick(e.button);
-//                    RightClick(e.button);
-//                }
-//                if (e.type == SDL_MOUSEBUTTONUP) {
-//                    leftButtonHeld = false;
-//                    for (int i = 0; i < (int) sliders.size(); i++) {
-//                        sliders[i]->SetClicked(false);
-//                    }
-//                }
 //                if (e.type == SDL_KEYDOWN) {
 //                    RKeyHeld(e.key);
-//                    PKeyPressed(e.key);
-//                    AKeyPressed(e.key);
-//                    KKeyPressed(e.key);
-//                    GKeyPressed(e.key);
 //                }
                 //Handle window events
                 for( int i = 0; i < TOTAL_WINDOWS; ++i )
@@ -453,29 +495,8 @@ class Simulation {
                     eventHappened = gWindows[i].handleButtonClick(e);
                     buttonClicked(eventHappened);
                 }
-                //Pull up window
-//                if( e.type == SDL_KEYDOWN )
-//                {
-//                    switch( e.key.keysym.sym )
-//                    {
-//                        case SDLK_1:
-//                        gWindows[ 0 ].focus();
-//                        break;
-//
-//                        case SDLK_2:
-//                        gWindows[ 1 ].focus();
-//                        break;
-//
-//                        case SDLK_3:
-//                        gWindows[ 2 ].focus();
-//                        break;
-//                    }
-//                }
-            }
 
-            /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
-            if (boxPointASelected) {
-                DrawBoxOutline();
+
             }
         }
 
@@ -524,33 +545,6 @@ class Simulation {
             }
         }
 
-//        void ExtraWindowHandler()
-//        {
-//        //Update all windows
-//        for( int i = 0; i < TOTAL_WINDOWS; ++i )
-//        {
-//            gWindows[ i ].LWFillScreen();
-//            gWindows[ i ].LWRenderPresent();
-//        }
-//
-//        //Check all windows
-//        bool allWindowsClosed = true;
-//        for( int i = 0; i < TOTAL_WINDOWS; ++i )
-//        {
-//            if( gWindows[ i ].isShown() )
-//            {
-//                allWindowsClosed = false;
-//                break;
-//            }
-//        }
-//
-//        //Application closed all windows
-//        if( allWindowsClosed )
-//        {
-//            quit_flag = true;
-//        }
-//       }
-
         void handleLWUI(TTF_Font* font)
         {
 
@@ -593,7 +587,7 @@ class Simulation {
             while (!quit_flag) {
                 FillScreen(0,0,0,255);
                 handleLWFillScreen();
-                EventHandler();
+                EventHandler(false);
                 UIHandler(Sans,renderer);
                 handleLWUI(Sans);
 
