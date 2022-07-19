@@ -13,8 +13,7 @@
 #include "displayPanel.h"
 #include "slider.h"
 #include "button.h"
-#include "Subject.h"
-
+//#include "Subject.h"
 //Screen dimension constants
 const int SCREEN_WIDTH = 200;
 const int SCREEN_HEIGHT = 80;
@@ -123,6 +122,7 @@ bool LWindow::init1()
 
    		//Create renderer for window
    		mRenderer = SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED );
+
    		if( mRenderer == NULL )
    		{
    			printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );

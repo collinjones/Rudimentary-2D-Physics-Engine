@@ -22,9 +22,7 @@
 #include "displayPanel.h"
 #include "slider.h"
 #include "LWindow.h"
-//#include "Controller.h"
-//#include "ConcreteCommands.h"
-//#include "Subject.h"
+#include "Subject.h"
 
 using namespace std;
 
@@ -170,6 +168,8 @@ class Simulation {
 
             TTF_Init();  /* Init TrueType Fonts */
 
+            sub = new Subject();
+            sub->Attach(Logger::getInstance());
             /* Gravity off at startup */
             gravOn = false;
             gravity.setVec(0, 0.0);
@@ -406,7 +406,7 @@ class Simulation {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
                 SDL_SetWindowGrab(window, SDL_TRUE);
-                EventHandler(true,1,sim);
+                EventHandler(true,1,sim,sub);
                 SDL_SetWindowGrab(window, SDL_FALSE);
              }
 
@@ -414,7 +414,7 @@ class Simulation {
             {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
-                EventHandler(true,2,sim);
+                EventHandler(true,2,sim,sub);
             }
             else{
             ;
@@ -422,11 +422,12 @@ class Simulation {
         }
 
         //destroyer called here after leaving event handler, but why
-        void EventHandler(bool drawOnMain, int boxOrLine, Simulation sim) {
+        void EventHandler(bool drawOnMain, int boxOrLine, Simulation sim, Subject* sub) {
             /* Check for events */
 
             if (drawOnMain && boxOrLine == 1)
             {
+                sub->Notify("draw a line on the main screen, double click the first point of the line, then click the endpoint of the line");
                 bool loop= true;
                 while(loop)
                 {
@@ -462,7 +463,6 @@ class Simulation {
                 //Handle window events
                 for( int i = 0; i < TOTAL_WINDOWS; ++i )
                 {
-
                     int eventHappened = -1;
                     gWindows[ i ].handleEvent( e );
                     eventHappened = gWindows[i].handleButtonClick(e);
@@ -564,7 +564,7 @@ class Simulation {
 
                 FillScreen(0,0,0,255);
                 handleLWFillScreen();
-                EventHandler(false,-1, sim);
+                EventHandler(false,-1, sim,sub);
                 //UIHandler(Sans,renderer);
 
                 handleLWUI(Sans);
@@ -627,6 +627,8 @@ class Simulation {
         }
 
     private:
+       Subject* sub;
+
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
         //SDL_Renderer* renderer;

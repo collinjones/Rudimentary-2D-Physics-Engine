@@ -10,13 +10,13 @@
 
 class Subject {
     public:
-        vector<Logger*> listOfSubs;
-        void Attach(Logger *loggers);
+        vector<Logger> listOfSubs;
+        void Attach(Logger loggers);
         //void Detach(Logger *loggers);
         void Notify(string msg);
 };
 
-void Subject::Attach(Logger *loggers)
+void Subject::Attach(Logger loggers)
 {
     listOfSubs.push_back(loggers);
 }
@@ -26,12 +26,9 @@ void Subject::Attach(Logger *loggers)
 //}
 void Subject::Notify(string msg)
 {
-    for(vector<Logger*>::const_iterator iter = listOfSubs.begin(); iter != listOfSubs.end(); ++iter)
+    for(size_t k = 0; k < listOfSubs.size(); ++k)
         {
-            if(*iter != 0)
-            {
-                (*iter)->Update(msg);
-            }
+                listOfSubs[k].Update(msg);
         }
 }
 //class ConcreteSub : public Subject
