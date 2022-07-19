@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
+#include "Subject.h"
 #include "text.h"
 
 using namespace std;
@@ -23,7 +24,10 @@ protected:
     Text* text;
     int id;
 
-    
+    //error coming from the fact we try to perform an operation
+    //not in a function. So move to another funciton
+    Subject *subjected = new Subject();
+    //Subject::subjected->Attach(Logger::getInstance());
 public:
 
     Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* s, int myID) {

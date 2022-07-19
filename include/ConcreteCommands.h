@@ -17,8 +17,8 @@ class NoCommand : public Command
 //class GravOff : public Command
 //{
 //public:
-//    Simulation simulation;
-//    GravOff(Simulation mySimulation)
+//   Simulation simulation;
+//    GravOff(Simulation mySimulation) : Command(mySimulation)
 //    {
 //        this.simulation = mySimulation;
 //    }

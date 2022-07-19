@@ -4,6 +4,9 @@
 class Command
 {
 public:
-    virtual void execute();
+//    Command(Simulation sim)
+//    {
+//    }
+    virtual void execute()=0;
 };
 #endif

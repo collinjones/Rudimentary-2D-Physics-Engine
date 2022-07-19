@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "button.h"
+#include "Subject.h"
 
 using namespace std;
 

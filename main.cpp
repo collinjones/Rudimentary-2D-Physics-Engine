@@ -1,5 +1,6 @@
 
 #include "include/Simulation.h"
+#include "include/Subject.h"
 
 bool init()
 {

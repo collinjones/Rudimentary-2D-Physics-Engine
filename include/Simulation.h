@@ -23,6 +23,7 @@
 #include "LWindow.h"
 #include "Controller.h"
 #include "ConcreteCommands.h"
+#include "Subject.h"
 
 using namespace std;
 
