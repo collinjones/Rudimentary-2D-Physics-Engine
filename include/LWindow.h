@@ -484,8 +484,8 @@ bool LWindow::isShown()
 SDL_Renderer* LWindow::getRenderer()
 {
     return mRenderer;
-};
+}
 SDL_Window* LWindow::getWindow() { 
     return mWindow;
-}
+};
  #endif
