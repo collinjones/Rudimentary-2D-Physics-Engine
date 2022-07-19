@@ -1,4 +1,5 @@
-/* VecMath is used to return a new vector instead of performing 
+#pragma once
+/* VecMath is used to return a new vector instead of performing
    the operation on a vector itself. */
 
 #ifndef _VECMATH_

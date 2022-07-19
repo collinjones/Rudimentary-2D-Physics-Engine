@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _SLIDER_
 #define _SLIDER_
 

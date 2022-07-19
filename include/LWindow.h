@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _LWindow_
 #define _LWindow_
 

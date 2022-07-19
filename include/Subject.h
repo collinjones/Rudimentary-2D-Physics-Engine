@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _SUBJECT_
 #define _SUBJECT_
 //code adapted from: https://www.codeproject.com/articles/328365/understanding-and-implementing-observer-pattern-2

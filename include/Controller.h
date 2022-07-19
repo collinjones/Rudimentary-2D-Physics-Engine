@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _Controller_
 #define _Controller_
 

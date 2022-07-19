@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _TOGGLEBUTTON_
 #define _TOGGLEBUTTON_
 

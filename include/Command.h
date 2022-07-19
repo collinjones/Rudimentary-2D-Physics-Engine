@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _Command_
 #define _Command_
 #include "Simulation.h"

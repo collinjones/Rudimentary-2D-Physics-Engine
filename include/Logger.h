@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _Logger_
 #define _Logger_
 

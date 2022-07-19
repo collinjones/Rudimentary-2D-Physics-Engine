@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _CIRCLE_
 #define _CIRCLE_
 

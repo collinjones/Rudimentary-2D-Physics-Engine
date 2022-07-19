@@ -1,3 +1,4 @@
+#pragma once
 /* A 2 dimensional vector class and related methods */
 #ifndef _VEC2_
 #define _VEC2_ 

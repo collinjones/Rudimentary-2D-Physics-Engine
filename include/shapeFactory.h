@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _CIRCLEFACTORY_
 #define _CIRCLEFACTORY_
 

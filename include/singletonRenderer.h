@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _SINGLETONRENDERER_
 #define _SINGLETONRENDERER_
 

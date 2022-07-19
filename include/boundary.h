@@ -1,3 +1,4 @@
+#pragma once
 /* A boundary object is a line from posA to posB */
 #ifndef _BOUNDARY_
 #define _BOUNDARY_ 

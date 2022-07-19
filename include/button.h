@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _BUTTON_
 #define _BUTTON_
 
@@ -27,7 +28,7 @@ protected:
     //error coming from the fact we try to perform an operation
     //not in a function. So move to another funciton
     Subject *subjected = new Subject();
-    //Subject::subjected->Attach(Logger::getInstance());
+    //subjected->Attach(Logger::getInstance());
 public:
 
     Button(int x, int y, int w, int h, SDL_Color fColor, SDL_Color bColor, const char* s, int myID) {

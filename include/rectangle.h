@@ -1,3 +1,4 @@
+#pragma once
 /* A rectangle object that interacts with circle objects */
 #ifndef _RECTANGLE_
 #define _RECTANGLE_

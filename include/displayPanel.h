@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _DISPLAYPANEL_
 #define _DISPLAYPANEL_
 

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _ALogger_
 #define _ALogger_
 

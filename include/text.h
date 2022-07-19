@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _TEXT_
 #define _TEXT_
 

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _Simulation_
 #define _Simulation_
 
@@ -21,9 +22,9 @@
 #include "displayPanel.h"
 #include "slider.h"
 #include "LWindow.h"
-#include "Controller.h"
-#include "ConcreteCommands.h"
-#include "Subject.h"
+//#include "Controller.h"
+//#include "ConcreteCommands.h"
+//#include "Subject.h"
 
 using namespace std;
 
