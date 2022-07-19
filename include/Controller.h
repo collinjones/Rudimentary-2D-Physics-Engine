@@ -3,13 +3,13 @@
 #define _Controller_
 
 #include <vector>
-#include "Command.h"
 
+#include "ConcreteCommands.h"
 
 class Controller
 {
     public:
-       const int NUMCOMMANDS = 7;
+       const int NUMCOMMANDS = 1;
        vector<Command*> userCommands;
 
        Controller()

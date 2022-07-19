@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
@@ -23,7 +24,8 @@
 #include "slider.h"
 #include "LWindow.h"
 #include "Subject.h"
-
+#include "Controller.h"
+//#include "ConcreteCommands.h"
 using namespace std;
 
 class Simulation {
@@ -103,34 +105,6 @@ class Simulation {
             }
             return true;
         }
-//
-//        void AKeyPressed(SDL_KeyboardEvent& k) {
-//                    if(k.keysym.scancode == SDL_SCANCODE_A){
-//                        int posX;
-//                        int posY;
-//                        int random = rand()%6+3;
-//                        SDL_GetMouseState(&posX, &posY);
-//                        Vec2 vel(0,0);
-//                        Vec2 pos(posX, posY);
-//
-//                        circles.push_back(shapeFact->createCircle(pos, vel, random,true));
-//                    }
-//                }
-//
-//        void KKeyPressed(SDL_KeyboardEvent& k)
-//        {
-//            if(k.keysym.scancode == SDL_SCANCODE_K)
-//            {
-//                int posX;
-//                int posY;
-//                int random = rand()%6+3;
-//                SDL_GetMouseState(&posX, &posY);
-//                Vec2 vel(0,0);
-//                Vec2 pos(posX, posY);
-//
-//                circles.push_back(shapeFact->createCircle(pos, vel, random,false));
-//            }
-//        }
 
         void GeneratePachinko() {
             for (int y = 2; y < 12; y+= 1) {
@@ -363,7 +337,7 @@ class Simulation {
 
         }
 
-        void buttonClicked(int type, Simulation sim)
+        void buttonClicked(int type, Simulation* sim, Controller* controller)
         {
             //Controller remoteControl = new Controller();
             //GravOn turnOnGrav = new GravOn(sim);
@@ -406,7 +380,7 @@ class Simulation {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
                 SDL_SetWindowGrab(window, SDL_TRUE);
-                EventHandler(true,1,sim,sub);
+                EventHandler(true,1,sim,sub,controller);
                 SDL_SetWindowGrab(window, SDL_FALSE);
              }
 
@@ -414,7 +388,7 @@ class Simulation {
             {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
-                EventHandler(true,2,sim,sub);
+                EventHandler(true,2,sim,sub,controller);
             }
             else{
             ;
@@ -422,7 +396,7 @@ class Simulation {
         }
 
         //destroyer called here after leaving event handler, but why
-        void EventHandler(bool drawOnMain, int boxOrLine, Simulation sim, Subject* sub) {
+        void EventHandler(bool drawOnMain, int boxOrLine, Simulation* sim, Subject* sub, Controller* controller) {
             /* Check for events */
 
             if (drawOnMain && boxOrLine == 1)
@@ -466,7 +440,7 @@ class Simulation {
                     int eventHappened = -1;
                     gWindows[ i ].handleEvent( e );
                     eventHappened = gWindows[i].handleButtonClick(e);
-                    buttonClicked(eventHappened,sim);
+                    buttonClicked(eventHappened,sim,controller);
                 }
             }
         }
@@ -546,7 +520,7 @@ class Simulation {
         }
 
         /* MAIN SIMULATION LOOP */
-        int MainLoop(Simulation sim) {
+        int MainLoop(Simulation sim, Controller* controller) {
 
             TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
 
@@ -665,5 +639,7 @@ class Simulation {
         int boxPosY;
 
         shapeFactory* shapeFact = new shapeFactory();
+
+        //ofstream fileHandler;
 };
 #endif

@@ -1,11 +1,11 @@
 #pragma once
 #ifndef _Command_
 #define _Command_
-#include "Simulation.h"
+//#include "Simulation.h"
 class Command
 {
 public:
-//    Command(Simulation sim)
+//    Command(Simulation* sim)
 //    {
 //    }
     virtual void execute()=0;

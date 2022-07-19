@@ -1,6 +1,8 @@
 
 #include "include/Simulation.h"
-#include "include/Subject.h"
+#include "include/Controller.h"
+#include "include/ConcreteCommands.h"
+
 
 bool init()
 {
@@ -44,13 +46,25 @@ void close()
 	SDL_Quit();
 }
 
+Controller* createController(Simulation sim)
+{
+    Controller* ControlGUI = new Controller();
+
+    GravOff* turnOffGrav = new GravOff(sim);
+
+    ControlGUI->setCommand(0,turnOffGrav);
+    return ControlGUI;
+}
+
 int WinMain () {
 
     Simulation physics_engine;
 
+
     // Check for any initialization errors
     if(physics_engine.CheckForErrors()) return EXIT_FAILURE;
-    physics_engine.MainLoop(physics_engine);
+    Controller* physics_engine_controller = createController(physics_engine);
+    physics_engine.MainLoop(physics_engine,physics_engine_controller);
 
     return EXIT_SUCCESS;
 }
