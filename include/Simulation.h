@@ -29,8 +29,9 @@
 using namespace std;
 
 class Simulation {
+
     public:
-//0: grav on, 1: grav off, 2: add normal circle, 3: add attractor, 4: add repeler
+        //0: grav on, 1: grav off, 2: add normal circle, 3: add attractor, 4: add repeler
         bool LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
                 if(!linePointASelected) {
@@ -420,13 +421,13 @@ class Simulation {
             }
         }
 
-//destroyer called here after leaving event handler, but why
+        //destroyer called here after leaving event handler, but why
         void EventHandler(bool drawOnMain, int boxOrLine, Simulation sim) {
             /* Check for events */
 
             if (drawOnMain && boxOrLine == 1)
             {
-            bool loop= true;
+                bool loop= true;
                 while(loop)
                 {
                     while (SDL_PollEvent(&e)){
@@ -438,7 +439,7 @@ class Simulation {
             }
             if (drawOnMain && boxOrLine == 2)
             {
-            bool loop= true;
+                bool loop= true;
                 while(loop)
                 {
                     while (SDL_PollEvent(&e)){
@@ -452,6 +453,7 @@ class Simulation {
                     }
                 }
             }
+
             while (SDL_PollEvent(&e)){
                 if (e.type == SDL_QUIT){
                 //never here
@@ -466,8 +468,6 @@ class Simulation {
                     eventHappened = gWindows[i].handleButtonClick(e);
                     buttonClicked(eventHappened,sim);
                 }
-
-
             }
         }
 
@@ -625,6 +625,7 @@ class Simulation {
         {
             circles.push_back(circ);
         }
+
     private:
         SDL_Window* window = NULL;
         SDL_Renderer* renderer = NULL;
