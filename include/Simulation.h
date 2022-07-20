@@ -142,11 +142,9 @@ class Simulation {
             Circle* sun = GenerateSun(WIDTH/2, HEIGHT/2, 0, 0, 10, 252, 229, 112);
             Circle* planet1 = GenerateCircle(WIDTH/2 + 100, HEIGHT/2, 0, -2, 2, 88, 199, 78);
             Circle* planet2 = GenerateCircle(WIDTH/2 + 200, HEIGHT/2, 0, -4, 4, 88, 199, 78);
-            Circle* planet3 = GenerateCircle(WIDTH/2 + 300, HEIGHT/2, 0, -6, 4, 88, 199, 78);
             circles.push_back(sun);
             circles.push_back(planet1);
             circles.push_back(planet2);
-            circles.push_back(planet3);
         }
 
         Simulation() {
@@ -176,7 +174,7 @@ class Simulation {
 
             /* Initialize simulation on startup */
             // GeneratePachinko();
-           // GenerateSolarSystem();
+            GenerateSolarSystem();
         }
 
 //        ~Simulation(){
@@ -618,7 +616,7 @@ class Simulation {
         SDL_Event e;
 
         const int WIDTH = 750;
-        const int HEIGHT = 700;
+        const int HEIGHT = 800;
         const int FRAMERATE = 60;
 
         int init_error;

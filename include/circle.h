@@ -313,7 +313,7 @@ public:
         Vec2 force = this->position;
         force.sub(circ->position);
         double distanceSq = constrain(force.magnitudeSq(), 25, 2500);
-        double G = 5;
+        double G = 1.3;
         double strength = ((this->getMass() * circ->getMass())/distanceSq)*G;
         force.setMag(strength);
         circ->ApplyForce(force);
@@ -324,7 +324,7 @@ public:
         Vec2 force = this->position;
         force.sub(circ->position);
         double distanceSq = constrain(force.magnitudeSq(), 25, 2500);
-        int G = 5;
+        int G = 1.3;
         double strength = ((this->getMass() * circ->getMass())/distanceSq)*G;
         force.setMag(-1*(strength));
         circ->ApplyForce(force);
