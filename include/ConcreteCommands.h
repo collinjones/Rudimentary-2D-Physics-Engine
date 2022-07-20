@@ -59,10 +59,9 @@ public:
 
     void execute()
     {
-        int random = rand()%3+3;
-        Vec2 vel(0,0);
-        Vec2 pos(200, 200);
-        simulation->addToCirc(shapeFact->createCircle(pos, vel, random));
+        SDL_ShowWindow( simulation->getWindow() );
+        SDL_RaiseWindow( simulation->getWindow() );
+        simulation->EventHandler(true,3,3);
     }
 private:
      Simulation* simulation;
@@ -78,10 +77,9 @@ public:
 
     void execute()
     {
-        int random = rand()%3+3;
-        Vec2 vel(0,0);
-        Vec2 pos(200, 200);
-        simulation->addToCirc(shapeFact->createCircle(pos, vel, random, true));
+        SDL_ShowWindow( simulation->getWindow() );
+        SDL_RaiseWindow( simulation->getWindow() );
+        simulation->EventHandler(true,3,1);
     }
 private:
      Simulation* simulation;
@@ -97,12 +95,9 @@ public:
 
     void execute()
     {
-        int random = rand()%3+3;
-        int randomPosX = rand()%600+50;
-        int randomPosY = rand()%600+25;
-        Vec2 vel(0,0);
-        Vec2 pos(randomPosX, randomPosY);
-        simulation->addToCirc(shapeFact->createCircle(pos, vel, random, false));
+        SDL_ShowWindow( simulation->getWindow() );
+        SDL_RaiseWindow( simulation->getWindow() );
+        simulation->EventHandler(true,3,2);
     }
 private:
      Simulation* simulation;
@@ -118,10 +113,9 @@ public:
 
     void execute()
     {
-
         SDL_ShowWindow( simulation->getWindow() );
         SDL_RaiseWindow( simulation->getWindow() );
-        simulation->EventHandler(true,1);
+        simulation->EventHandler(true,1,-1);
     }
 private:
      Simulation* simulation;
@@ -137,7 +131,7 @@ public:
     {
         SDL_ShowWindow( simulation->getWindow() );
         SDL_RaiseWindow( simulation->getWindow()  );
-        simulation->EventHandler(true,2);
+        simulation->EventHandler(true,2,-1);
     }
 private:
      Simulation* simulation;

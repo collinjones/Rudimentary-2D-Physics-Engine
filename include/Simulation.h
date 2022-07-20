@@ -31,7 +31,29 @@ using namespace std;
 class Simulation {
 
     public:
-        //0: grav on, 1: grav off, 2: add normal circle, 3: add attractor, 4: add repeler
+        bool circleLeftClick(SDL_MouseButtonEvent& b, int CircType) {
+            bool cir;
+            if (CircType == 1)
+                cir = true;
+            else if (CircType ==2)
+                cir = false;
+             if(b.button == SDL_BUTTON_LEFT){
+                 int posX;
+                 int posY;
+                 SDL_GetMouseState(&posX, &posY);
+
+                 int random = rand()%3+3;
+                 Vec2 vel(0,0);
+                 Vec2 pos(posX, posY);
+                 if (CircType ==1 || CircType == 2)
+                    circles.push_back(shapeFact->createCircle(pos, vel, random,cir));
+                 else
+                    circles.push_back(shapeFact->createCircle(pos, vel, random));
+                 return false;
+             }
+             return true;
+         }
+
         bool LeftClick(SDL_MouseButtonEvent& b) {
             if(b.button == SDL_BUTTON_LEFT){
                 if(!linePointASelected) {
@@ -52,22 +74,11 @@ class Simulation {
                         linePointASelected = false;
                         return false;
                     }
-
                 }
             }
             return true;
         }
-//
-//        void PKeyPressed(SDL_KeyboardEvent& k) {
-//            if(k.keysym.scancode == SDL_SCANCODE_P){
-//                int posX;
-//                int posY;
-//                SDL_GetMouseState(&posX, &posY);
-//                Vec2 pos(posX, posY);
-//                pegs.push_back(shapeFact->createPeg(pos,3));
-//            }
-//        }
-//
+
         bool rectLeftClick(SDL_MouseButtonEvent& b) {
              if(b.button == SDL_BUTTON_LEFT) {
 
@@ -162,18 +173,6 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-            /* EXAMPLE UI ELEMENTS: BUTTON, TOGGLE BUTTON, DISPLAY PANEL, and SLIDER */
-//            SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
-//            SDL_Color c2 = {.r = 0, .g=100, .b=200, .a=255};
-//            SDL_Color c3 = {.r = 50, .g=60, .b=187, .a=255};
-
-            /* Main setting */
-            /* System of buttons */
-//            toggleButtons.push_back(new ToggleButton(400, 200, 200, 25, c, c, "Toggle Status: ON", "Toggle Status: OFF"));
-//            buttons.push_back(new Button(300, 200, 100, 25, c2, c2, "Event Button"));
-//            displays.push_back(new DisplayPanel(100, 525, 100, 25, c3));
-//            sliders.push_back(new Slider(150, 575, 50, 100));
 
             /* Initialize simulation on startup */
             // GeneratePachinko();
@@ -342,6 +341,48 @@ class Simulation {
 
         }
 
+        //circType = 1: attractor 2: repeller 3: norm -1: NA
+        void drawOntoMain(int lineRectCirc, int circType)
+        {
+            if (lineRectCirc == 1)
+            {
+                bool loop= true;
+                while(loop)
+                {
+                    while (SDL_PollEvent(&e)){
+                        if (e.type == SDL_MOUSEBUTTONDOWN) {
+                            loop = LeftClick(e.button);
+                        }
+                    }
+                }
+            }
+            else if (lineRectCirc == 2)
+            {
+                bool loop= true;
+                while(loop)
+                {
+                    while (SDL_PollEvent(&e)){
+                        if (e.type == SDL_MOUSEBUTTONDOWN) {
+                            loop = rectLeftClick(e.button);
+                        }
+                    }
+                }
+            }
+
+            else if (lineRectCirc == 3)
+            {
+                bool loop= true;
+                while(loop)
+                {
+                    while (SDL_PollEvent(&e)){
+                        if (e.type == SDL_MOUSEBUTTONDOWN) {
+                            loop = circleLeftClick(e.button,circType);
+                        }
+                    }
+                }
+            }
+            else {;}
+        }
         void buttonClicked(int type)
         {
             if (type == 0)
@@ -386,39 +427,12 @@ class Simulation {
         }
 
         //destroyer called here after leaving event handler, but why
-        void EventHandler(bool drawOnMain, int boxOrLine){//}, Controller* controller) {
+        void EventHandler(bool drawOnMain, int boxOrLine, int typeCirc){//}, Controller* controller) {
             /* Check for events */
-
-            if (drawOnMain && boxOrLine == 1)
+            if (drawOnMain)
             {
-
-                bool loop= true;
-                while(loop)
-                {
-                    while (SDL_PollEvent(&e)){
-                        if (e.type == SDL_MOUSEBUTTONDOWN) {
-                            loop = LeftClick(e.button);
-                        }
-                    }
-                }
+                drawOntoMain(boxOrLine,typeCirc);
             }
-            if (drawOnMain && boxOrLine == 2)
-            {
-                bool loop= true;
-                while(loop)
-                {
-                    while (SDL_PollEvent(&e)){
-                        if (e.type == SDL_MOUSEBUTTONDOWN) {
-                            loop = rectLeftClick(e.button);
-                            /* If the first point of a box was selected (R key), then continue to draw the outline of the box */
-                            if (boxPointASelected) {
-                                DrawBoxOutline();
-                            }
-                        }
-                    }
-                }
-            }
-
             while (SDL_PollEvent(&e)){
                 if (e.type == SDL_QUIT){
                 //never here
@@ -523,14 +537,12 @@ class Simulation {
                 gWindows[ 1 ].init2();
                 gWindows[2].init3();
                 gWindows[3].init4();
-                //writeToTxtFile("Opening a txt file",true,false);
             }
             while (!quit_flag) {
 
                 FillScreen(0,0,0,255);
                 handleLWFillScreen();
-                EventHandler(false,-1);
-                //UIHandler(Sans,renderer);
+                EventHandler(false,-1,-1);
 
                 handleLWUI(Sans);
 
