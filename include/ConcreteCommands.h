@@ -15,22 +15,22 @@ class NoCommand : public Command
         }
 };
 
-class GravOff : public Command
-{
-public:
-   Simulation simulation;
-    GravOff(Simulation* mySimulation)
-    {
-        this->simulation = mySimulation;
-    }
-
-    void execute()
-    {
-        Vec2 acc(0,0.0);
-        simulation.setGravity(acc);
-        simulation.setGravOn(false);
-    }
-};
+//class GravOff : public Command
+//{
+//public:
+//   Simulation simulation;
+//    GravOff(Simulation* mySimulation)
+//    {
+//        this->simulation = mySimulation;
+//    }
+//
+//    void execute()
+//    {
+//        Vec2 acc(0,0.0);
+//        simulation.setGravity(acc);
+//        simulation.setGravOn(false);
+//    }
+//};
 
 //class GravON : public Command
 //{

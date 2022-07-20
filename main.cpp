@@ -46,15 +46,15 @@ void close()
 	SDL_Quit();
 }
 
-Controller* createController(Simulation sim)
-{
-    Controller* ControlGUI = new Controller();
-
-    GravOff* turnOffGrav = new GravOff(sim);
-
-    ControlGUI->setCommand(0,turnOffGrav);
-    return ControlGUI;
-}
+//Controller* createController(Simulation sim)
+//{
+//    Controller* ControlGUI = new Controller();
+//
+//    GravOff* turnOffGrav = new GravOff(sim);
+//
+//    ControlGUI->setCommand(0,turnOffGrav);
+//    return ControlGUI;
+//}
 
 int WinMain () {
 
@@ -63,8 +63,8 @@ int WinMain () {
 
     // Check for any initialization errors
     if(physics_engine.CheckForErrors()) return EXIT_FAILURE;
-    Controller* physics_engine_controller = createController(physics_engine);
-    physics_engine.MainLoop(physics_engine,physics_engine_controller);
-
+    //Controller* physics_engine_controller = createController(physics_engine);
+    //physics_engine.MainLoop(physics_engine,physics_engine_controller);
+    physics_engine.MainLoop(physics_engine);
     return EXIT_SUCCESS;
 }

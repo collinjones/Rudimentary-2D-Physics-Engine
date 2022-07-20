@@ -298,6 +298,29 @@ class Simulation {
             }
         }
 
+
+//for date https://www.tutorialspoint.com/how-to-get-current-time-and-date-in-cplusplus
+//        void writeToTxtFile(string msg, bool firstOpen, bool lastLine){
+//           time_t now = time(0);
+//           char *date = ctime(& now);
+//            ofstream outputFile;
+//            if(firstOpen)
+//            {
+//                outputFile.open("result.txt");
+//                outputFile<<msg<<" @ "<<date<< "\n";
+//            }
+//            else
+//            {
+//            cout <<"here" ;
+//                outputFile<<msg<<" @ "<<date<< "\n";
+//            }
+//            if(lastLine)
+//            {
+//                outputFile<<msg<<" @ "<<date<< "\n";
+//                outputFile.close();
+//            }
+//            //outputFile.close();
+//        }
         /* Handles additional user interaction with UI */
         void UIHandler(TTF_Font* font, SDL_Renderer * cRenderer) {
 
@@ -337,7 +360,7 @@ class Simulation {
 
         }
 
-        void buttonClicked(int type, Simulation* sim, Controller* controller)
+        void buttonClicked(int type, Simulation sim)//, Controller* controller)
         {
             //Controller remoteControl = new Controller();
             //GravOn turnOnGrav = new GravOn(sim);
@@ -345,11 +368,13 @@ class Simulation {
             {
                 gravity.setVec(0, 0.1);
                 gravOn = true;
+                sub->Notify("Gravity turned on");
             }
             else if (type ==1)
             {
                 gravity.setVec(0, 0);
                 gravOn = false;
+                sub->Notify("Gravity turned off");
             }
             else if (type ==2)
             {
@@ -358,6 +383,7 @@ class Simulation {
                 Vec2 pos(200, 200);
 
                 circles.push_back(shapeFact->createCircle(pos, vel, random));
+                sub->Notify("Normal circle added");
             }
             else if (type ==3)
             {
@@ -366,6 +392,7 @@ class Simulation {
                 Vec2 pos(200, 200);
 
                 circles.push_back(shapeFact->createCircle(pos, vel, random,true));
+                sub->Notify("Attractor circle added");
             }
             else if (type ==4)
             {
@@ -374,13 +401,14 @@ class Simulation {
                 Vec2 pos(200, 200);
 
                 circles.push_back(shapeFact->createCircle(pos, vel, random,false));
+                sub->Notify("Repeller circle added");
             }
             else if (type ==5)
             {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
                 SDL_SetWindowGrab(window, SDL_TRUE);
-                EventHandler(true,1,sim,sub,controller);
+                EventHandler(true,1,sim,sub);//,controller);
                 SDL_SetWindowGrab(window, SDL_FALSE);
              }
 
@@ -388,7 +416,7 @@ class Simulation {
             {
                 SDL_ShowWindow( window );
                 SDL_RaiseWindow( window );
-                EventHandler(true,2,sim,sub,controller);
+                EventHandler(true,2,sim,sub);//,controller);
             }
             else{
             ;
@@ -396,7 +424,7 @@ class Simulation {
         }
 
         //destroyer called here after leaving event handler, but why
-        void EventHandler(bool drawOnMain, int boxOrLine, Simulation* sim, Subject* sub, Controller* controller) {
+        void EventHandler(bool drawOnMain, int boxOrLine, Simulation sim, Subject* sub){//}, Controller* controller) {
             /* Check for events */
 
             if (drawOnMain && boxOrLine == 1)
@@ -411,9 +439,12 @@ class Simulation {
                         }
                     }
                 }
+                sub->Notify("line drawn");
+                //writeToTxtFile("line drawn",false,false);
             }
             if (drawOnMain && boxOrLine == 2)
             {
+                sub->Notify("Draw a box by double clicking the first point, then clicking one other point (the opposite corner of the starting point).");
                 bool loop= true;
                 while(loop)
                 {
@@ -427,6 +458,7 @@ class Simulation {
                         }
                     }
                 }
+                sub->Notify("Box drawn");
             }
 
             while (SDL_PollEvent(&e)){
@@ -440,7 +472,7 @@ class Simulation {
                     int eventHappened = -1;
                     gWindows[ i ].handleEvent( e );
                     eventHappened = gWindows[i].handleButtonClick(e);
-                    buttonClicked(eventHappened,sim,controller);
+                    buttonClicked(eventHappened,sim);//,controller);
                 }
             }
         }
@@ -520,7 +552,7 @@ class Simulation {
         }
 
         /* MAIN SIMULATION LOOP */
-        int MainLoop(Simulation sim, Controller* controller) {
+        int MainLoop(Simulation sim){//}, Controller* controller) {
 
             TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
 
@@ -533,6 +565,7 @@ class Simulation {
                 gWindows[ 1 ].init2();
                 gWindows[2].init3();
                 gWindows[3].init4();
+                //writeToTxtFile("Opening a txt file",true,false);
             }
             while (!quit_flag) {
 
@@ -640,6 +673,6 @@ class Simulation {
 
         shapeFactory* shapeFact = new shapeFactory();
 
-        //ofstream fileHandler;
+
 };
 #endif

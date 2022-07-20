@@ -5,7 +5,8 @@
 #include <string>
 #include <vector>
 #include <list>
-
+#include <iostream>
+#include <fstream>
 #include "Logger.h"
 
 class Subject {
@@ -14,10 +15,17 @@ class Subject {
         void Attach(Logger loggers);
         //void Detach(Logger *loggers);
         void Notify(string msg);
+//        ofstream outputFiles;
 };
 
 void Subject::Attach(Logger loggers)
 {
+
+//    if (outputFiles.is_open())
+//    {
+//        cout<<"here";
+//    }
+
     listOfSubs.push_back(loggers);
 }
 //void Subject::Detach(Logger *loggers)
@@ -26,9 +34,15 @@ void Subject::Attach(Logger loggers)
 //}
 void Subject::Notify(string msg)
 {
+    time_t now = time(0);
+    char *date = ctime(& now);
+    ofstream outputFiles;
+    outputFiles.open("results.txt" ,std::ofstream::out | std::ofstream::app );
+
     for(size_t k = 0; k < listOfSubs.size(); ++k)
         {
-                listOfSubs[k].Update(msg);
+            listOfSubs[k].Update(msg);
+            outputFiles<<msg<<" @ "<<date<< "\n";
         }
 }
 //class ConcreteSub : public Subject

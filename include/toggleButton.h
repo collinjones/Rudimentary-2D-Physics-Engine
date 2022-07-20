@@ -34,13 +34,13 @@ public:
     int ProcessClick(float px, float py) {
         if (mouseOver) {
             if (!activated) {
-                cout << "clicked a toggle button ON" << endl;
+                //cout << "clicked a toggle button ON" << endl;
                 SetClickedColor();
                 activated = true;
                 return 0;
             }
             else {
-                cout << "clicked a toggle button OFF" << endl;
+                //cout << "clicked a toggle button OFF" << endl;
                 SetUnclickedColor();
                 activated = false;
                 return 1;
