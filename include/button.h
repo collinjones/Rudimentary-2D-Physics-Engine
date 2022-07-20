@@ -58,34 +58,7 @@ public:
 
     int ProcessClick(float px, float py, int whichButton) {
         if (mouseOver) {
-            if (whichButton ==2)
-            {
-                //cout << "clicked the normal circle button" << endl;
-                return 2;
-            }
-            else if (whichButton ==3)
-            {
-                //cout << "clicked the attracter circle button" << endl;
-                return 3;
-            }
-            else if (whichButton ==4)
-            {
-                //cout << "clicked the repeler circle button" << endl;
-                return 4;
-            }
-            else if (whichButton ==5)
-            {
-                //cout << "clicked the add line button" << endl;
-                return 5;
-            }
-            else if (whichButton ==6)
-            {
-                //cout << "clicked the add box button" << endl;
-                return 6;
-            }
-            else
-            {;
-            }
+        return whichButton;
         }
         return -1;
     }

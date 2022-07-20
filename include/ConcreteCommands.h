@@ -136,4 +136,52 @@ public:
 private:
      Simulation* simulation;
 };
+
+class SolarSystem : public Command
+{
+public:
+    SolarSystem(Simulation* mySimulation) : simulation (mySimulation)
+    {
+    }
+
+    void execute()
+    {
+        simulation->clearScreen();
+        simulation->GenerateSolarSystem();
+    }
+private:
+     Simulation* simulation;
+};
+
+class Pachinko : public Command
+{
+public:
+    Pachinko(Simulation* mySimulation) : simulation (mySimulation)
+    {
+    }
+
+    void execute()
+    {
+        simulation->clearScreen();
+        simulation->GeneratePachinko();
+    }
+private:
+     Simulation* simulation;
+};
+
+class clearTheScreen : public Command
+{
+public:
+    clearTheScreen(Simulation* mySimulation) : simulation (mySimulation)
+    {
+    }
+
+    void execute()
+    {
+        simulation->clearScreen();
+    }
+private:
+     Simulation* simulation;
+};
+
 #endif

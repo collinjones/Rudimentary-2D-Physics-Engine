@@ -9,7 +9,7 @@
 class Controller
 {
     public:
-       Command* userCommands[7];
+       Command* userCommands[10];
 
        Controller()
        {

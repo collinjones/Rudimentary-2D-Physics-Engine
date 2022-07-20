@@ -57,6 +57,9 @@ Controller* createController(Simulation* sim)
     createRepeler* createARCircle = new createRepeler(sim);
     createLine* createALine = new createLine(sim);
     createBox* createABox = new createBox(sim);
+    SolarSystem* createASolar = new SolarSystem(sim);
+    Pachinko* createPachinko = new Pachinko(sim);
+    clearTheScreen* clrSc = new clearTheScreen(sim);
 
     ControlGUI->setCommand(0,turnOnGrav);
     ControlGUI->setCommand(1,turnOffGrav);
@@ -65,6 +68,9 @@ Controller* createController(Simulation* sim)
     ControlGUI->setCommand(4,createARCircle);
     ControlGUI->setCommand(5,createALine);
     ControlGUI->setCommand(6,createABox);
+    ControlGUI->setCommand(7,createASolar);
+    ControlGUI->setCommand(8,createPachinko);
+    ControlGUI->setCommand(9,clrSc);
 
     return ControlGUI;
 }

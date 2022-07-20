@@ -110,7 +110,7 @@ LWindow::LWindow()
 bool LWindow::init1()
 {
    //Create window
-   	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+   	mWindow = SDL_CreateWindow( "Physics Engine",  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT+65, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
     SDL_Color c = {.r = 100, .g=100, .b=0, .a=255};
    	if( mWindow != NULL )
    	{
@@ -138,8 +138,11 @@ bool LWindow::init1()
    			//Flag as opened
    			mShown = true;
 
-            LWToggleButtons.push_back(new ToggleButton(50, 20, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF",-1));
-            SDL_SetWindowPosition(mWindow, 85,110);
+            LWToggleButtons.push_back(new ToggleButton(50, 40, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF",-1));
+            LWButtons.push_back(new Button(20, 70, 150, 25, c, c, "Create Solar System",7));
+            LWButtons.push_back(new Button(20, 100, 150, 25, c, c, "Create Panchinko",8));
+            LWButtons.push_back(new Button(20, 10, 150, 25, c, c, "Clear Screen",9));
+            SDL_SetWindowPosition(mWindow, 85,90);
 
    		}
    	}

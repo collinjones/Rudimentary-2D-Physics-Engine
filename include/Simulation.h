@@ -174,7 +174,7 @@ class Simulation {
 
             /* Initialize simulation on startup */
             // GeneratePachinko();
-            GenerateSolarSystem();
+           // GenerateSolarSystem();
         }
 
 //        ~Simulation(){
@@ -419,6 +419,23 @@ class Simulation {
                 SController->buttonPushed(type);
                 sub->Notify("Box added");
             }
+
+            else if (type ==7)
+            {
+                SController->buttonPushed(type);
+                sub->Notify("Solar System created");
+            }
+
+            else if (type ==8)
+            {
+                SController->buttonPushed(type);
+                sub->Notify("Panchinko added");
+            }
+            else if (type ==9)
+            {
+                SController->buttonPushed(type);
+                sub->Notify("Screen Cleared");
+            }
             else{
             ;
             }
@@ -607,6 +624,13 @@ class Simulation {
             circles.push_back(circ);
         }
 
+        void clearScreen()
+        {
+            circles.clear();
+            rectangles.clear();
+            boundaries.clear();
+            pegs.clear();
+        }
     private:
        Subject* sub;
 
