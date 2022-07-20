@@ -46,20 +46,18 @@ void close()
 	SDL_Quit();
 }
 
-//Controller* createController(Simulation sim)
-//{
-//    Controller* ControlGUI = new Controller();
-//
-//    GravOff* turnOffGrav = new GravOff(sim);
-//
-//    ControlGUI->setCommand(0,turnOffGrav);
-//    return ControlGUI;
-//}
+Controller* createController(Simulation sim)
+{
+    Controller* ControlGUI = new Controller();
+
+    GravOff* turnOffGrav = new GravOff(sim);
+
+    ControlGUI->setCommand(0,turnOffGrav);
+    return ControlGUI;
+}
 
 int WinMain () {
-
     Simulation physics_engine;
-
 
     // Check for any initialization errors
     if(physics_engine.CheckForErrors()) return EXIT_FAILURE;

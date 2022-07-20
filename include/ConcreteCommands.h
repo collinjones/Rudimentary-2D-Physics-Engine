@@ -6,7 +6,7 @@
 #include "Command.h"
 #include "vec2.h"
 #include "shapeFactory.h"
-#include "Simulation.h"
+//#include "Simulation.h"
 
 class NoCommand : public Command
 {
@@ -15,22 +15,23 @@ class NoCommand : public Command
         }
 };
 
-//class GravOff : public Command
-//{
-//public:
-//   Simulation simulation;
-//    GravOff(Simulation* mySimulation)
-//    {
+class GravOff : public Command
+{
+public:
+    GravOff(Simulation mySimulation) : simulation (mySimulation)
+    {
 //        this->simulation = mySimulation;
-//    }
-//
-//    void execute()
-//    {
-//        Vec2 acc(0,0.0);
-//        simulation.setGravity(acc);
-//        simulation.setGravOn(false);
-//    }
-//};
+    }
+
+    void execute()
+    {
+        Vec2 acc(0,0.0);
+        simulation.setGravity(acc);
+        simulation.setGravOn(false);
+    }
+private:
+     Simulation simulation;
+};
 
 //class GravON : public Command
 //{

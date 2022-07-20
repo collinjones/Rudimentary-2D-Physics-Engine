@@ -5,8 +5,10 @@
 class Command
 {
 public:
-//    Command(Simulation* sim)
+//Simulation simulation();
+//    Command(Simulation sim)
 //    {
+//        this->simulation = sim;
 //    }
     virtual void execute()=0;
 };

@@ -298,29 +298,6 @@ class Simulation {
             }
         }
 
-
-//for date https://www.tutorialspoint.com/how-to-get-current-time-and-date-in-cplusplus
-//        void writeToTxtFile(string msg, bool firstOpen, bool lastLine){
-//           time_t now = time(0);
-//           char *date = ctime(& now);
-//            ofstream outputFile;
-//            if(firstOpen)
-//            {
-//                outputFile.open("result.txt");
-//                outputFile<<msg<<" @ "<<date<< "\n";
-//            }
-//            else
-//            {
-//            cout <<"here" ;
-//                outputFile<<msg<<" @ "<<date<< "\n";
-//            }
-//            if(lastLine)
-//            {
-//                outputFile<<msg<<" @ "<<date<< "\n";
-//                outputFile.close();
-//            }
-//            //outputFile.close();
-//        }
         /* Handles additional user interaction with UI */
         void UIHandler(TTF_Font* font, SDL_Renderer * cRenderer) {
 

@@ -13,25 +13,15 @@ class Subject {
     public:
         vector<Logger> listOfSubs;
         void Attach(Logger loggers);
-        //void Detach(Logger *loggers);
         void Notify(string msg);
-//        ofstream outputFiles;
 };
 
 void Subject::Attach(Logger loggers)
 {
-
-//    if (outputFiles.is_open())
-//    {
-//        cout<<"here";
-//    }
-
     listOfSubs.push_back(loggers);
 }
-//void Subject::Detach(Logger *loggers)
-//{
-//    listOfSubs.erase(std::remove(listOfSubs.begin(), listOfSubs.end(), loggers), listOfSubs.end());
-//}
+//for date https://www.tutorialspoint.com/how-to-get-current-time-and-date-in-cplusplus
+
 void Subject::Notify(string msg)
 {
     time_t now = time(0);
