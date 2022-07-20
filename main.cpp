@@ -46,23 +46,41 @@ void close()
 	SDL_Quit();
 }
 
-Controller* createController(Simulation sim)
+Controller* createController(Simulation* sim)
 {
     Controller* ControlGUI = new Controller();
 
     GravOff* turnOffGrav = new GravOff(sim);
+    GravON* turnOnGrav = new GravON(sim);
+    createNormCircle* createANCircle = new createNormCircle(sim);
+    createAttracter* createAACircle = new createAttracter(sim);
+    createRepeler* createARCircle = new createRepeler(sim);
+    createLine* createALine = new createLine(sim);
+    createBox* createABox = new createBox(sim);
 
-    ControlGUI->setCommand(0,turnOffGrav);
+    ControlGUI->setCommand(0,turnOnGrav);
+    ControlGUI->setCommand(1,turnOffGrav);
+    ControlGUI->setCommand(2,createANCircle);
+    ControlGUI->setCommand(3,createAACircle);
+    ControlGUI->setCommand(4,createARCircle);
+    ControlGUI->setCommand(5,createALine);
+    ControlGUI->setCommand(6,createABox);
+
     return ControlGUI;
 }
 
 int WinMain () {
-    Simulation physics_engine;
+    Simulation* physics_engine = new Simulation();
 
     // Check for any initialization errors
-    if(physics_engine.CheckForErrors()) return EXIT_FAILURE;
-    //Controller* physics_engine_controller = createController(physics_engine);
+    if(physics_engine->CheckForErrors()) return EXIT_FAILURE;
+    //can not pass the simulation to the controller cause simulation not done
+    Controller* physics_engine_controller = createController(physics_engine);
+    //cout<<physics_engine_controller << endl;
     //physics_engine.MainLoop(physics_engine,physics_engine_controller);
-    physics_engine.MainLoop(physics_engine);
+    physics_engine->grabController(physics_engine_controller);
+    physics_engine->MainLoop(physics_engine);
+
+
     return EXIT_SUCCESS;
 }

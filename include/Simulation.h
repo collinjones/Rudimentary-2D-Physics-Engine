@@ -177,7 +177,7 @@ class Simulation {
 
             /* Initialize simulation on startup */
             // GeneratePachinko();
-            GenerateSolarSystem();
+           // GenerateSolarSystem();
         }
 
 //        ~Simulation(){
@@ -188,6 +188,11 @@ class Simulation {
 //            cout << "EXIT SUCCESS" << endl;
 //        }
 
+        void grabController (Controller* controller)
+        {
+            SController = controller;
+
+        }
         Circle* GenerateCircle (Vec2 pos, Vec2 vel, double mass) {
             SDL_Color color;
             color.r = rand() % 255 + 1;
@@ -337,63 +342,43 @@ class Simulation {
 
         }
 
-        void buttonClicked(int type, Simulation sim)//, Controller* controller)
+        void buttonClicked(int type)
         {
-            //Controller remoteControl = new Controller();
-            //GravOn turnOnGrav = new GravOn(sim);
             if (type == 0)
             {
-                gravity.setVec(0, 0.1);
-                gravOn = true;
+                SController->buttonPushed(type);
                 sub->Notify("Gravity turned on");
             }
             else if (type ==1)
             {
-                gravity.setVec(0, 0);
-                gravOn = false;
+                SController->buttonPushed(type);
                 sub->Notify("Gravity turned off");
             }
             else if (type ==2)
             {
-                int random = rand()%3+3;
-                Vec2 vel(0,0);
-                Vec2 pos(200, 200);
-
-                circles.push_back(shapeFact->createCircle(pos, vel, random));
+                SController->buttonPushed(type);
                 sub->Notify("Normal circle added");
             }
             else if (type ==3)
             {
-                int random = rand()%3+3;
-                Vec2 vel(0,0);
-                Vec2 pos(200, 200);
-
-                circles.push_back(shapeFact->createCircle(pos, vel, random,true));
+                SController->buttonPushed(type);
                 sub->Notify("Attractor circle added");
             }
             else if (type ==4)
             {
-                int random = rand()%3+3;
-                Vec2 vel(0,0);
-                Vec2 pos(200, 200);
-
-                circles.push_back(shapeFact->createCircle(pos, vel, random,false));
+                SController->buttonPushed(type);
                 sub->Notify("Repeller circle added");
             }
             else if (type ==5)
             {
-                SDL_ShowWindow( window );
-                SDL_RaiseWindow( window );
-                SDL_SetWindowGrab(window, SDL_TRUE);
-                EventHandler(true,1,sim,sub);//,controller);
-                SDL_SetWindowGrab(window, SDL_FALSE);
+                SController->buttonPushed(type);
+                sub->Notify("line added");
              }
 
             else if (type ==6)
             {
-                SDL_ShowWindow( window );
-                SDL_RaiseWindow( window );
-                EventHandler(true,2,sim,sub);//,controller);
+                SController->buttonPushed(type);
+                sub->Notify("Box added");
             }
             else{
             ;
@@ -401,12 +386,12 @@ class Simulation {
         }
 
         //destroyer called here after leaving event handler, but why
-        void EventHandler(bool drawOnMain, int boxOrLine, Simulation sim, Subject* sub){//}, Controller* controller) {
+        void EventHandler(bool drawOnMain, int boxOrLine){//}, Controller* controller) {
             /* Check for events */
 
             if (drawOnMain && boxOrLine == 1)
             {
-                sub->Notify("draw a line on the main screen, double click the first point of the line, then click the endpoint of the line");
+
                 bool loop= true;
                 while(loop)
                 {
@@ -416,12 +401,9 @@ class Simulation {
                         }
                     }
                 }
-                sub->Notify("line drawn");
-                //writeToTxtFile("line drawn",false,false);
             }
             if (drawOnMain && boxOrLine == 2)
             {
-                sub->Notify("Draw a box by double clicking the first point, then clicking one other point (the opposite corner of the starting point).");
                 bool loop= true;
                 while(loop)
                 {
@@ -435,7 +417,6 @@ class Simulation {
                         }
                     }
                 }
-                sub->Notify("Box drawn");
             }
 
             while (SDL_PollEvent(&e)){
@@ -449,7 +430,7 @@ class Simulation {
                     int eventHappened = -1;
                     gWindows[ i ].handleEvent( e );
                     eventHappened = gWindows[i].handleButtonClick(e);
-                    buttonClicked(eventHappened,sim);//,controller);
+                    buttonClicked(eventHappened);
                 }
             }
         }
@@ -529,7 +510,7 @@ class Simulation {
         }
 
         /* MAIN SIMULATION LOOP */
-        int MainLoop(Simulation sim){//}, Controller* controller) {
+        int MainLoop(Simulation* sim){//}, Controller* controller) {
 
             TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
 
@@ -548,7 +529,7 @@ class Simulation {
 
                 FillScreen(0,0,0,255);
                 handleLWFillScreen();
-                EventHandler(false,-1, sim,sub);
+                EventHandler(false,-1);
                 //UIHandler(Sans,renderer);
 
                 handleLWUI(Sans);
@@ -600,11 +581,17 @@ class Simulation {
             gravOn = change;
         }
 
-        void setGravity(Vec2 toChange)
+        void setGravityOn()
         {
-            gravity = toChange;
+            gravity.setVec(0, 0.1);
+            gravOn = true;
         }
 
+        void setGravityOff()
+        {
+            gravity.setVec(0, 0.0);
+            gravOn = false;
+        }
         void addToCirc(Circle* circ)
         {
             circles.push_back(circ);
@@ -613,7 +600,7 @@ class Simulation {
     private:
        Subject* sub;
 
-        SDL_Window* window = NULL;
+        SDL_Window* window;
         SDL_Renderer* renderer = NULL;
         //SDL_Renderer* renderer;
         SDL_Event e;
@@ -650,6 +637,7 @@ class Simulation {
 
         shapeFactory* shapeFact = new shapeFactory();
 
+        Controller* SController;
 
 };
 #endif

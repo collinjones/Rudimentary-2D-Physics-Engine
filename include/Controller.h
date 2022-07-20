@@ -9,21 +9,15 @@
 class Controller
 {
     public:
-       const int NUMCOMMANDS = 1;
-       vector<Command*> userCommands;
+       Command* userCommands[7];
 
        Controller()
        {
-
-//           for (int k = 0; k<NUMCOMMANDS; k++)
-//           {
-//                userCommands[k] = noCommand;
-//           }
        }
 
-       void setCommand (int slot, Command* userCommand)
+       void setCommand (int slot, Command* commandToAdd)
        {
-            userCommands[slot] = userCommand;
+            userCommands[slot] = commandToAdd;
        }
 
        void buttonPushed(int slot)
