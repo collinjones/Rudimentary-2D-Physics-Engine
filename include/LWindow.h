@@ -10,8 +10,6 @@
 #include <string>
 #include <sstream>
 #include "toggleButton.h"
-#include "displayPanel.h"
-#include "slider.h"
 #include "button.h"
 //Screen dimension constants
 const int SCREEN_WIDTH = 200;

@@ -4,9 +4,7 @@
 
 #include <stdlib.h>     /* srand, rand */
 #include "Command.h"
-#include "vec2.h"
-#include "shapeFactory.h"
-//#include "Simulation.h"
+
 
 class NoCommand : public Command
 {

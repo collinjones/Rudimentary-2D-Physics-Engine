@@ -80,10 +80,8 @@ int WinMain () {
 
     // Check for any initialization errors
     if(physics_engine->CheckForErrors()) return EXIT_FAILURE;
-    //can not pass the simulation to the controller cause simulation not done
+
     Controller* physics_engine_controller = createController(physics_engine);
-    //cout<<physics_engine_controller << endl;
-    //physics_engine.MainLoop(physics_engine,physics_engine_controller);
     physics_engine->grabController(physics_engine_controller);
     physics_engine->MainLoop(physics_engine);
 

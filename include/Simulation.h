@@ -16,7 +16,6 @@
 #include "rectangle.h"
 #include "peg.h"
 #include "emitter.h"
-#include "singletonRenderer.h"
 #include "shapeFactory.h"
 #include "button.h"
 #include "toggleButton.h"
@@ -25,7 +24,6 @@
 #include "LWindow.h"
 #include "Subject.h"
 #include "Controller.h"
-//#include "ConcreteCommands.h"
 using namespace std;
 
 class Simulation {
@@ -171,19 +169,15 @@ class Simulation {
                 WIDTH, HEIGHT,
                 SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-            /* Initialize simulation on startup */
-            // GeneratePachinko();
-           // GenerateSolarSystem();
         }
 
-//        ~Simulation(){
-//            SDL_DestroyRenderer( renderer );
-//            SDL_DestroyWindow( window );
-//            SDL_Quit();
-//            TTF_Quit();
-//            cout << "EXIT SUCCESS" << endl;
-//        }
+        ~Simulation(){
+            SDL_DestroyRenderer( renderer );
+            SDL_DestroyWindow( window );
+            SDL_Quit();
+            TTF_Quit();
+            cout << "EXIT SUCCESS" << endl;
+        }
 
         void grabController (Controller* controller)
         {
@@ -339,7 +333,6 @@ class Simulation {
 
         }
 
-        //circType = 1: attractor 2: repeller 3: norm -1: NA
         void drawOntoMain(int lineRectCirc, int circType)
         {
             if (lineRectCirc == 1)
@@ -441,8 +434,7 @@ class Simulation {
             }
         }
 
-        //destroyer called here after leaving event handler, but why
-        void EventHandler(bool drawOnMain, int boxOrLine, int typeCirc){//}, Controller* controller) {
+        void EventHandler(bool drawOnMain, int boxOrLine, int typeCirc){
             /* Check for events */
             if (drawOnMain)
             {
@@ -450,7 +442,6 @@ class Simulation {
             }
             while (SDL_PollEvent(&e)){
                 if (e.type == SDL_QUIT){
-                //never here
                     quit_flag = true;
                 }
                 //Handle window events

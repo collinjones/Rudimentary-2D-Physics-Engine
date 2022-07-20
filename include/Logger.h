@@ -20,7 +20,6 @@ private:
 };
 void Logger::Update(string msg)
 {
-    //add write to file here
     cout << msg << endl;
 }
 
