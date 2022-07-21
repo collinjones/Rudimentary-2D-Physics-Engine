@@ -339,7 +339,9 @@ class Simulation {
         /*
          * function handles if we need to use the main screen to
          * draw an object (uses left click functions defined at the
-         * top to accomplish this
+         * top to accomplish this. the loop var is used here to ensure
+         * the user clicks the points on the main screen. This is what
+         * causes the simulation to "pause" until the object is created
         */
         void drawOntoMain(int lineRectCirc, int circType)
         {
