@@ -3,15 +3,10 @@
 Authors: **Collin Jones** (cojo2657@colorado.edu), **Medhaj Shrestha** (mesh5341@colorado.edu)
 
 
-## Java Version
-Collin's `java --version` output: 
-```Bash
-java 18.0.1.1 2022-04-22
-Java(TM) SE Runtime Environment (build 18.0.1.1+2-6)
-Java HotSpot(TM) 64-Bit Server VM (build 18.0.1.1+2-6, mixed mode, sharing)
-```
+## C++ Version
+`g++ --version` output:
+`g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders) 11.2.0`
 
-Medhaj's environment is Java 13. 
 
 
 ## Additional Comments
@@ -22,7 +17,4 @@ However, beyond that, the more complex concepts such as Elastic Collisions, Vect
 
 Collin and Medhaj have taken these concepts and represented them together at once in one large interactive simulation. 
 
-## CURRENT CONTROLS
-Click the left mouse button once, then again in another location to create a line. \
-Right click the mosue to create a circle. \
-Press the `R` key once to begin the creation of a box, Press `R` again to create it. 
+MinGW is required to compile this code, but not sure if required to run. The DLL files are in the root folder, so those should be enough to run the .exe without any compilation. Please reach out to Collin if assistance is required. 
