@@ -554,11 +554,12 @@ class Simulation {
         int MainLoop(Simulation* sim){//}, Controller* controller) {
 
             TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 50);
-
+            //create first aditional window
             if( !init() )
             {
                 printf( "Failed to initialize!\n" );
             }
+            //create the rest of the windows
             else
             {
                 gWindows[ 1 ].init2();
