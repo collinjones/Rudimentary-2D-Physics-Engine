@@ -5,6 +5,11 @@
 #include <stdlib.h>     /* srand, rand */
 #include "Command.h"
 
+/*
+ * concrete commands for the command pattern. what they do is inherit from their class name.
+ * each take in a simulation pointer so they can alter the main screen (which is a simulation
+ * object)
+ */
 
 class NoCommand : public Command
 {

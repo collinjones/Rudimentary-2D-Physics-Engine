@@ -6,6 +6,9 @@
 
 #include "Command.h"
 
+/*
+ * controller class for command pattern. Code used/altered from the book
+*/
 class Controller
 {
     public:

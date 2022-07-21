@@ -29,6 +29,10 @@ using namespace std;
 class Simulation {
 
     public:
+    /*
+     * the three left click functions handle if an event button on another screen was pressed.
+     * it allows for the user to click on the main screen to add their desired object
+    */
         bool circleLeftClick(SDL_MouseButtonEvent& b, int CircType) {
             bool cir;
             if (CircType == 1)
@@ -178,7 +182,7 @@ class Simulation {
             TTF_Quit();
             cout << "EXIT SUCCESS" << endl;
         }
-
+        //function to grab in a passed controller from main
         void grabController (Controller* controller)
         {
             SController = controller;
@@ -332,7 +336,11 @@ class Simulation {
             }
 
         }
-
+        /*
+         * function handles if we need to use the main screen to
+         * draw an object (uses left click functions defined at the
+         * top to accomplish this
+        */
         void drawOntoMain(int lineRectCirc, int circType)
         {
             if (lineRectCirc == 1)
@@ -374,6 +382,10 @@ class Simulation {
             }
             else {;}
         }
+        /*
+         * command pattern used here with the SController. Observer pattern also
+         * used here to write to a txt file and the console
+        */
         void buttonClicked(int type)
         {
             if (type == 0)
@@ -433,7 +445,11 @@ class Simulation {
             ;
             }
         }
-
+        /*
+         * funciton that handles the events that happen on the main screen
+         * and the aditional screens. Most logic is taken from other methods
+         * to handle this.
+        */
         void EventHandler(bool drawOnMain, int boxOrLine, int typeCirc){
             /* Check for events */
             if (drawOnMain)
@@ -500,6 +516,9 @@ class Simulation {
             }
         }
 
+        /*
+         * to handle the buttons on the addtional screens so they render
+        */
         void handleLWUI(TTF_Font* font)
         {
             SDL_Window * currentFocus = SDL_GetMouseFocus();

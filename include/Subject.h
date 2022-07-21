@@ -8,7 +8,10 @@
 #include <iostream>
 #include <fstream>
 #include "Logger.h"
-
+/*
+ * class that is part of the observer pattern. Writes
+ * messages to the console and an external file.
+*/
 class Subject {
     public:
         vector<Logger> listOfSubs;
@@ -35,9 +38,5 @@ void Subject::Notify(string msg)
             outputFiles<<msg<<" @ "<<date<< "\n";
         }
 }
-//class ConcreteSub : public Subject
-//{
-//    public:
-//
-//};
+
 #endif

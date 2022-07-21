@@ -7,7 +7,11 @@
 #include <list>
 #include <iostream>
 #include "ALogger.h"
-
+/*
+ * the concrete logger class. It uses the singleton patter (the private constructer, lazy instantiation, and
+ * unique getter. The logger is also part of the observer pattern (the observer/subscriber). The subject
+ * is the publisher/subject.
+*/
 class Logger : public ALogger
 {
 public:

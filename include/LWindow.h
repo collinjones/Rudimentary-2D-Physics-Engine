@@ -74,7 +74,7 @@ class LWindow
 		bool mFullScreen;
 		bool mMinimized;
 		bool mShown;
-
+        //keep track of each windows button variables
 		vector<Button*> LWButtons;
 		vector<ToggleButton*> LWToggleButtons;
         vector<DisplayPanel*> LWDisplays;
@@ -104,7 +104,7 @@ LWindow::LWindow()
 	mWidth = 0;
 	mHeight = 0;
 }
-
+//each iteration of the init() represents each additional window. 1 = gravity. 2 = circles. 3 = lines. 4 = boxes
 bool LWindow::init1()
 {
    //Create window
@@ -135,7 +135,7 @@ bool LWindow::init1()
    			mWindowID = SDL_GetWindowID( mWindow );
    			//Flag as opened
    			mShown = true;
-
+            //add buttons on the screen to change gravity, solar system, pachinko, and clear the screen
             LWToggleButtons.push_back(new ToggleButton(50, 40, 100, 25, c, c, "Gravity Status: ON", "Gravity Status: OFF",-1));
             LWButtons.push_back(new Button(20, 70, 150, 25, c, c, "Create Solar System",7));
             LWButtons.push_back(new Button(20, 100, 150, 25, c, c, "Create Panchinko",8));
@@ -181,6 +181,7 @@ bool LWindow::init2()
 			mWindowID = SDL_GetWindowID( mWindow );
 			//Flag as opened
 			mShown = true;
+			//add buttons to this screen to add the 3 types of circles
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add Normal Circle",2));
 			LWButtons.push_back(new Button(20, 50, 150, 25, c, c, "Add Attracter Circle",3));
 			LWButtons.push_back(new Button(20, 80, 150, 25, c, c, "Add Repeler Circle",4));
@@ -224,6 +225,7 @@ bool LWindow::init3()
 			mWindowID = SDL_GetWindowID( mWindow );
 			//Flag as opened
 			mShown = true;
+			//add a button to add a line
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add line",5));
 			SDL_SetWindowPosition(mWindow, 85,480);
 		}
@@ -265,6 +267,7 @@ bool LWindow::init4()
 			mWindowID = SDL_GetWindowID( mWindow );
 			//Flag as opened
 			mShown = true;
+			//add a button to add a rectangle
 			LWButtons.push_back(new Button(20, 20, 150, 25, c, c, "Add box",6));
 			SDL_SetWindowPosition(mWindow, 85,600);
 		}
@@ -276,7 +279,12 @@ bool LWindow::init4()
 
 	return mWindow != NULL && mRenderer != NULL;
 }
-
+/*
+ * functions (this and the next) to go through the windows to see
+ * if a button was clicked.  if a button was clicked it returns the
+ * buttons id which will  eventually end up in the simulation.h file
+ * for the command object to execute what the button is supposed to do
+*/
 int LWindow:: LWLeftClick(SDL_MouseButtonEvent& b) {
   if(b.button == SDL_BUTTON_LEFT){
       int posX;
@@ -309,7 +317,10 @@ int LWindow::handleButtonClick(SDL_Event& e)
     }
     return -1;
 }
-
+/*
+ * function to handle events outside of the button. Keeps track of which window
+ * has the mouse and keyboard focus. Handles the Xing and minimizing
+*/
 void LWindow::handleEvent( SDL_Event& e )
 {
 	//If an event was detected for this window
@@ -400,7 +411,12 @@ void LWindow::handleEvent( SDL_Event& e )
 		}
 	}
 }
-
+/*
+ * function to handle the UI part, or the buttons part.
+ * renders in the buttons for us to see and also handles
+ * changing the buttons color when hovering over or clicking
+ * a button
+*/
 void LWindow::LWUIHandler(TTF_Font* font) {
     SDL_Color White = {255, 255, 255};
     int posX;
@@ -416,6 +432,9 @@ void LWindow::LWUIHandler(TTF_Font* font) {
     }
 
 }
+/*
+ * bring a window to have mouse and keyboard focus
+*/
 void LWindow::focus()
 {
 	//Restore window if needed

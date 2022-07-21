@@ -10,7 +10,10 @@
 
 
 using namespace std;
-
+/*
+ * class that handles object creation. Uses the FACTORY PATTERN, code used from
+ * the book but altered for own purpose
+*/
 class shapeFactory{
 
     public:

@@ -56,6 +56,7 @@ public:
         SDL_RenderDrawRect(renderer, &button); 
     }
 
+    //returns which of the buttons was clicked, returns their id
     int ProcessClick(float px, float py, int whichButton) {
         if (mouseOver) {
         return whichButton;
